@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-gray-50;
+}
+
+/* NProgress Customization */
+#nprogress .bar {
+  background: #2563eb !important; /* blue-600 */
+  height: 3px !important;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #2563eb, 0 0 5px #2563eb !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: #2563eb !important;
+  border-left-color: #2563eb !important;
+}

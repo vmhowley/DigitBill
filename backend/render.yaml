@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: facturacion-backend
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: DB_HOST
+        fromGroup: supabase-db-settings
+      - key: DB_NAME
+        fromGroup: supabase-db-settings
+      - key: DB_USER
+        fromGroup: supabase-db-settings
+      - key: DB_PASSWORD
+        fromGroup: supabase-db-settings
+      - key: DB_PORT
+        value: 5432
+      - key: SUPABASE_URL
+        fromGroup: supabase-api-settings
+      - key: SUPABASE_ANON_KEY
+        fromGroup: supabase-api-settings
+      - key: ADMIN_SECRET
+        generateValue: true
+
+envVarGroups:
+  - name: supabase-db-settings
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+  - name: supabase-api-settings
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
