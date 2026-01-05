@@ -27,6 +27,8 @@ import { ProviderList } from './components/ProviderList';
 import { ClientStatement } from './pages/ClientStatement';
 import { InventoryPage } from './pages/Inventory';
 import { ResetPassword } from './pages/ResetPassword';
+import { UpgradePlan } from './pages/UpgradePlan';
+import { PaymentSuccess, PaymentCancel } from './pages/PaymentStatus';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, roles }: { children: ReactNode, roles?: string[] }) => {
@@ -99,6 +101,11 @@ function AppRoutes() {
 
       {/* Admin Only */}
       <Route path="/settings" element={<ProtectedRoute roles={['admin']}><Settings /></ProtectedRoute>} />
+      
+      {/* Platform Subscriptions */}
+      <Route path="/upgrade" element={<ProtectedRoute roles={['admin']}><UpgradePlan /></ProtectedRoute>} />
+      <Route path="/payment/success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+      <Route path="/payment/cancel" element={<ProtectedRoute><PaymentCancel /></ProtectedRoute>} />
 
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />

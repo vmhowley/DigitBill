@@ -2,6 +2,7 @@ import { Plus, Save, Trash2 } from 'lucide-react';
 import React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import api from '../api';
 
 interface InvoiceItem {
@@ -60,12 +61,14 @@ export const InvoiceForm: React.FC = () => {
         try {
             const response = await api.post('/api/invoices', { ...data, immediate_issue: immediate });
             if (response.data.error) {
-                alert(response.data.error);
+                toast.error(response.data.error);
+            } else {
+                toast.success(immediate ? 'Factura emitida correctamente' : 'Borrador guardado');
+                navigate('/invoices');
             }
-            navigate('/invoices');
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert('Error creating invoice');
+            toast.error(err.response?.data?.error || 'Error al crear la factura');
         } finally {
             setIsSubmitting(false);
         }

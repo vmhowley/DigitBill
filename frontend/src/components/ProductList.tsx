@@ -1,6 +1,7 @@
 import { Edit, Package, Plus, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import api from '../api';
 
 interface Product {
@@ -38,10 +39,11 @@ export const ProductList: React.FC = () => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
             try {
                 await api.delete(`/api/products/${id}`);
+                toast.success('Producto eliminado');
                 fetchProducts();
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error deleting product:', error);
-                alert('No se puede eliminar el producto porque está en uso o ocurrió un error.');
+                toast.error(error.response?.data?.error || 'No se puede eliminar el producto porque está en uso o ocurrió un error.');
             }
         }
     };

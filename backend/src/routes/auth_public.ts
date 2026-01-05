@@ -20,16 +20,16 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: error.message });
         }
 
-        // Fetch user and tenant info to return plan_type
+        // Fetch user and tenant info to return plan
         const userRes = await query('SELECT tenant_id, role, username FROM users WHERE supabase_uid = $1', [data.user.id]);
         let userDetails = null;
-        let planType = 'pyme'; // Default
+        let plan = 'free'; // Default
 
         if (userRes.rows.length > 0) {
             userDetails = userRes.rows[0];
-            const tenantRes = await query('SELECT plan_type FROM tenants WHERE id = $1', [userDetails.tenant_id]);
+            const tenantRes = await query('SELECT plan FROM tenants WHERE id = $1', [userDetails.tenant_id]);
             if (tenantRes.rows.length > 0) {
-                planType = tenantRes.rows[0].plan_type;
+                plan = tenantRes.rows[0].plan;
             }
         }
 
@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
             user: {
                 ...data.user,
                 ...userDetails,
-                plan_type: planType
+                plan: plan
             }
         });
     } catch (err: any) {
@@ -55,7 +55,7 @@ router.post('/register', async (req, res) => {
             return res.status(403).json({ error: 'Forbidden: Admin Secret Required' });
         }
 
-        const { email, password, company_name, rnc, phone, address, type } = req.body;
+        const { email, password, company_name, rnc, phone, address, type, plan } = req.body;
 
 
         // Basic validation
@@ -90,8 +90,8 @@ router.post('/register', async (req, res) => {
         try {
             // Create Tenant
             const tenantRes = await query(
-                'INSERT INTO tenants (name, rnc, address, phone, email, type, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
-                [company_name, rnc, address, phone, email, type, 'active']
+                'INSERT INTO tenants (name, rnc, address, phone, email, type, status, plan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+                [company_name, rnc, address, phone, email, type, 'active', plan || 'free']
             );
             const tenantId = tenantRes.rows[0].id;
 

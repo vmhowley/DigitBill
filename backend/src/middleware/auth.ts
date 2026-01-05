@@ -14,6 +14,7 @@ declare global {
       user?: any; // Should interface this
       tenantId?: number;
       role?: string;
+      plan?: string;
     }
   }
 }
@@ -60,17 +61,31 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
 
     // 3. Resolve Tenant
     // Check if user exists in local DB
-    const userRes = await query('SELECT id, tenant_id, role FROM users WHERE supabase_uid = $1', [user.id]);
+    const userRes = await query(`
+      SELECT u.id, u.tenant_id, u.role, t.plan 
+      FROM users u 
+      JOIN tenants t ON u.tenant_id = t.id 
+      WHERE u.supabase_uid = $1
+    `, [user.id]);
     
     let tenantId;
+    let plan;
+    let role;
 
     if (userRes.rows.length === 0) {
       // Check if maybe they exist by email but haven't linked UID yet (migrating legacy users)
-      const emailCheck = await query('SELECT id, tenant_id FROM users WHERE username = $1', [user.email]);
+      const emailCheck = await query(`
+        SELECT u.id, u.tenant_id, u.role, t.plan 
+        FROM users u 
+        JOIN tenants t ON u.tenant_id = t.id 
+        WHERE u.username = $1
+      `, [user.email]);
       
       if (emailCheck.rows.length > 0) {
         // Link existing legacy user to the new Supabase UID
         tenantId = emailCheck.rows[0].tenant_id;
+        plan = emailCheck.rows[0].plan;
+        role = emailCheck.rows[0].role;
         await query('UPDATE users SET supabase_uid = $1 WHERE id = $2', [user.id, emailCheck.rows[0].id]);
       } else {
         // STRICT MODE: If user is not in our DB, deny access.
@@ -80,11 +95,14 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       }
     } else {
       tenantId = userRes.rows[0].tenant_id;
+      plan = userRes.rows[0].plan;
+      role = userRes.rows[0].role;
     }
 
     // Attach to request
-    req.user = { ...user, role: userRes.rows[0].role }; // Attach role
+    req.user = { ...user, role }; // Attach role
     req.tenantId = tenantId;
+    req.plan = plan || 'free';
 
     next();
   } catch (err) {

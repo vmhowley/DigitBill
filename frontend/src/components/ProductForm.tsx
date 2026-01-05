@@ -2,6 +2,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import api from '../api';
 
 interface ProductFormData {
@@ -54,7 +55,7 @@ export const ProductForm: React.FC = () => {
             setValue('category', product.category || '');
         } catch (error) {
             console.error('Error fetching product:', error);
-            alert('Error al cargar los datos del producto');
+            toast.error('Error al cargar los datos del producto');
             navigate('/products');
         }
     };
@@ -66,10 +67,11 @@ export const ProductForm: React.FC = () => {
             } else {
                 await api.post('/api/products', data);
             }
+            toast.success(isEditMode ? 'Producto actualizado' : 'Producto creado');
             navigate('/products');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving product:', error);
-            alert('Error al guardar el producto');
+            toast.error(error.response?.data?.error || 'Error al guardar el producto');
         }
     };
 

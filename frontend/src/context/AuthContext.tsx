@@ -9,6 +9,7 @@ interface UserProfile {
     role: string;
     tenant_id: number;
     tenant_name: string;
+    plan?: string;
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
     profile: UserProfile | null;
     loading: boolean;
     signOut: () => Promise<void>;
+    fetchProfile: () => Promise<void>;
     isAdmin: boolean;
     needsMFA: boolean;
 }
@@ -27,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
     profile: null,
     loading: true,
     signOut: async () => { },
+    fetchProfile: async () => { },
     isAdmin: false,
     needsMFA: false
 });
@@ -166,6 +169,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             profile, 
             loading, 
             signOut,
+            fetchProfile,
             isAdmin: profile?.role === 'admin',
             needsMFA
         }}>

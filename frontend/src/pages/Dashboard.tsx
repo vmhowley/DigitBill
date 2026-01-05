@@ -2,9 +2,11 @@ import { AlertCircle, ArrowRight, FileText, Package, Plus, TrendingUp, Users } f
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../api';
+import { useAuth } from '../context/AuthContext';
 
 // Dashboard handles its own loading state for data fetching.
 export const Dashboard = () => {
+    const { fetchProfile } = useAuth();
     const [stats, setStats] = useState({
         totalRevenue: 0,
         invoiceCount: 0,
@@ -16,6 +18,7 @@ export const Dashboard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        fetchProfile();
         const fetchData = async () => {
             try {
                 // In a real app, we'd have a dedicated /stats endpoint.

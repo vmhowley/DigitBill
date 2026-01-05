@@ -1,6 +1,7 @@
 import { Edit, FileText, Plus, Trash2, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import api from '../api';
 
 interface Client {
@@ -36,10 +37,11 @@ export const ClientList: React.FC = () => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
             try {
                 await api.delete(`/api/clients/${id}`);
+                toast.success('Cliente eliminado');
                 fetchClients();
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Error deleting client:', error);
-                alert('No se puede eliminar el cliente porque tiene facturas asociadas o ocurrió un error.');
+                toast.error(error.response?.data?.error || 'No se puede eliminar el cliente porque tiene facturas asociadas o ocurrió un error.');
             }
         }
     };

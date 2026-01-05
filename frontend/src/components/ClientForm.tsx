@@ -2,6 +2,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import api from '../api';
 
 interface ClientFormData {
@@ -42,7 +43,7 @@ export const ClientForm: React.FC = () => {
             setValue('type', client.type);
         } catch (error) {
             console.error('Error fetching client:', error);
-            alert('Error al cargar los datos del cliente');
+            toast.error('Error al cargar los datos del cliente');
             navigate('/clients');
         }
     };
@@ -54,10 +55,11 @@ export const ClientForm: React.FC = () => {
             } else {
                 await api.post('/api/clients', data);
             }
+            toast.success(isEditMode ? 'Cliente actualizado' : 'Cliente creado');
             navigate('/clients');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving client:', error);
-            alert('Error al guardar el cliente');
+            toast.error(error.response?.data?.error || 'Error al guardar el cliente');
         }
     };
 

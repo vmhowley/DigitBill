@@ -50,7 +50,7 @@ export const InvoiceList: React.FC = () => {
             toast?.success(isElectronicEnabled ? 'Factura firmada' : 'Factura completada');
             fetchInvoices();
         } catch (err) {
-            alert(isElectronicEnabled ? 'Error signing invoice' : 'Error completing invoice');
+            toast.error(isElectronicEnabled ? 'Error al firmar la factura' : 'Error al completar la factura');
         }
     };
 
@@ -60,11 +60,11 @@ export const InvoiceList: React.FC = () => {
             if (!conf) return;
 
             await axios.post(`/api/invoices/${id}/send`);
-            alert('Factura enviada correctamente');
+            toast.success('Factura enviada correctamente');
             fetchInvoices();
         } catch (err: any) {
             console.error(err);
-            alert('Error al enviar: ' + (err.response?.data?.error || 'Error desconocido'));
+            toast.error('Error al enviar: ' + (err.response?.data?.error || 'Error desconocido'));
         }
     };
 
@@ -81,7 +81,7 @@ export const InvoiceList: React.FC = () => {
             link.click();
             link.remove();
         } catch (err) {
-            alert('Error downloading XML');
+            toast.error('Error al descargar el XML');
         }
     };
 

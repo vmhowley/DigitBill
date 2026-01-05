@@ -3,6 +3,7 @@ import { pool, query } from "../db";
 import { requireAuth } from "../middleware/auth";
 import { issueInvoice } from "../services/invoiceService";
 import { logger } from "../utils/logger";
+import { getPlanLimits } from "../utils/planLimits";
 
 const router = Router();
 
@@ -70,9 +71,28 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const dbClient = await pool.connect();
   try {
-    await dbClient.query("BEGIN");
     const { client_id, items, type_code, reference_ncf, immediate_issue } =
       req.body;
+
+    // Check Plan Limits
+    const limits = getPlanLimits(req.plan);
+    if (limits.maxInvoicesPerMonth < 9999) {
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+
+      const countRes = await dbClient.query(
+        "SELECT COUNT(*) as count FROM invoices WHERE tenant_id = $1 AND created_at >= $2",
+        [req.tenantId, monthStart]
+      );
+      const currentCount = parseInt(countRes.rows[0].count);
+
+      if (currentCount >= limits.maxInvoicesPerMonth) {
+        return res.status(403).json({
+          error: `Has alcanzado el límite de ${limits.maxInvoicesPerMonth} facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
+        });
+      }
+    }
 
     // Calculate totals (simplified)
     let net_total = 0;

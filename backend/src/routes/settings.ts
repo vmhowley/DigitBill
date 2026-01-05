@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { query } from '../db';
 import { requireAuth, requireRole } from '../middleware/auth';
 import { supabaseAdmin } from '../services/supabase';
+import { getPlanLimits } from '../utils/planLimits';
 
 const router = Router();
 
@@ -97,20 +98,14 @@ router.post('/users/invite', async (req, res) => {
         }
 
         // 2. Check Plan Limits before inviting
-        // Get current user count and plan
-        const tenantRes = await query('SELECT plan_type FROM tenants WHERE id = $1', [req.tenantId]);
-        const planType = tenantRes.rows[0]?.plan_type || 'pyme';
+        const limits = getPlanLimits(req.plan);
         
         const countRes = await query('SELECT COUNT(*) as count FROM users WHERE tenant_id = $1', [req.tenantId]);
         const currentCount = parseInt(countRes.rows[0].count);
 
-        let maxUsers = 1; // Default/Entrepreneur
-        if (planType === 'pyme') maxUsers = 3;
-        else if (planType === 'enterprise') maxUsers = 9999;
-
-        if (currentCount >= maxUsers) {
+        if (currentCount >= limits.maxUsers) {
             return res.status(403).json({ 
-                error: `Tu plan actual (${planType.toUpperCase()}) solo permite ${maxUsers} usuarios. Actualiza a Empresarial para ilimitados.` 
+                error: `Tu plan actual (${req.plan?.toUpperCase()}) solo permite ${limits.maxUsers} usuarios. Actualiza para obtener más.` 
             });
         }
 

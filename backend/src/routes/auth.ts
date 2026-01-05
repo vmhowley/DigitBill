@@ -18,7 +18,7 @@ router.get('/me', async (req, res) => {
         }
 
         const user = userRes.rows[0];
-        const tenantRes = await query('SELECT name, plan_type FROM tenants WHERE id = $1', [user.tenant_id]);
+        const tenantRes = await query('SELECT name, plan FROM tenants WHERE id = $1', [user.tenant_id]);
         
         res.json({
             id: user.id,
@@ -26,7 +26,7 @@ router.get('/me', async (req, res) => {
             role: user.role,
             tenant_id: user.tenant_id,
             tenant_name: tenantRes.rows[0]?.name || 'Unknown',
-            plan_type: tenantRes.rows[0]?.plan_type || 'pyme',
+            plan: tenantRes.rows[0]?.plan || 'free',
             email: req.user.email
         });
     } catch (err) {

@@ -1,4 +1,4 @@
-import { BarChart3, FilePlus, FileText, LayoutDashboard, LogOut, Package, Receipt, Settings, Truck, Users, Warehouse } from 'lucide-react';
+import { BarChart3, CreditCard, FilePlus, FileText, LayoutDashboard, LogOut, Package, Receipt, Settings, Truck, Users, Warehouse } from 'lucide-react';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo_digitbill.png';
@@ -120,12 +120,25 @@ export const Sidebar: React.FC = () => {
                 )}
 
                 {role === 'admin' && (
-                    <div className="pt-4 mt-4 border-t border-gray-100">
+                    <div className="pt-4 mt-4 border-t border-gray-100 space-y-1">
+                        <Link
+                            to="/upgrade"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/upgrade')
+                                ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+                            <CreditCard size={20} className={isActive('/upgrade') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
+                            <span className="font-medium">Cambiar Plan</span>
+                        </Link>
                         <Link
                             to="/settings"
-                            className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 group"
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/settings')
+                                ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
                         >
-                            <Settings size={20} className="text-gray-400 group-hover:text-gray-600" />
+                            <Settings size={20} className={isActive('/settings') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
                             <span className="font-medium">Configuración</span>
                         </Link>
                     </div>

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { query } from '../db';
 import { requireAuth } from '../middleware/auth';
+import { getPlanLimits } from '../utils/planLimits';
 
 const router = Router();
 
@@ -37,6 +38,20 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, rnc_ci, address, email, phone, type } = req.body;
+
+    // Check Plan Limits
+    const limits = getPlanLimits(req.plan);
+    if (limits.maxClients < 9999) {
+      const countRes = await query('SELECT COUNT(*) as count FROM clients WHERE tenant_id = $1', [req.tenantId]);
+      const currentCount = parseInt(countRes.rows[0].count);
+
+      if (currentCount >= limits.maxClients) {
+        return res.status(403).json({ 
+          error: `Has alcanzado el límite de ${limits.maxClients} clientes para tu plan ${req.plan?.toUpperCase()}.` 
+        });
+      }
+    }
+
     const result = await query(
       'INSERT INTO clients (tenant_id, name, rnc_ci, address, email, phone, type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
       [req.tenantId, name, rnc_ci, address, email, phone, type]

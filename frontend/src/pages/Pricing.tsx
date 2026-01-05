@@ -14,7 +14,25 @@ export const Pricing: React.FC = () => {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* Free Plan */}
+                    <PricingCard 
+                        title="Gratis"
+                        price="RD$ 0"
+                        period="/ mes"
+                        description="Ideal para probar la plataforma o negocios muy pequeños."
+                        features={[
+                            "5 Facturas por mes",
+                            "Hasta 10 Clientes",
+                            "1 Usuario",
+                            "Facturas B01 y B02",
+                            "Soporte Comunitario"
+                        ]}
+                        buttonText="Empezar Gratis"
+                        buttonLink="/register?plan=free"
+                        highlight={false}
+                    />
+
                     {/* Emprendedor Plan */}
                     <PricingCard 
                         title="Emprendedor"
@@ -23,6 +41,7 @@ export const Pricing: React.FC = () => {
                         description="Para pequeños negocios que facturan desde la web."
                         features={[
                             "Facturación Ilimitada",
+                            "Clientes Ilimitados",
                             "1 Usuario",
                             "Acceso Web (Dashboard)",
                             "Facturas B01 y B02",
