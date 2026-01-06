@@ -93,12 +93,12 @@ export const InvoiceList: React.FC = () => {
 
     const filteredInvoices = invoices.filter(inv => {
         const query = searchTerm.toLowerCase().trim();
-        
+
         // Search Filter logic
         const seqFormatted = (inv.sequential_number || inv.id).toString().padStart(6, '0');
         const seqRaw = (inv.sequential_number || inv.id).toString();
-        
-        const matchesSearch = !query || 
+
+        const matchesSearch = !query ||
             seqFormatted.includes(query) ||
             seqRaw.includes(query) ||
             (inv.client_name && inv.client_name.toLowerCase().includes(query)) ||
@@ -168,7 +168,7 @@ export const InvoiceList: React.FC = () => {
                             title="Fecha Final"
                         />
                         {(startDate || endDate) && (
-                            <button 
+                            <button
                                 onClick={() => { setStartDate(''); setEndDate(''); }}
                                 className="text-xs text-red-500 hover:text-red-700 font-medium"
                             >
@@ -189,7 +189,124 @@ export const InvoiceList: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
+            {/* Mobile View - Cards */}
+            <div className="md:hidden grid grid-cols-1 gap-4">
+                {filteredInvoices.map((inv) => (
+                    <div key={inv.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-2">
+                                <div className="bg-blue-50 p-1.5 rounded-lg text-blue-600">
+                                    <FileText size={16} />
+                                </div>
+                                <span className="font-medium text-gray-900">#{(inv.sequential_number || inv.id).toString().padStart(6, '0')}</span>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${inv.status === 'sent'
+                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                    : inv.status === 'signed' || inv.status === 'completed'
+                                        ? 'bg-green-50 text-green-700 border-green-200'
+                                        : inv.status === 'draft'
+                                            ? 'bg-gray-100 text-gray-700 border-gray-200'
+                                            : 'bg-orange-50 text-orange-700 border-orange-200'
+                                    }`}>
+                                    {inv.status === 'sent' ? <Send size={12} /> : (inv.status === 'signed' || inv.status === 'completed') ? <CheckCircle size={12} /> : <div className="w-1.5 h-1.5 rounded-full bg-current" />}
+                                    {inv.status === 'sent' ? 'Enviada' : inv.status === 'completed' ? 'Completada' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
+                                </span>
+                                {parseFloat(inv.total) - parseFloat(inv.total_paid as string) <= 0 && (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">
+                                        Pagada
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <p className="font-semibold text-gray-900">{inv.client_name || 'Desconocido'}</p>
+                            <p className="text-xs text-gray-500">{new Date(inv.created_at).toLocaleDateString()}</p>
+                        </div>
+
+                        <div className="flex justify-between items-center border-t border-gray-100 pt-3">
+                            <div>
+                                <p className="text-xs text-gray-500">Total</p>
+                                <p className="font-semibold text-gray-900">RD$ {parseFloat(inv.total).toLocaleString('es-DO', { minimumFractionDigits: 2 })}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs text-gray-500">Saldo</p>
+                                <span className={`font-medium ${parseFloat(inv.total) - parseFloat(inv.total_paid as string) <= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    RD$ {(parseFloat(inv.total) - parseFloat(inv.total_paid as string)).toLocaleString('es-DO', { minimumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-gray-100">
+                            {inv.status === 'draft' && (
+                                <button
+                                    onClick={() => signInvoice(inv.id)}
+                                    className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+                                >
+                                    {isElectronicEnabled ? 'Firmar' : 'Completar'}
+                                </button>
+                            )}
+                            {(inv.status === 'signed' || inv.status === 'completed') && (
+                                <div className="flex items-center justify-end gap-2 flex-wrap">
+                                    <Link
+                                        to={`/invoices/${inv.id}`}
+                                        className="text-sm font-medium text-blue-600 hover:text-blue-800 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+                                    >
+                                        Ver
+                                    </Link>
+                                    {inv.status === 'signed' && (
+                                        <>
+                                            <button
+                                                onClick={() => downloadXml(inv.id)}
+                                                className="text-sm font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                                            >
+                                                XML
+                                            </button>
+                                            <button
+                                                onClick={() => sendToDGII(inv.id)}
+                                                className="flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-3 py-1.5 rounded-lg transition-colors"
+                                            >
+                                                <Send size={14} /> Enviar
+                                            </button>
+                                        </>
+                                    )}
+                                    {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
+                                        <button
+                                            onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
+                                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                                        >
+                                            <Banknote size={14} /> Pagar
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                            {inv.status === 'sent' && (
+                                <div className="flex items-center justify-end gap-2">
+                                    <span className="text-sm text-gray-400 font-medium px-3">Enviada</span>
+                                    {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
+                                        <button
+                                            onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
+                                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                                        >
+                                            <Banknote size={14} /> Pagar
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))}
+                {filteredInvoices.length === 0 && (
+                    <div className="flex flex-col items-center gap-2 p-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200 text-gray-500">
+                        <FileText size={32} className="text-gray-300" />
+                        <p>{searchTerm || statusFilter !== 'all' ? 'No se encontraron facturas con estos filtros' : 'No hay facturas registradas'}</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Desktop View - Table */}
+            <div className="hidden md:block bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-left">
                         <thead>
@@ -211,7 +328,7 @@ export const InvoiceList: React.FC = () => {
                                             <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
                                                 <FileText size={18} />
                                             </div>
-                                            <span className="font-medium text-gray-900">#{ (inv.sequential_number || inv.id).toString().padStart(6, '0')}</span>
+                                            <span className="font-medium text-gray-900">#{(inv.sequential_number || inv.id).toString().padStart(6, '0')}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-700 font-medium">

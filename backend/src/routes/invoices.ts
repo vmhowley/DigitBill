@@ -89,7 +89,9 @@ router.post("/", async (req, res) => {
 
       if (currentCount >= limits.maxInvoicesPerMonth) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de ${limits.maxInvoicesPerMonth} facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
+          error: `Has alcanzado el límite de ${
+            limits.maxInvoicesPerMonth
+          } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
         });
       }
     }
@@ -134,7 +136,7 @@ router.post("/", async (req, res) => {
 
       // Default to 18 if still not set
       if (taxRate === undefined || taxRate === null) {
-        taxRate = 18.00;
+        taxRate = 18.0;
       }
 
       const lineAmount = item.quantity * item.unit_price;
@@ -314,7 +316,7 @@ router.post("/:id/email", async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-        return res.status(400).json({ error: "Email recipient is required" });
+      return res.status(400).json({ error: "Email recipient is required" });
     }
 
     const invRes = await query(
@@ -330,8 +332,10 @@ router.post("/:id/email", async (req, res) => {
 
     const invoice = invRes.rows[0];
 
-    if (invoice.status === 'draft') {
-        return res.status(400).json({ error: "No se puede enviar una factura en borrador" });
+    if (invoice.status === "draft") {
+      return res
+        .status(400)
+        .json({ error: "No se puede enviar una factura en borrador" });
     }
 
     const { getCompanyConfig } = require("../services/configService");
@@ -340,17 +344,26 @@ router.post("/:id/email", async (req, res) => {
 
     // Prepare company info for the email
     const company = {
-        name: config.company_name,
-        address: config.address || 'Dominican Republic',
-        phone: config.phone || ''
+      name: config.company_name,
+      address: config.address || "Dominican Republic",
+      phone: config.phone || "",
     };
 
-    await sendInvoiceEmail(email, invoice, company);
+    const senderEmail = req.user?.email;
+    // Try to get a friendly name, fallback to part of email
+    const senderName =
+      req.user?.user_metadata?.full_name ||
+      req.user?.user_metadata?.name ||
+      (senderEmail ? senderEmail.split("@")[0] : "DigitBill");
+
+    await sendInvoiceEmail(email, invoice, company, senderEmail, senderName);
 
     res.json({ success: true, message: "Factura enviada correctamente" });
   } catch (err: any) {
-    console.error('Email Send Error:', err);
-    res.status(500).json({ error: "Error al enviar el correo: " + err.message });
+    console.error("Email Send Error:", err);
+    res
+      .status(500)
+      .json({ error: "Error al enviar el correo: " + err.message });
   }
 });
 

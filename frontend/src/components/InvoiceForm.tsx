@@ -1,8 +1,8 @@
 import { Plus, Save, Trash2 } from 'lucide-react';
 import React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { QuickClientModal } from './QuickClientModal';
 
@@ -179,8 +179,8 @@ export const InvoiceForm: React.FC = () => {
 
                     <div className="space-y-3">
                         {fields.map((field, index) => (
-                            <div key={field.id} className="group flex gap-4 items-start bg-gray-50/50 hover:bg-gray-50 p-4 rounded-xl border border-gray-100 hover:border-gray-200 transition-all">
-                                <div className="flex-1">
+                            <div key={field.id} className="group relative grid grid-cols-12 gap-x-4 gap-y-4 items-start bg-gray-50/50 hover:bg-gray-50 p-4 rounded-xl border border-gray-100 hover:border-gray-200 transition-all">
+                                <div className="col-span-12 md:col-span-4">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Producto / Servicio</label>
                                     <div className="space-y-2">
                                         <select
@@ -212,7 +212,7 @@ export const InvoiceForm: React.FC = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="w-28">
+                                <div className="col-span-6 md:col-span-2">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
                                     <input
                                         type="number"
@@ -221,7 +221,7 @@ export const InvoiceForm: React.FC = () => {
                                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
                                     />
                                 </div>
-                                <div className="w-36">
+                                <div className="col-span-6 md:col-span-2">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Precio Unitario</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-2 text-gray-400 text-sm">$</span>
@@ -233,7 +233,7 @@ export const InvoiceForm: React.FC = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="w-20">
+                                <div className="col-span-6 md:col-span-1">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Tax %</label>
                                     <input
                                         type="number"
@@ -242,19 +242,22 @@ export const InvoiceForm: React.FC = () => {
                                         className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
                                     />
                                 </div>
-                                <div className="w-32">
+                                <div className="col-span-6 md:col-span-2">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Total</label>
-                                    <div className="px-3 py-2 bg-gray-100 rounded-lg text-right font-medium text-gray-700">
+                                    <div className="px-3 py-2 bg-gray-100 rounded-lg text-right font-medium text-gray-700 truncate">
                                         {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toFixed(2)}
                                     </div>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => remove(index)}
-                                    className="mt-6 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
+                                <div className="col-span-12 md:col-span-1 flex items-center justify-center md:pt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => remove(index)}
+                                        className="w-full md:w-auto p-2 text-red-500 bg-red-50 md:bg-transparent md:text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center gap-2"
+                                        title="Eliminar Item"
+                                    >
+                                        <Trash2 size={18} /> <span className="md:hidden text-sm font-medium">Eliminar</span>
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -268,10 +271,10 @@ export const InvoiceForm: React.FC = () => {
                                 <span>Subtotal</span>
                                 <span className="font-medium">RD$ {subtotal.toFixed(2)}</span>
                             </div>
-                             <div className="flex justify-between text-gray-600">
-                                 <span>ITBIS Total</span>
-                                 <span className="font-medium">RD$ {tax.toFixed(2)}</span>
-                             </div>
+                            <div className="flex justify-between text-gray-600">
+                                <span>ITBIS Total</span>
+                                <span className="font-medium">RD$ {tax.toFixed(2)}</span>
+                            </div>
                             <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
                                 <span className="text-lg font-bold text-gray-800">Total</span>
                                 <span className="text-xl font-bold text-blue-600">RD$ {total.toFixed(2)}</span>
@@ -300,7 +303,7 @@ export const InvoiceForm: React.FC = () => {
                 </div>
             </form>
 
-            <QuickClientModal 
+            <QuickClientModal
                 isOpen={isClientModalOpen}
                 onClose={() => setIsClientModalOpen(false)}
                 onSuccess={async (newClientId) => {
