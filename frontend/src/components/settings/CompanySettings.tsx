@@ -39,7 +39,7 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                     <label className="block text-sm font-medium text-gray-700 mb-1">Dirección Física</label>
                     <input {...register('address')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
                 </div>
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 p-6 bg-blue-50/50 rounded-2xl border border-blue-100 space-y-4">
                     <label className="flex items-center gap-3 cursor-pointer group">
                         <div className="relative">
                             <input
@@ -50,10 +50,21 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </div>
                         <div>
-                            <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">Facturación Electrónica</span>
-                            <p className="text-xs text-gray-500">Activa el envío de comprobantes e-CF a la DGII y firma digital.</p>
+                            <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Facturación Electrónica Activa</span>
+                            <p className="text-xs text-gray-500">Habilita la firma digital y el envío automático a la DGII.</p>
                         </div>
                     </label>
+
+                    <div className="pt-4 border-t border-blue-100">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña del Certificado (.p12)</label>
+                        <input 
+                            type="password" 
+                            {...register('certificate_password')} 
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white" 
+                            placeholder="••••••••"
+                        />
+                        <p className="text-[10px] text-gray-400 mt-1 italic">La contraseña se encripta para mayor seguridad.</p>
+                    </div>
                 </div>
             </div>
             <div className="flex justify-end pt-4 border-t">

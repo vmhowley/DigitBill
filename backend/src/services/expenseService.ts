@@ -10,6 +10,27 @@ export const createProvider = async (tenantId: number, data: any) => {
   return res.rows[0];
 };
 
+export const updateProvider = async (tenantId: number, id: number, data: any) => {
+  const res = await query(
+    `UPDATE providers SET name=$1, rnc=$2, phone=$3, email=$4, address=$5 
+         WHERE id=$6 AND tenant_id=$7 RETURNING *`,
+    [data.name, data.rnc, data.phone, data.email, data.address, id, tenantId]
+  );
+  return res.rows[0];
+};
+
+export const deleteProvider = async (tenantId: number, id: number) => {
+  await query("DELETE FROM providers WHERE id=$1 AND tenant_id=$2", [id, tenantId]);
+};
+
+export const getProvider = async (tenantId: number, id: number) => {
+  const res = await query(
+    "SELECT * FROM providers WHERE id = $1 AND tenant_id = $2",
+    [id, tenantId]
+  );
+  return res.rows[0];
+};
+
 export const getProviders = async (tenantId: number) => {
   const res = await query(
     "SELECT * FROM providers WHERE tenant_id = $1 ORDER BY name",

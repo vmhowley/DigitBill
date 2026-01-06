@@ -4,6 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../api';
+import { QuickClientModal } from './QuickClientModal';
 
 interface InvoiceItem {
     product_id: number; // Simplified for now, would be a select in real app
@@ -25,6 +26,7 @@ export const InvoiceForm: React.FC = () => {
     const [products, setProducts] = React.useState<Array<{ id: number, sku: string, description: string, unit_price: string }>>([]);
     const [isElectronic, setIsElectronic] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const [isClientModalOpen, setIsClientModalOpen] = React.useState(false);
 
     const { register, control, handleSubmit, watch, setValue } = useForm<InvoiceFormData>({
         defaultValues: {
@@ -51,6 +53,15 @@ export const InvoiceForm: React.FC = () => {
         fetchData();
     }, []);
 
+    const fetchClients = async () => {
+        try {
+            const res = await api.get('/api/clients');
+            setClients(res.data);
+        } catch (err) {
+            console.error('Error refreshing clients', err);
+        }
+    };
+
     const { fields, append, remove } = useFieldArray({
         control,
         name: "items"
@@ -74,11 +85,13 @@ export const InvoiceForm: React.FC = () => {
         }
     };
 
-    // Calculate totals for preview
+    // Calculate totals for preview - Optimized with useMemo
     const items = watch('items');
-    const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
-    const tax = subtotal * 0.18;
-    const total = subtotal + tax;
+    const { subtotal, tax, total } = React.useMemo(() => {
+        const sub = items.reduce((sum, item) => sum + ((item.quantity || 0) * (item.unit_price || 0)), 0);
+        const t = sub * 0.18;
+        return { subtotal: sub, tax: t, total: sub + t };
+    }, [items]);
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -109,7 +122,7 @@ export const InvoiceForm: React.FC = () => {
                                 </select>
                                 <button
                                     type="button"
-                                    onClick={() => navigate('/clients/new')}
+                                    onClick={() => setIsClientModalOpen(true)}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center"
                                     title="Crear Nuevo Cliente"
                                 >
@@ -275,6 +288,15 @@ export const InvoiceForm: React.FC = () => {
                     </div>
                 </div>
             </form>
+
+            <QuickClientModal 
+                isOpen={isClientModalOpen}
+                onClose={() => setIsClientModalOpen(false)}
+                onSuccess={async (newClientId) => {
+                    await fetchClients();
+                    setValue('client_id', newClientId);
+                }}
+            />
         </div>
     );
 };

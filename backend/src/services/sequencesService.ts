@@ -70,7 +70,8 @@ export const getNextNCF = async (
     await dbClient.query("ROLLBACK");
     logger.error("Error generating NCF", { tenantId, typeCode, error });
     throw error;
-  } finally {
-    dbClient.release();
-  }
+    } finally {
+        dbClient.release();
+    }
 };
+

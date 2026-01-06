@@ -47,9 +47,9 @@ export const Settings: React.FC = () => {
         }
     };
 
-    const  onUpdateSequence = async (id: number, next_number: number, end_date: string) => {
+    const  onUpdateSequence = async (id: number, next_number: number, end_date: string, current_end_number?: number) => {
         try {
-           await axios.put(`/api/settings/sequences/${id}`, { next_number, end_date });
+           await axios.put(`/api/settings/sequences/${id}`, { next_number, end_date, current_end_number });
            toast.success('Secuencia actualizada');
            fetchAllData();
         } catch(err) {

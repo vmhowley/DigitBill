@@ -6,6 +6,7 @@ import axios from '../api';
 
 interface InvoiceDetail {
     id: number;
+    sequential_number: number;
     client_name: string;
     client_rnc: string;
     issue_date: string;
@@ -78,7 +79,7 @@ export const InvoiceDetails: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto p-8">
             <div className="mb-6 flex justify-between items-center print:hidden">
-                <Link to="/" className="flex items-center text-gray-500 hover:text-gray-800">
+                <Link to="/invoices" className="flex items-center text-gray-500 hover:text-gray-800">
                     <ArrowLeft size={18} className="mr-2" /> Volver
                 </Link>
                 <button
@@ -102,7 +103,10 @@ export const InvoiceDetails: React.FC = () => {
                         <p className="text-sm text-gray-500">{company?.phone}</p>
                     </div>
                     <div className="text-right">
-                        <h1 className="text-2xl font-bold text-gray-900">{getTypeName(invoice.type_code)}</h1>
+                        <div className="flex flex-col items-end">
+                            <h1 className="text-2xl font-bold text-gray-900">{getTypeName(invoice.type_code)}</h1>
+                            <span className="text-blue-600 font-mono text-sm font-semibold">#{(invoice.sequential_number || invoice.id).toString().padStart(6, '0')}</span>
+                        </div>
                         {invoice.e_ncf ? (
                             <p className="text-lg font-mono text-gray-700 mt-1">
                                 <span className="text-xs text-gray-400 mr-2">{company?.electronic_invoicing !== false ? 'e-NCF' : 'NCF'}:</span>

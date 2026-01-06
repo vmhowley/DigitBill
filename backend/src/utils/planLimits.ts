@@ -1,7 +1,7 @@
 
 export const PLAN_LIMITS = {
     free: {
-        maxInvoicesPerMonth: 5,
+        maxInvoicesPerMonth: 20,
         maxClients: 10,
         maxUsers: 1,
         features: ['B02', 'B01']

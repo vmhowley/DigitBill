@@ -5,12 +5,13 @@ interface Sequence {
     id: number;
     type_code: string;
     next_number: number;
+    current_end_number: number | null;
     end_date: string;
 }
 
 interface SequenceSettingsProps {
     sequences: Sequence[];
-    onUpdate: (id: number, next_number: number, end_date: string) => Promise<void>;
+    onUpdate: (id: number, next_number: number, end_date: string, current_end_number?: number) => Promise<void>;
 }
 
 export const SequenceSettings: React.FC<SequenceSettingsProps> = ({ sequences, onUpdate }) => {
@@ -21,7 +22,8 @@ export const SequenceSettings: React.FC<SequenceSettingsProps> = ({ sequences, o
                     <tr className="border-b text-gray-500 text-sm">
                         <th className="py-3 px-4">Código</th>
                         <th className="py-3 px-4">Tipo de Comprobante</th>
-                        <th className="py-3 px-4 text-center">Próximo Número</th>
+                        <th className="py-3 px-4 text-center">Desde (Próximo)</th>
+                        <th className="py-3 px-4 text-center">Hasta (Final)</th>
                         <th className="py-3 px-4 text-right">Vencimiento</th>
                         <th className="py-3 px-4 text-right">Acción</th>
                     </tr>
@@ -39,13 +41,14 @@ export const SequenceSettings: React.FC<SequenceSettingsProps> = ({ sequences, o
     );
 };
 
-const SequenceRow = ({ sequence, onUpdate }: { sequence: Sequence, onUpdate: (id: number, next: number, date: string) => Promise<void> }) => {
+const SequenceRow = ({ sequence, onUpdate }: { sequence: Sequence, onUpdate: (id: number, next: number, date: string, end?: number) => Promise<void> }) => {
     const [next, setNext] = useState(sequence.next_number.toString());
+    const [end, setEnd] = useState(sequence.current_end_number?.toString() || '');
     const [date, setDate] = useState(sequence.end_date ? new Date(sequence.end_date).toISOString().split('T')[0] : '');
     const [isDirty, setIsDirty] = useState(false);
 
     const handleUpdate = () => {
-        onUpdate(sequence.id, parseInt(next), date);
+        onUpdate(sequence.id, parseInt(next), date, end ? parseInt(end) : undefined);
         setIsDirty(false);
     };
 
@@ -61,12 +64,24 @@ const SequenceRow = ({ sequence, onUpdate }: { sequence: Sequence, onUpdate: (id
             </td>
             <td className="py-3 px-4 text-center">
                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-gray-400 text-xs">B{sequence.type_code}...</span>
+                    <span className="text-gray-400 text-xs">{sequence.type_code.startsWith('3') || sequence.type_code.startsWith('4') ? 'E' : 'B'}{sequence.type_code}...</span>
                     <input 
                         type="number" 
                         value={next}
                         onChange={(e) => { setNext(e.target.value); setIsDirty(true); }}
                         className="w-20 px-2 py-1 border rounded text-center text-sm"
+                    />
+                 </div>
+            </td>
+            <td className="py-3 px-4 text-center">
+                 <div className="flex items-center justify-center gap-2">
+                    <span className="text-gray-400 text-xs">...</span>
+                    <input 
+                        type="number" 
+                        value={end}
+                        onChange={(e) => { setEnd(e.target.value); setIsDirty(true); }}
+                        className="w-24 px-2 py-1 border rounded text-center text-sm"
+                        placeholder="Sin limite"
                     />
                  </div>
             </td>

@@ -11,6 +11,7 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Landing } from './pages/Landing';
 import { Pricing } from './pages/Pricing';
+import { Register } from './pages/Register';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 
@@ -23,6 +24,7 @@ import { InvoiceForm } from './components/InvoiceForm';
 import { InvoiceList } from './components/InvoiceList';
 import { ProductForm } from './components/ProductForm';
 import { ProductList } from './components/ProductList';
+import { ProviderForm } from './components/ProviderForm';
 import { ProviderList } from './components/ProviderList';
 import { ClientStatement } from './pages/ClientStatement';
 import { InventoryPage } from './pages/Inventory';
@@ -73,6 +75,7 @@ function AppRoutes() {
       <Route path="/pricing" element={<PublicRoute><Pricing /></PublicRoute>} />
 
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+      <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
       <Route path="/update-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
 
@@ -97,6 +100,8 @@ function AppRoutes() {
       <Route path="/reports" element={<ProtectedRoute roles={['admin', 'accountant']}><Reports /></ProtectedRoute>} />
       <Route path="/expenses" element={<ProtectedRoute roles={['admin', 'accountant']}><ExpenseList /></ProtectedRoute>} />
       <Route path="/providers" element={<ProtectedRoute roles={['admin', 'accountant']}><ProviderList /></ProtectedRoute>} />
+      <Route path="/providers/new" element={<ProtectedRoute roles={['admin', 'accountant']}><ProviderForm /></ProtectedRoute>} />
+      <Route path="/providers/edit/:id" element={<ProtectedRoute roles={['admin', 'accountant']}><ProviderForm /></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute roles={['admin', 'accountant']}><InventoryPage /></ProtectedRoute>} />
 
       {/* Admin Only */}

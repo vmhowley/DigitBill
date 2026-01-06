@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
         FROM invoices i 
         LEFT JOIN clients c ON i.client_id = c.id 
         WHERE i.tenant_id = $1 
-        ORDER BY i.created_at DESC
+        ORDER BY i.sequential_number DESC
       `,
       [req.tenantId]
     );

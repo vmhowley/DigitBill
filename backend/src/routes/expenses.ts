@@ -16,6 +16,22 @@ router.post("/providers", async (req, res) => {
   res.json(provider);
 });
 
+router.get("/providers/:id", async (req, res) => {
+  const provider = await expenseService.getProvider(req.tenantId!, parseInt(req.params.id));
+  if (!provider) return res.status(404).json({ error: "Provider not found" });
+  res.json(provider);
+});
+
+router.put("/providers/:id", async (req, res) => {
+  const provider = await expenseService.updateProvider(req.tenantId!, parseInt(req.params.id), req.body);
+  res.json(provider);
+});
+
+router.delete("/providers/:id", async (req, res) => {
+  await expenseService.deleteProvider(req.tenantId!, parseInt(req.params.id));
+  res.status(204).end();
+});
+
 // Expenses
 router.get("/", async (req, res) => {
   const expenses = await expenseService.getExpenses(req.tenantId!);

@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(50) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role VARCHAR(20) DEFAULT 'user',
+  supabase_uid UUID UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(tenant_id, username)
 );
@@ -63,13 +64,15 @@ CREATE TABLE IF NOT EXISTS invoices (
   tax_total DECIMAL(12, 2) NOT NULL,
   total DECIMAL(12, 2) NOT NULL,
   status VARCHAR(20) DEFAULT 'draft', -- draft, signed, sent, accepted, rejected
+  sequential_number INTEGER,
   e_ncf VARCHAR(20),
   xml_path TEXT,
   pdf_path TEXT,
   track_id_dgii VARCHAR(50),
   type_code VARCHAR(2) DEFAULT '31', -- 31=Invoice, 33=Credit Note, 34=Debit Note
   reference_ncf VARCHAR(19), -- For notes, referencing the original e-NCF
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(tenant_id, sequential_number)
 );
 
 -- Invoice Items
@@ -128,6 +131,33 @@ CREATE TABLE IF NOT EXISTS company_settings (
   UNIQUE(tenant_id, key)
 );
 
+-- Providers (Proveedores)
+CREATE TABLE IF NOT EXISTS providers (
+  id SERIAL PRIMARY KEY,
+  tenant_id INTEGER REFERENCES tenants(id) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  rnc VARCHAR(20),
+  address TEXT,
+  email VARCHAR(255),
+  phone VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Expenses (Gastos/Compras)
+CREATE TABLE IF NOT EXISTS expenses (
+  id SERIAL PRIMARY KEY,
+  tenant_id INTEGER REFERENCES tenants(id) NOT NULL,
+  provider_id INTEGER REFERENCES providers(id),
+  ncf VARCHAR(20),
+  description TEXT,
+  amount DECIMAL(12, 2) NOT NULL,
+  tax_amount DECIMAL(12, 2) DEFAULT 0,
+  category VARCHAR(50), -- e.g. 'compras', 'servicios', 'alquiler'
+  expense_date DATE DEFAULT CURRENT_DATE,
+  status VARCHAR(20) DEFAULT 'paid', -- paid, pending
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Enable Row Level Security (RLS) basics
 -- Note: In a real Supabase env, you would create policies here.
 -- For local Node.js development, RLS is often bypassed if connecting as postgres superuser.
@@ -139,4 +169,32 @@ ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoice_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sequences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE company_settings ENABLE ROW LEVEL SECURITY;
+
+-- Ensure sequential_number exists for existing databases
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='sequential_number') THEN
+        ALTER TABLE invoices ADD COLUMN sequential_number INTEGER;
+    END IF;
+END $$;
+
+-- Trigger for automatic sequential number per tenant
+CREATE OR REPLACE FUNCTION set_invoice_sequential_number()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.sequential_number IS NULL THEN
+        SELECT COALESCE(MAX(sequential_number), 0) + 1
+        INTO NEW.sequential_number
+        FROM invoices
+        WHERE tenant_id = NEW.tenant_id;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_set_invoice_sequential_number ON invoices;
+CREATE TRIGGER trg_set_invoice_sequential_number
+BEFORE INSERT ON invoices
+FOR EACH ROW
+EXECUTE FUNCTION set_invoice_sequential_number();
 

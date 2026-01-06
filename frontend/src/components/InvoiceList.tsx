@@ -7,6 +7,7 @@ import { PaymentModal } from './PaymentModal';
 
 interface Invoice {
     id: number;
+    sequential_number: number;
     client_id: number;
     client_name?: string;
     total: string;
@@ -87,15 +88,42 @@ export const InvoiceList: React.FC = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const filteredInvoices = invoices.filter(inv => {
-        const matchesSearch =
-            inv.id.toString().includes(searchTerm) ||
-            inv.total.includes(searchTerm) ||
-            (inv.client_name && inv.client_name.toLowerCase().includes(searchTerm.toLowerCase()));
+        const query = searchTerm.toLowerCase().trim();
+        
+        // Search Filter logic
+        const seqFormatted = (inv.sequential_number || inv.id).toString().padStart(6, '0');
+        const seqRaw = (inv.sequential_number || inv.id).toString();
+        
+        const matchesSearch = !query || 
+            seqFormatted.includes(query) ||
+            seqRaw.includes(query) ||
+            (inv.client_name && inv.client_name.toLowerCase().includes(query)) ||
+            inv.total.toString().includes(query);
 
+        // Status Filter logic
         const matchesStatus = statusFilter === 'all' || inv.status === statusFilter;
-        return matchesSearch && matchesStatus;
+
+        // Date Filter logic
+        const invDate = new Date(inv.created_at);
+        invDate.setHours(0, 0, 0, 0);
+
+        let matchesDate = true;
+        if (startDate) {
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+            if (invDate < start) matchesDate = false;
+        }
+        if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            if (invDate > end) matchesDate = false;
+        }
+
+        return matchesSearch && matchesStatus && matchesDate;
     });
 
     return (
@@ -108,7 +136,7 @@ export const InvoiceList: React.FC = () => {
                 <div className="flex gap-3 w-full md:w-auto">
                     <input
                         type="text"
-                        placeholder="Buscar por Cliente o ID..."
+                        placeholder="Buscar por cliente, # o monto..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
@@ -123,6 +151,31 @@ export const InvoiceList: React.FC = () => {
                         <option value="signed">Firmada</option>
                         <option value="sent">Enviada</option>
                     </select>
+                    <div className="flex gap-2 items-center">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            title="Fecha Inicial"
+                        />
+                        <span className="text-gray-400">al</span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            title="Fecha Final"
+                        />
+                        {(startDate || endDate) && (
+                            <button 
+                                onClick={() => { setStartDate(''); setEndDate(''); }}
+                                className="text-xs text-red-500 hover:text-red-700 font-medium"
+                            >
+                                Limpiar
+                            </button>
+                        )}
+                    </div>
                     <button
                         onClick={fetchInvoices}
                         className="p-2 text-gray-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50 border border-gray-200"
@@ -158,7 +211,7 @@ export const InvoiceList: React.FC = () => {
                                             <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
                                                 <FileText size={18} />
                                             </div>
-                                            <span className="font-medium text-gray-900">#{inv.id.toString().padStart(6, '0')}</span>
+                                            <span className="font-medium text-gray-900">#{ (inv.sequential_number || inv.id).toString().padStart(6, '0')}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-700 font-medium">

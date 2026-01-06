@@ -50,13 +50,7 @@ router.post('/login', async (req, res) => {
 // POST /register
 router.post('/register', async (req, res) => {
     try {
-        const adminSecret = req.headers['x-admin-secret'];
-        if (adminSecret !== process.env.ADMIN_SECRET) {
-            return res.status(403).json({ error: 'Forbidden: Admin Secret Required' });
-        }
-
         const { email, password, company_name, rnc, phone, address, type, plan } = req.body;
-
 
         // Basic validation
         if (!email || !password || !company_name || !rnc) {
@@ -91,7 +85,7 @@ router.post('/register', async (req, res) => {
             // Create Tenant
             const tenantRes = await query(
                 'INSERT INTO tenants (name, rnc, address, phone, email, type, status, plan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
-                [company_name, rnc, address, phone, email, type, 'active', plan || 'free']
+                [company_name, rnc, address, phone, email, type || 'juridico', 'active', plan || 'free']
             );
             const tenantId = tenantRes.rows[0].id;
 
@@ -101,12 +95,18 @@ router.post('/register', async (req, res) => {
                 [tenantId, email, 'managed_by_supabase', 'admin', uid]
             );
 
-            // Create Default Sequences (Optional but helpful)
-            // e.g. Factura de Crédito Fiscal (31)
+            // Create Default Sequences
+            // e.g. Factura de Crédito Fiscal (31) and Consumo (32)
             await query(
                 `INSERT INTO sequences (tenant_id, type_code, next_number, end_date) 
-                 VALUES ($1, '31', 1, '2030-12-31')`, 
+                 VALUES ($1, '31', 1, '2030-12-31'), ($1, '32', 1, '2030-12-31')`, 
                  [tenantId]
+            );
+
+            // Create Initial Company Settings
+            await query(
+                "INSERT INTO company_settings (tenant_id, key, value) VALUES ($1, 'company_name', $2), ($1, 'company_rnc', $3)",
+                [tenantId, company_name, rnc]
             );
 
             await query('COMMIT');

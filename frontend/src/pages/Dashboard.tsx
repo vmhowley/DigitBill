@@ -155,7 +155,7 @@ export const Dashboard = () => {
                         <tbody className="divide-y divide-gray-100">
                             {recentInvoices.map((inv) => (
                                 <tr key={inv.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium text-gray-900">#{inv.id}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">#{(inv.sequential_number || inv.id).toString().padStart(6, '0')}</td>
                                     <td className="px-6 py-4 text-gray-500">{new Date(inv.created_at).toLocaleDateString()}</td>
                                     <td className="px-6 py-4 font-medium text-gray-900">RD$ {parseFloat(inv.total).toLocaleString()}</td>
                                     <td className="px-6 py-4">

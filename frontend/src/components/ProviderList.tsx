@@ -1,11 +1,14 @@
 import { Edit, Mail, Phone, Plus, Search, Trash2, Truck } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import axios from '../api';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 export const ProviderList: React.FC = () => {
     const [providers, setProviders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProviders();
@@ -19,6 +22,18 @@ export const ProviderList: React.FC = () => {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteProvider = async (id: number) => {
+        if (!window.confirm('¿Estás seguro de eliminar este proveedor?')) return;
+        try {
+            await axios.delete(`/api/expenses/providers/${id}`);
+            toast.success('Proveedor eliminado');
+            fetchProviders();
+        } catch (err) {
+            console.error(err);
+            toast.error('Error al eliminar proveedor');
         }
     };
 
@@ -36,7 +51,10 @@ export const ProviderList: React.FC = () => {
                     <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Proveedores</h2>
                     <p className="text-gray-500 mt-1">Gestiona tus suministradores y acreedores</p>
                 </div>
-                <button className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition font-medium flex items-center gap-2 shadow-lg shadow-blue-600/20">
+                <button 
+                    onClick={() => navigate('/providers/new')}
+                    className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition font-medium flex items-center gap-2 shadow-lg shadow-blue-600/20"
+                >
                     <Plus size={20} /> Nuevo Proveedor
                 </button>
             </div>
@@ -92,10 +110,18 @@ export const ProviderList: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar">
+                                            <button 
+                                                onClick={() => navigate(`/providers/edit/${p.id}`)}
+                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" 
+                                                title="Editar"
+                                            >
                                                 <Edit size={18} />
                                             </button>
-                                            <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
+                                            <button 
+                                                onClick={() => handleDeleteProvider(p.id)}
+                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
+                                                title="Eliminar"
+                                            >
                                                 <Trash2 size={18} />
                                             </button>
                                         </div>

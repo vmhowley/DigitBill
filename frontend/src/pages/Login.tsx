@@ -138,6 +138,19 @@ export const Login = () => {
                                     {loading ? <Loader className="animate-spin" size={20} /> : <>Ingresar <ArrowRight size={20} /></>}
                                 </button>
                             </form>
+
+                            <div className="mt-8 text-center border-t pt-6">
+                                <p className="text-gray-600 text-sm">
+                                    ¿Nuevo en DigitBill?{' '}
+                                    <button 
+                                        type="button"
+                                        onClick={() => navigate('/register')}
+                                        className="text-blue-600 font-bold hover:underline underline-offset-4"
+                                    >
+                                        Crea tu cuenta gratis
+                                    </button>
+                                </p>
+                            </div>
                         </>
                     ) : (
                         <>

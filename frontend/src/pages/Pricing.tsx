@@ -22,7 +22,7 @@ export const Pricing: React.FC = () => {
                         period="/ mes"
                         description="Ideal para probar la plataforma o negocios muy pequeños."
                         features={[
-                            "5 Facturas por mes",
+                            "20 Facturas por mes",
                             "Hasta 10 Clientes",
                             "1 Usuario",
                             "Facturas B01 y B02",
