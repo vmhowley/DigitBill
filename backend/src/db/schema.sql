@@ -84,7 +84,9 @@ CREATE TABLE IF NOT EXISTS invoice_items (
   quantity DECIMAL(10, 2) NOT NULL,
   unit_price DECIMAL(12, 2) NOT NULL,
   line_amount DECIMAL(12, 2) NOT NULL,
-  line_tax DECIMAL(12, 2) NOT NULL
+  line_tax DECIMAL(12, 2) NOT NULL,
+  tax_rate DECIMAL(5, 2) DEFAULT 18.00,
+  description TEXT
 );
 
 -- Sequences (Consecutivos)

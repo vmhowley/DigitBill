@@ -112,30 +112,38 @@ router.post("/", async (req, res) => {
       ]
     );
     const invoiceId = invRes.rows[0].id;
-
     // Insert items and calc totals
     for (const item of items) {
-      const lineAmount = item.quantity * item.unit_price;
-      const lineTax = lineAmount * 0.18; // Fixed 18% for now
-      net_total += lineAmount;
-      tax_total += lineTax;
-
-      // Verify product existence
+      // Verify product existence and get tax rate
       let productId = item.product_id;
+      let taxRate = item.tax_rate;
+
       if (productId === 0 || productId === "0") {
         productId = null;
       } else if (productId) {
         const prodCheck = await dbClient.query(
-          "SELECT id FROM products WHERE id = $1",
+          "SELECT id, tax_rate FROM products WHERE id = $1",
           [productId]
         );
         if (prodCheck.rows.length === 0) {
           productId = null;
+        } else if (taxRate === undefined || taxRate === null) {
+          taxRate = parseFloat(prodCheck.rows[0].tax_rate);
         }
       }
 
+      // Default to 18 if still not set
+      if (taxRate === undefined || taxRate === null) {
+        taxRate = 18.00;
+      }
+
+      const lineAmount = item.quantity * item.unit_price;
+      const lineTax = (lineAmount * taxRate) / 100;
+      net_total += lineAmount;
+      tax_total += lineTax;
+
       await dbClient.query(
-        "INSERT INTO invoice_items (tenant_id, invoice_id, product_id, quantity, unit_price, line_amount, line_tax, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+        "INSERT INTO invoice_items (tenant_id, invoice_id, product_id, quantity, unit_price, line_amount, line_tax, tax_rate, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
         [
           req.tenantId,
           invoiceId,
@@ -144,6 +152,7 @@ router.post("/", async (req, res) => {
           item.unit_price,
           lineAmount,
           lineTax,
+          taxRate,
           item.description,
         ]
       );
@@ -295,6 +304,53 @@ router.post("/:id/send", async (req, res) => {
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ error: "Error sending to DGII: " + err.message });
+  }
+});
+
+// POST /api/invoices/:id/email
+router.post("/:id/email", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: "Email recipient is required" });
+    }
+
+    const invRes = await query(
+      `SELECT i.*, c.name as client_name, c.email as client_email 
+       FROM invoices i 
+       JOIN clients c ON i.client_id = c.id 
+       WHERE i.id = $1 AND i.tenant_id = $2`,
+      [id, req.tenantId]
+    );
+
+    if (invRes.rows.length === 0)
+      return res.status(404).json({ error: "Invoice not found" });
+
+    const invoice = invRes.rows[0];
+
+    if (invoice.status === 'draft') {
+        return res.status(400).json({ error: "No se puede enviar una factura en borrador" });
+    }
+
+    const { getCompanyConfig } = require("../services/configService");
+    const { sendInvoiceEmail } = require("../services/emailService");
+    const config = await getCompanyConfig(req.tenantId);
+
+    // Prepare company info for the email
+    const company = {
+        name: config.company_name,
+        address: config.address || 'Dominican Republic',
+        phone: config.phone || ''
+    };
+
+    await sendInvoiceEmail(email, invoice, company);
+
+    res.json({ success: true, message: "Factura enviada correctamente" });
+  } catch (err: any) {
+    console.error('Email Send Error:', err);
+    res.status(500).json({ error: "Error al enviar el correo: " + err.message });
   }
 });
 

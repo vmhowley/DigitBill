@@ -1,14 +1,16 @@
-import { ArrowLeft, Printer, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Printer, ShoppingCart, Mail, Send } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import axios from '../api';
+import { toast } from 'react-hot-toast';
 
 interface InvoiceDetail {
     id: number;
     sequential_number: number;
     client_name: string;
     client_rnc: string;
+    client_email: string;
     issue_date: string;
     status: string;
     total: string;
@@ -24,6 +26,7 @@ interface InvoiceDetail {
         unit_price: string;
         line_amount: string;
         line_tax: string;
+        tax_rate: string;
     }>;
 }
 
@@ -33,6 +36,25 @@ export const InvoiceDetails: React.FC = () => {
     const [qrValue, setQrValue] = useState<string>('');
     const [company, setCompany] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [sendingEmail, setSendingEmail] = useState(false);
+
+    const handleSendEmail = async () => {
+        if (!invoice) return;
+        
+        const email = prompt('¿A qué correo deseas enviar esta factura?', invoice.client_email || '');
+        if (!email) return;
+
+        setSendingEmail(true);
+        try {
+            await axios.post(`/api/invoices/${id}/email`, { email });
+            toast.success('Factura enviada por correo correctamente');
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.response?.data?.error || 'Error al enviar el correo');
+        } finally {
+            setSendingEmail(false);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,12 +104,22 @@ export const InvoiceDetails: React.FC = () => {
                 <Link to="/invoices" className="flex items-center text-gray-500 hover:text-gray-800">
                     <ArrowLeft size={18} className="mr-2" /> Volver
                 </Link>
-                <button
-                    onClick={() => window.print()}
-                    className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
-                >
-                    <Printer size={18} /> Imprimir
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={handleSendEmail}
+                        disabled={sendingEmail || invoice.status === 'draft'}
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    >
+                        {sendingEmail ? <Send size={18} className="animate-pulse" /> : <Mail size={18} />}
+                        {sendingEmail ? 'Enviando...' : 'Enviar por Correo'}
+                    </button>
+                    <button
+                        onClick={() => window.print()}
+                        className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                    >
+                        <Printer size={18} /> Imprimir
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white border border-gray-200 shadow-lg rounded-xl p-8 print:shadow-none print:border-none">
@@ -143,6 +175,7 @@ export const InvoiceDetails: React.FC = () => {
                                 <td className="py-3 text-gray-800">{item.description}</td>
                                 <td className="py-3 text-right text-gray-600">{item.quantity}</td>
                                 <td className="py-3 text-right text-gray-600">{parseFloat(item.unit_price).toFixed(2)}</td>
+                                <td className="py-3 text-right text-gray-500 text-xs">({parseFloat(item.tax_rate || '18').toFixed(0)}%)</td>
                                 <td className="py-3 text-right text-gray-600">{parseFloat(item.line_tax).toFixed(2)}</td>
                                 <td className="py-3 text-right font-medium text-gray-900">{parseFloat(item.line_amount).toFixed(2)}</td>
                             </tr>

@@ -97,22 +97,26 @@ export const checkStatusDGII = async (trackId: string, tenantId: number) => {
 };
 
 export const checkRNC = async (rnc: string, tenantId: number) => {
-    // Note: DGII Consultas often use a different endpoint or public web scraping if no API provided.
-    // However, for e-CF certified senders, there is usually a 'ConsultarDirectorio' or similar in the auth environment.
-    // We will assume a standard RNC info endpoint exists or mock it for now as 'Not Implemented fully without specific endpoint docs'.
-    
-    // Placeholder implementation 
-    const token = await getAuthToken(tenantId);
-    const url = `${getBaseUrl()}/consultas/api/rnc/${rnc}`;
+    // Mock database of known RNCs for demonstration
+    const MOCK_DATA: Record<string, any> = {
+        '131652755': { rnc: '131652755', name: 'DIGITBILL DOMINICANA SRL', status: 'ACTIVO', type: 'JURIDICO' },
+        '101017961': { rnc: '101017961', name: 'BANCO POPULAR DOMINICANO', status: 'ACTIVO', type: 'JURIDICO' },
+        '101001429': { rnc: '101001429', name: 'CERVECERIA NACIONAL DOMINICANA', status: 'ACTIVO', type: 'JURIDICO' },
+        '130541127': { rnc: '130541127', name: 'GOOGLE DOMINICANA SRL', status: 'ACTIVO', type: 'JURIDICO' }
+    };
 
     try {
-        const response = await axios.get(url, {
-             headers: { 'Authorization': `Bearer ${token}` }
-        });
-        return response.data; // Expected { rnc, nombre, estado, ... }
+        if (MOCK_DATA[rnc]) {
+            return MOCK_DATA[rnc];
+        }
+
+        // Simulating external delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        // Note: For production, this should call a real DGII endpoint or a scraping service.
+        return null;
     } catch (error: any) {
         console.warn(`RNC Check failed for ${rnc}`, error.message);
-        // Fallback or return null
         return null;
     }
 };

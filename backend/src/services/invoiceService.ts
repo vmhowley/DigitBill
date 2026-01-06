@@ -88,7 +88,7 @@ export const issueInvoice = async (tenantId: number, invoiceId: number) => {
         precio: it.unit_price,
         monto: it.line_amount,
         impuesto: it.line_tax,
-        itbis_rate: "18",
+        itbis_rate: it.tax_rate ? it.tax_rate.toString() : "18",
       })),
       subtotal: invoice.net_total,
       impuestototal: invoice.tax_total,

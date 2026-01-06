@@ -1,5 +1,5 @@
-import { ArrowLeft, Save } from 'lucide-react';
-import React, { useEffect } from 'react';
+import { ArrowLeft, Save, Search, Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -19,11 +19,37 @@ export const ClientForm: React.FC = () => {
     const navigate = useNavigate();
     const isEditMode = !!id;
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<ClientFormData>({
+    const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<ClientFormData>({
         defaultValues: {
             type: 'juridico'
         }
     });
+
+    const [isFetchingRNC, setIsFetchingRNC] = useState(false);
+    const rncValue = watch('rnc_ci');
+
+    useEffect(() => {
+        if (rncValue && (rncValue.length === 9 || rncValue.length === 11) && !isEditMode) {
+            handleRNCLookup(rncValue);
+        }
+    }, [rncValue]);
+
+    const handleRNCLookup = async (rnc: string) => {
+        try {
+            setIsFetchingRNC(true);
+            const response = await api.get(`/api/dgii/rnc/${rnc}`);
+            if (response.data && response.data.name) {
+                setValue('name', response.data.name);
+                setValue('type', response.data.type?.toLowerCase() === 'fisico' ? 'fisico' : 'juridico');
+                toast.success('Datos encontrados en DGII');
+            }
+        } catch (error) {
+            // Silently fail or log, as it might just be a manual entry
+            console.log('RNC not found or lookup failed');
+        } finally {
+            setIsFetchingRNC(false);
+        }
+    };
 
     useEffect(() => {
         if (isEditMode) {
@@ -91,11 +117,16 @@ export const ClientForm: React.FC = () => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1.5">RNC / Cédula</label>
-                        <input
-                            {...register('rnc_ci', { required: 'El RNC/Cédula es obligatorio' })}
-                            className={`w-full px-4 py-2.5 bg-gray-50 border rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none ${errors.rnc_ci ? 'border-red-300' : 'border-gray-200'}`}
-                            placeholder="Ej: 101010101"
-                        />
+                        <div className="relative">
+                            <input
+                                {...register('rnc_ci', { required: 'El RNC/Cédula es obligatorio' })}
+                                className={`w-full px-4 py-2.5 bg-gray-50 border rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none ${errors.rnc_ci ? 'border-red-300' : 'border-gray-200'}`}
+                                placeholder="Ej: 101010101"
+                            />
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                {isFetchingRNC ? <Loader2 size={18} className="animate-spin text-blue-500" /> : <Search size={18} />}
+                            </div>
+                        </div>
                         {errors.rnc_ci && <span className="text-xs text-red-500 mt-1">{errors.rnc_ci.message}</span>}
                     </div>
 

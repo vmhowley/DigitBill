@@ -11,6 +11,7 @@ interface InvoiceItem {
     description: string;
     quantity: number;
     unit_price: number;
+    tax_rate: number;
 }
 
 interface InvoiceFormData {
@@ -23,7 +24,7 @@ interface InvoiceFormData {
 export const InvoiceForm: React.FC = () => {
     const navigate = useNavigate();
     const [clients, setClients] = React.useState<Array<{ id: number, name: string }>>([]);
-    const [products, setProducts] = React.useState<Array<{ id: number, sku: string, description: string, unit_price: string }>>([]);
+    const [products, setProducts] = React.useState<Array<{ id: number, sku: string, description: string, unit_price: string, tax_rate: number }>>([]);
     const [isElectronic, setIsElectronic] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isClientModalOpen, setIsClientModalOpen] = React.useState(false);
@@ -31,7 +32,7 @@ export const InvoiceForm: React.FC = () => {
     const { register, control, handleSubmit, watch, setValue } = useForm<InvoiceFormData>({
         defaultValues: {
             client_id: 0, // Will be set after fetching
-            items: [{ description: 'Servicio', quantity: 1, unit_price: 0, product_id: 0 }]
+            items: [{ description: 'Servicio', quantity: 1, unit_price: 0, product_id: 0, tax_rate: 18.00 }]
         }
     });
 
@@ -89,7 +90,7 @@ export const InvoiceForm: React.FC = () => {
     const items = watch('items');
     const { subtotal, tax, total } = React.useMemo(() => {
         const sub = items.reduce((sum, item) => sum + ((item.quantity || 0) * (item.unit_price || 0)), 0);
-        const t = sub * 0.18;
+        const t = items.reduce((sum, item) => sum + (((item.quantity || 0) * (item.unit_price || 0)) * (item.tax_rate || 0) / 100), 0);
         return { subtotal: sub, tax: t, total: sub + t };
     }, [items]);
 
@@ -169,7 +170,7 @@ export const InvoiceForm: React.FC = () => {
                         </h3>
                         <button
                             type="button"
-                            onClick={() => append({ description: '', quantity: 1, unit_price: 0, product_id: 0 })}
+                            onClick={() => append({ description: '', quantity: 1, unit_price: 0, product_id: 0, tax_rate: 18.00 })}
                             className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
                         >
                             <Plus size={18} /> Agregar Item
@@ -192,6 +193,7 @@ export const InvoiceForm: React.FC = () => {
                                                         setValue(`items.${index}.product_id`, product.id);
                                                         setValue(`items.${index}.description`, product.description);
                                                         setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
+                                                        setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
                                                     }
                                                 } else {
                                                     setValue(`items.${index}.product_id`, 0);
@@ -231,10 +233,19 @@ export const InvoiceForm: React.FC = () => {
                                         />
                                     </div>
                                 </div>
+                                <div className="w-20">
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Tax %</label>
+                                    <input
+                                        type="number"
+                                        step="1"
+                                        {...register(`items.${index}.tax_rate`, { valueAsNumber: true })}
+                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
+                                    />
+                                </div>
                                 <div className="w-32">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Total</label>
                                     <div className="px-3 py-2 bg-gray-100 rounded-lg text-right font-medium text-gray-700">
-                                        {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0)).toFixed(2)}
+                                        {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toFixed(2)}
                                     </div>
                                 </div>
                                 <button
@@ -257,10 +268,10 @@ export const InvoiceForm: React.FC = () => {
                                 <span>Subtotal</span>
                                 <span className="font-medium">RD$ {subtotal.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between text-gray-600">
-                                <span>ITBIS (18%)</span>
-                                <span className="font-medium">RD$ {tax.toFixed(2)}</span>
-                            </div>
+                             <div className="flex justify-between text-gray-600">
+                                 <span>ITBIS Total</span>
+                                 <span className="font-medium">RD$ {tax.toFixed(2)}</span>
+                             </div>
                             <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
                                 <span className="text-lg font-bold text-gray-800">Total</span>
                                 <span className="text-xl font-bold text-blue-600">RD$ {total.toFixed(2)}</span>

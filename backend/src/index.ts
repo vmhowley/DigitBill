@@ -10,6 +10,7 @@ import invoiceRoutes from "./routes/invoices";
 import paymentRoutes from "./routes/payments";
 import productRoutes from "./routes/products";
 import reportRoutes from "./routes/reports";
+import dgiiRoutes from "./routes/dgii";
 import adminRoutes from "./routes/admin";
 import authRoutes from "./routes/auth";
 import authPublicRoutes from "./routes/auth_public";
@@ -35,6 +36,7 @@ app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/dgii", dgiiRoutes);
 
 app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");

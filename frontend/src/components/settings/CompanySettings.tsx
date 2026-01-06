@@ -1,5 +1,7 @@
-import { Save } from 'lucide-react';
-import React, { useEffect } from 'react';
+import { Save, FileUp, CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import axios from '../../api';
+import { toast } from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 
 interface CompanySettingsProps {
@@ -9,6 +11,31 @@ interface CompanySettingsProps {
 
 export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues, onSave }) => {
     const { register, handleSubmit, reset } = useForm();
+    const [uploading, setUploading] = useState(false);
+    const [certFile, setCertFile] = useState<File | null>(null);
+
+    const handleFileUpload = async () => {
+        if (!certFile) return;
+        
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('certificate', certFile);
+
+        try {
+            await axios.post('/api/settings/upload-certificate', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            toast.success('Certificado subido correctamente');
+            setCertFile(null);
+            // We don't necessarily need to reset the whole form, 
+            // the backend just updated company_settings
+        } catch (error: any) {
+            console.error(error);
+            toast.error(error.response?.data?.error || 'Error al subir el certificado');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     useEffect(() => {
         if (defaultValues) {
@@ -64,6 +91,43 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                             placeholder="••••••••"
                         />
                         <p className="text-[10px] text-gray-400 mt-1 italic">La contraseña se encripta para mayor seguridad.</p>
+                    </div>
+
+                    <div className="pt-4 border-t border-blue-100">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Archivo del Certificado (.p12 / .pfx)</label>
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1 relative">
+                                <input 
+                                    type="file" 
+                                    accept=".p12,.pfx"
+                                    onChange={(e) => setCertFile(e.target.files?.[0] || null)}
+                                    className="hidden" 
+                                    id="cert-upload"
+                                />
+                                <label 
+                                    htmlFor="cert-upload" 
+                                    className="flex items-center justify-between w-full px-4 py-2 border border-dashed rounded-lg cursor-pointer hover:bg-white transition-colors bg-white/50"
+                                >
+                                    <span className="text-sm text-gray-500 truncate mr-2">
+                                        {certFile ? certFile.name : (defaultValues?.certificate_path?.split(/[\\/]/).pop() || 'Seleccionar archivo...')}
+                                    </span>
+                                    <FileUp size={18} className="text-blue-500 flex-shrink-0" />
+                                </label>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleFileUpload}
+                                disabled={!certFile || uploading}
+                                className="bg-blue-600 border border-blue-600 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2 whitespace-nowrap"
+                            >
+                                {uploading ? 'Subiendo...' : 'Subir'}
+                            </button>
+                        </div>
+                        {defaultValues?.certificate_path && !certFile && (
+                            <div className="flex items-center gap-1 mt-1 text-[10px] text-green-600">
+                                <CheckCircle size={10} /> Certificado configurado
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

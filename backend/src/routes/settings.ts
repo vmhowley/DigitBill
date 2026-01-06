@@ -4,12 +4,46 @@ import { requireAuth, requireRole } from '../middleware/auth';
 import { supabaseAdmin } from '../services/supabase';
 import { getPlanLimits } from '../utils/planLimits';
 import * as configService from '../services/configService';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
 
 router.use(requireAuth);
 // Only Admin can access settings
 router.use(requireRole(['admin']));
+
+// File Upload Configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, '../../certs/uploads');
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
+    },
+    filename: (req: any, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const tenantId = req.tenantId;
+        const timestamp = Date.now();
+        cb(null, `tenant_${tenantId}_${timestamp}${ext}`);
+    }
+});
+
+const upload = multer({
+    storage,
+    fileFilter: (req, file, cb) => {
+        const allowedExts = ['.p12', '.pfx'];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowedExts.includes(ext)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Solo se permiten archivos .p12 o .pfx'));
+        }
+    },
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
 
 // GET /api/settings/company
 router.get('/company', async (req, res) => {
@@ -157,6 +191,30 @@ router.post('/users/invite', async (req, res) => {
     } catch (err: any) {
         console.error('Invite Error:', err);
         res.status(500).json({ error: 'Failed to invite user' });
+    }
+});
+
+// POST /api/settings/upload-certificate
+router.post('/upload-certificate', upload.single('certificate'), async (req: any, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se subió ningún archivo' });
+        }
+
+        const filePath = req.file.path;
+        console.log(`Certificate uploaded for tenant ${req.tenantId}: ${filePath}`);
+
+        // Update company config with the absolute path
+        await configService.updateCompanyConfig(req.tenantId!, 'certificate_path', filePath);
+
+        res.json({ 
+            success: true, 
+            message: 'Certificado subido exitosamente',
+            path: filePath
+        });
+    } catch (err: any) {
+        console.error('Upload Error:', err);
+        res.status(500).json({ error: 'Error al subir el certificado: ' + err.message });
     }
 });
 
