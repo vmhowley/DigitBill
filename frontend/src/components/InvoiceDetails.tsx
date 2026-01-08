@@ -122,12 +122,12 @@ export const InvoiceDetails: React.FC = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-8">
-            <div className="mb-6 flex justify-between items-center print:hidden">
+        <div className="max-w-4xl mx-auto p-4 md:p-8">
+            <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <Link to="/invoices" className="flex items-center text-gray-500 hover:text-gray-800">
                     <ArrowLeft size={18} className="mr-2" /> Volver
                 </Link>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     <button
                         onClick={handleSendEmail}
                         disabled={sendingEmail || invoice.status === 'draft'}
@@ -177,9 +177,9 @@ export const InvoiceDetails: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-200 shadow-lg rounded-xl p-8 print:shadow-none print:border-none">
+            <div className="bg-white border border-gray-200 shadow-lg rounded-xl p-6 md:p-8 print:shadow-none print:border-none">
                 {/* Header */}
-                <div className="flex justify-between items-start border-b border-gray-100 pb-8 mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-100 pb-8 mb-8 gap-6 md:gap-0">
                     <div>
                         <div className="flex items-center gap-2 text-blue-600 mb-2">
                             <ShoppingCart className="w-6 h-6" />
@@ -189,8 +189,8 @@ export const InvoiceDetails: React.FC = () => {
                         <p className="text-sm text-gray-500">RNC: {company?.rnc}</p>
                         <p className="text-sm text-gray-500">{company?.phone}</p>
                     </div>
-                    <div className="text-right">
-                        <div className="flex flex-col items-end">
+                    <div className="text-left md:text-right w-full md:w-auto">
+                        <div className="flex flex-col md:items-end">
                             <h1 className="text-2xl font-bold text-gray-900">{getTypeName(invoice.type_code)}</h1>
                             <span className="text-blue-600 font-mono text-sm font-semibold">#{(invoice.sequential_number || invoice.id).toString().padStart(6, '0')}</span>
                         </div>
@@ -214,32 +214,34 @@ export const InvoiceDetails: React.FC = () => {
                 </div>
 
                 {/* Items */}
-                <table className="w-full mb-8">
-                    <thead>
-                        <tr className="border-b border-gray-200">
-                            <th className="text-left py-3 text-sm font-semibold text-gray-600">Descripción</th>
-                            <th className="text-right py-3 text-sm font-semibold text-gray-600">Cant</th>
-                            <th className="text-right py-3 text-sm font-semibold text-gray-600">Precio</th>
-                            <th className="text-right py-3 text-sm font-semibold text-gray-600">ITBIS</th>
-                            <th className="text-right py-3 text-sm font-semibold text-gray-600">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {invoice.items.map((item) => (
-                            <tr key={item.id}>
-                                <td className="py-3 text-gray-800">{item.description}</td>
-                                <td className="py-3 text-right text-gray-600">{item.quantity}</td>
-                                <td className="py-3 text-right text-gray-600">{parseFloat(item.unit_price).toFixed(2)}</td>
-                                <td className="py-3 text-right text-gray-500 text-xs">({parseFloat(item.tax_rate || '18').toFixed(0)}%)</td>
-                                <td className="py-3 text-right text-gray-600">{parseFloat(item.line_tax).toFixed(2)}</td>
-                                <td className="py-3 text-right font-medium text-gray-900">{parseFloat(item.line_amount).toFixed(2)}</td>
+                <div className="overflow-x-auto mb-8">
+                    <table className="w-full min-w-[600px]">
+                        <thead>
+                            <tr className="border-b border-gray-200">
+                                <th className="text-left py-3 text-sm font-semibold text-gray-600">Descripción</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600">Cant</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600">Precio</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600">ITBIS</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600">Total</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {invoice.items.map((item) => (
+                                <tr key={item.id}>
+                                    <td className="py-3 text-gray-800">{item.description}</td>
+                                    <td className="py-3 text-right text-gray-600">{item.quantity}</td>
+                                    <td className="py-3 text-right text-gray-600">{parseFloat(item.unit_price).toFixed(2)}</td>
+                                    <td className="py-3 text-right text-gray-500 text-xs">({parseFloat(item.tax_rate || '18').toFixed(0)}%)</td>
+                                    <td className="py-3 text-right text-gray-600">{parseFloat(item.line_tax).toFixed(2)}</td>
+                                    <td className="py-3 text-right font-medium text-gray-900">{parseFloat(item.line_amount).toFixed(2)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* Footer / Totals */}
-                <div className="flex justify-between items-end border-t border-gray-100 pt-8">
+                <div className="flex flex-col md:flex-row justify-between md:items-end border-t border-gray-100 pt-8 gap-6 md:gap-0">
                     <div>
                         {qrValue && company?.electronic_invoicing !== false && (
                             <div className="flex flex-col items-center">

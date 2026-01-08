@@ -43,7 +43,7 @@ export const Landing: React.FC = () => {
                         Nueva Actualización: Facturación Electrónica al 100%
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gray-900 mb-8 max-w-5xl leading-[1.1]">
+                    <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gray-900 mb-8 max-w-5xl leading-[1.1]">
                         Tu negocio, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">organizado</span><br />
                         y en cumplimiento.
                     </h1>
