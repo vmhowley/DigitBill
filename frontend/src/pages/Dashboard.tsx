@@ -23,16 +23,14 @@ export const Dashboard = () => {
         fetchProfile();
         const fetchData = async () => {
             try {
-                const [invoicesRes, clientsRes, alertsRes, expensesRes, expenseStatsRes] = await Promise.all([
+                const [invoicesRes, alertsRes, expensesRes, expenseStatsRes] = await Promise.all([
                     axios.get('/api/invoices'),
-                    axios.get('/api/clients'),
                     axios.get('/api/inventory/alerts'),
                     axios.get('/api/expenses'), // NEW
                     axios.get('/api/expenses/stats-by-date') // NEW
                 ]);
 
                 const invoices = invoicesRes.data;
-                const clients = clientsRes.data;
                 const alerts = alertsRes.data;
                 const expenses = expensesRes.data || [];
                 const expenseStats = expenseStatsRes.data || [];
