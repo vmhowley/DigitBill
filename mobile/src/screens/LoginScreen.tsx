@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../services/api';
 import { useAuthStore } from '../store/authStore';
@@ -26,7 +26,7 @@ const LoginScreen = () => {
             const userData = res.data.user;
             if (userData.plan_type === 'entrepreneur') {
                 Alert.alert(
-                    'Acceso Restringido', 
+                    'Acceso Restringido',
                     'Tu plan "Emprendedor" no incluye acceso a la App Móvil. Actualiza al plan Pyme para disfrutar de esta funcionalidad.'
                 );
                 setLoading(false);
@@ -46,7 +46,7 @@ const LoginScreen = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-50 justify-center">
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f9fafb', justifyContent: 'center' }}>
             <View className="px-8">
                 <View className="items-center mb-10">
                     <Text className="text-4xl font-bold text-blue-600">DigitBill</Text>
@@ -56,7 +56,7 @@ const LoginScreen = () => {
                 <View className="space-y-4">
                     <View>
                         <Text className="text-gray-700 mb-2 font-medium">Email</Text>
-                        <TextInput 
+                        <TextInput
                             className="bg-white px-4 py-3 rounded-xl border border-gray-200 text-gray-800"
                             placeholder="user@example.com"
                             value={email}
@@ -68,7 +68,7 @@ const LoginScreen = () => {
 
                     <View>
                         <Text className="text-gray-700 mb-2 font-medium">Password</Text>
-                        <TextInput 
+                        <TextInput
                             className="bg-white px-4 py-3 rounded-xl border border-gray-200 text-gray-800"
                             placeholder="********"
                             value={password}
@@ -77,7 +77,7 @@ const LoginScreen = () => {
                         />
                     </View>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={handleLogin}
                         className={`bg-blue-600 py-4 rounded-xl items-center mt-6 ${loading ? 'opacity-70' : ''}`}
                         disabled={loading}

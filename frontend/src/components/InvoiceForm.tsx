@@ -86,13 +86,26 @@ export const InvoiceForm: React.FC = () => {
         }
     };
 
-    // Calculate totals for preview - Optimized with useMemo
+
+    // Calculate totals for preview - Watch all item fields that affect calculation
     const items = watch('items');
     const { subtotal, tax, total } = React.useMemo(() => {
-        const sub = items.reduce((sum, item) => sum + ((item.quantity || 0) * (item.unit_price || 0)), 0);
-        const t = items.reduce((sum, item) => sum + (((item.quantity || 0) * (item.unit_price || 0)) * (item.tax_rate || 0) / 100), 0);
+        if (!items || items.length === 0) {
+            return { subtotal: 0, tax: 0, total: 0 };
+        }
+        const sub = items.reduce((sum, item) => {
+            const qty = Number(item?.quantity) || 0;
+            const price = Number(item?.unit_price) || 0;
+            return sum + (qty * price);
+        }, 0);
+        const t = items.reduce((sum, item) => {
+            const qty = Number(item?.quantity) || 0;
+            const price = Number(item?.unit_price) || 0;
+            const taxRate = Number(item?.tax_rate) || 0;
+            return sum + ((qty * price) * taxRate / 100);
+        }, 0);
         return { subtotal: sub, tax: t, total: sub + t };
-    }, [items]);
+    }, [JSON.stringify(items)]); // Use JSON.stringify to detect deep changes
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -286,17 +299,9 @@ export const InvoiceForm: React.FC = () => {
                                 type="button"
                                 onClick={() => handleSubmit((data) => onSubmit(data, false))()}
                                 disabled={isSubmitting}
-                                className="flex-1 bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 transition-all disabled:opacity-50"
-                            >
-                                <Save size={20} /> Borrador
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleSubmit((data) => onSubmit(data, true))()}
-                                disabled={isSubmitting}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                             >
-                                <Save size={20} /> {isElectronic ? 'Emitir y Firmar' : 'Emitir Factura'}
+                                <Save size={20} /> Crear Factura
                             </button>
                         </div>
                     </div>

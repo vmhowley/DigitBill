@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuthStore } from '../store/authStore';
+import { RefreshControl, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import api from '../services/api';
+import { useAuthStore } from '../store/authStore';
 
 const DashboardScreen = () => {
     const { user, logout } = useAuthStore();
@@ -10,32 +9,44 @@ const DashboardScreen = () => {
     const [stats, setStats] = useState({ totalRevenue: 0, count: 0 });
     const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
 
+    console.log('[DashboardScreen] Rendering...');
+
     const fetchDashboardData = async () => {
+        console.log('[DashboardScreen] Fetching data...');
         setLoading(true);
         try {
+            console.log('[DashboardScreen] API Call Start');
             const res = await api.get('/invoices');
+            console.log('[DashboardScreen] API Call Success', res.status);
             const invoices = res.data;
-            
-            // Calculate stats (Align with Web Dashboard: ONLY signed or sent)
+
+            // Calculate revenue from total_paid (matching web logic)
             const revenue = invoices
-                .filter((i: any) => i.status === 'signed' || i.status === 'sent')
-                .reduce((sum: number, inv: any) => sum + parseFloat(inv.total || 0), 0);
-            
+                .filter((i: any) => i.status !== 'draft')
+                .reduce((acc: number, curr: any) => acc + (curr.total_paid ? parseFloat(curr.total_paid) : 0), 0);
+
+            const invoiceCount = invoices.filter((i: any) => i.status !== 'draft').length;
+
             setStats({
                 totalRevenue: revenue,
-                count: invoices.filter((i: any) => i.status === 'signed' || i.status === 'sent').length
+                count: invoiceCount
             });
-            
+
             // Get top 5 recent
             setRecentInvoices(invoices.slice(0, 5));
+            console.log('[DashboardScreen] Data processed');
+            console.log('[DashboardScreen] Stats:', { totalRevenue: revenue, count: invoiceCount });
+            console.log('[DashboardScreen] Recent invoices count:', invoices.slice(0, 5).length);
         } catch (error) {
-            console.error('Error fetching dashboard:', error);
+            console.error('[DashboardScreen] Error fetching dashboard:', error);
         } finally {
             setLoading(false);
+            console.log('[DashboardScreen] Loading finished');
         }
     };
 
     useEffect(() => {
+        console.log('[DashboardScreen] Mounted');
         fetchDashboardData();
     }, []);
 
@@ -43,86 +54,94 @@ const DashboardScreen = () => {
         return new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(amount);
     };
 
+    console.log('[DashboardScreen] About to return JSX...');
+
     return (
-        <SafeAreaView className="flex-1 bg-gray-50">
-            <View className="px-6 py-4 flex-row justify-between items-center bg-white shadow-sm z-10">
+        <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+            {/* Header */}
+            <View style={{ paddingHorizontal: 24, paddingVertical: 16, paddingTop: 50, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
                 <View>
-                    <Text className="text-xl font-bold text-gray-800">Hola, {user?.username}!</Text>
-                    <Text className="text-gray-500 text-xs">{user?.email}</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1f2937' }}>Hola, {user?.username}!</Text>
+                    <Text style={{ color: '#6b7280', fontSize: 12 }}>{user?.email}</Text>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                     onPress={logout}
-                    className="bg-red-50 px-3 py-1.5 rounded-lg border border-red-100"
+                    style={{ backgroundColor: '#fef2f2', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#fee2e2' }}
                 >
-                    <Text className="text-red-600 font-medium text-xs">Salir</Text>
+                    <Text style={{ color: '#dc2626', fontWeight: '500', fontSize: 12 }}>Salir</Text>
                 </TouchableOpacity>
             </View>
 
-            <ScrollView 
-                className="flex-1 px-6 pt-6"
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24 }}
                 refreshControl={
                     <RefreshControl refreshing={loading} onRefresh={fetchDashboardData} />
                 }
             >
                 {/* Stats Card */}
-                <View className="bg-blue-600 p-6 rounded-2xl shadow-lg mb-8">
-                    <Text className="text-blue-100 text-sm mb-1 uppercase font-semibold tracking-wider">Total Facturado</Text>
-                    <Text className="text-3xl font-bold text-white mb-2">{formatCurrency(stats.totalRevenue)}</Text>
-                    <View className="flex-row items-center bg-blue-500 self-start px-3 py-1 rounded-full">
-                        <Text className="text-white text-xs font-medium">{stats.count} facturas generadas</Text>
+                <View style={{ backgroundColor: '#2563eb', padding: 24, borderRadius: 16, marginBottom: 32 }}>
+                    <Text style={{ color: '#dbeafe', fontSize: 14, marginBottom: 4, textTransform: 'uppercase', fontWeight: '600' }}>Total Facturado</Text>
+                    <Text style={{ fontSize: 30, fontWeight: 'bold', color: 'white', marginBottom: 8 }}>{formatCurrency(stats.totalRevenue)}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#3b82f6', alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20 }}>
+                        <Text style={{ color: 'white', fontSize: 12, fontWeight: '500' }}>{stats.count} facturas generadas</Text>
                     </View>
                 </View>
 
                 {/* Recent Activity */}
-                <Text className="text-lg font-bold text-gray-800 mb-4">Actividad Reciente</Text>
-                
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1f2937', marginBottom: 16 }}>Actividad Reciente</Text>
+
                 {recentInvoices.length === 0 && !loading && (
-                    <Text className="text-gray-500 italic text-center py-8">No hay facturas recientes</Text>
+                    <Text style={{ color: '#6b7280', fontStyle: 'italic', textAlign: 'center', paddingVertical: 32 }}>No hay facturas recientes</Text>
                 )}
 
                 {recentInvoices.map((inv) => (
-                    <View key={inv.id} className="bg-white p-4 rounded-xl border border-gray-100 mb-3 shadow-sm flex-row justify-between items-center">
-                        <View>
-                            <Text className="font-bold text-gray-800 text-base">{inv.client_name || 'Cliente Desconocido'}</Text>
-                            <Text className="text-gray-500 text-xs mt-0.5">
+                    <View key={inv.id} style={{ backgroundColor: 'white', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#f3f4f6', marginBottom: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ fontWeight: 'bold', color: '#1f2937', fontSize: 16 }}>{inv.client_name || 'Cliente Desconocido'}</Text>
+                            <Text style={{ color: '#6b7280', fontSize: 12, marginTop: 2 }}>
                                 {new Date(inv.created_at).toLocaleDateString()} • {inv.type_code === '01' ? 'Crédito Fiscal' : 'Consumo'}
                             </Text>
                         </View>
-                        <View className="items-end">
-                            <Text className="font-bold text-gray-900">{formatCurrency(inv.total)}</Text>
+                        <View style={{ alignItems: 'flex-end' }}>
+                            <Text style={{ fontWeight: 'bold', color: '#111827' }}>{formatCurrency(inv.total)}</Text>
                             <StatusBadge status={inv.status} />
                         </View>
                     </View>
                 ))}
-                
-                <View className="h-10" />
+
+                <View style={{ height: 80 }} />
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
-    let colorClass = 'bg-gray-100 text-gray-600';
+    let bgColor = '#f3f4f6'; // bg-gray-100
+    let textColor = '#4b5563'; // text-gray-600
     let label = status;
 
-    switch(status) {
+    switch (status) {
         case 'draft':
-            colorClass = 'bg-gray-100 text-gray-600';
+            bgColor = '#f3f4f6';
+            textColor = '#4b5563';
             label = 'Borrador';
             break;
         case 'signed':
-            colorClass = 'bg-blue-100 text-blue-600';
+            bgColor = '#dbeafe'; // bg-blue-100
+            textColor = '#2563eb'; // text-blue-600
             label = 'Firmada';
             break;
         case 'sent':
-            colorClass = 'bg-green-100 text-green-600';
+            bgColor = '#dcfce7'; // bg-green-100
+            textColor = '#16a34a'; // text-green-600
             label = 'Enviada';
             break;
     }
 
     return (
-        <View className={`px-2 py-0.5 rounded text-xs mt-1 ${colorClass.split(' ')[0]}`}>
-            <Text className={`${colorClass.split(' ')[1]} text-[10px] font-bold uppercase`}>{label}</Text>
+        <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4, marginTop: 4, backgroundColor: bgColor, alignSelf: 'flex-start' }}>
+            <Text style={{ color: textColor, fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>{label}</Text>
         </View>
     )
 }

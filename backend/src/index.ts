@@ -66,7 +66,9 @@ app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");
 });
 
-app.listen(port, async () => {
+app.listen(port as number, "0.0.0.0", async () => {
   await initDb();
-  console.log(`Server is running on port ${port}`);
+  console.log(
+    `Server is running on port ${port} and accessible via network (0.0.0.0)`
+  );
 });

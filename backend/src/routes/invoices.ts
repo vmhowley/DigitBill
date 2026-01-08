@@ -149,13 +149,16 @@ router.post("/", async (req, res) => {
       }
     }
 
+    // Start transaction
+    await dbClient.query("BEGIN");
+
     // Calculate totals (simplified)
     let net_total = 0;
     let tax_total = 0;
 
     // Insert invoice
     const invRes = await dbClient.query(
-      "INSERT INTO invoices (tenant_id, client_id, net_total, tax_total, total, type_code, reference_ncf) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
+      "INSERT INTO invoices (tenant_id, client_id, net_total, tax_total, total, type_code, reference_ncf, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
       [
         req.tenantId,
         client_id,
@@ -164,6 +167,7 @@ router.post("/", async (req, res) => {
         0,
         type_code || "31",
         reference_ncf || null,
+        "draft", // Set initial status as draft
       ]
     );
     const invoiceId = invRes.rows[0].id;
