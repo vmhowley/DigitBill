@@ -38,6 +38,28 @@ router.get("/:id/pdf", async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Check Storage Limits
+    const limits = getPlanLimits(req.plan);
+    if (limits.maxStorageMB < 99999) {
+      // 99999 means unlimited essentially
+      // Calculate current storage usage (sum of XML content length)
+      const usageRes = await query(
+        "SELECT SUM(LENGTH(xml_path)) as total_bytes FROM invoices WHERE tenant_id = $1",
+        [req.tenantId]
+      );
+
+      const totalBytes = parseInt(usageRes.rows[0].total_bytes || "0");
+      const totalMB = totalBytes / (1024 * 1024);
+
+      if (totalMB >= limits.maxStorageMB) {
+        return res.status(403).json({
+          error: `Has alcanzado el límite de almacenamiento de ${
+            limits.maxStorageMB
+          }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
+        });
+      }
+    }
+
     // 1. Fetch Invoice
     const invRes = await query(
       `
@@ -151,6 +173,37 @@ router.post("/", async (req, res) => {
 
     // Start transaction
     await dbClient.query("BEGIN");
+
+    // Validate invoice type based on plan (reuse limits from above)
+    const requestedType = type_code || "31";
+
+    if (limits.features && !limits.features.includes("All")) {
+      const allowedTypes = limits.features.filter((f) => f.startsWith("B"));
+
+      // Map type codes to type names
+      const typeMap: Record<string, string> = {
+        "31": "B01", // Crédito Fiscal
+        "32": "B02", // Consumo
+        "33": "B03", // Gubernamental
+        "34": "B04", // Exportación
+        "41": "B11", // Proveedores Informales
+        "43": "B13", // Gastos Menores
+        "44": "B14", // Regímenes Especiales
+        "45": "B15", // Comprobante Gubernamental
+        "46": "B16", // Exportaciones
+      };
+
+      const requestedTypeName = typeMap[requestedType];
+      if (requestedTypeName && !allowedTypes.includes(requestedTypeName)) {
+        await dbClient.query("ROLLBACK");
+        dbClient.release();
+        return res.status(403).json({
+          error: `Tu plan ${req.plan?.toUpperCase()} no permite crear facturas tipo ${requestedTypeName}. Tipos permitidos: ${allowedTypes.join(
+            ", "
+          )}. Actualiza tu plan para acceder a más tipos de comprobantes.`,
+        });
+      }
+    }
 
     // Calculate totals (simplified)
     let net_total = 0;
