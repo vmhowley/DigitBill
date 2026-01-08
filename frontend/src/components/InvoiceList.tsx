@@ -142,7 +142,7 @@ export const InvoiceList: React.FC = () => {
                     <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Facturas</h2>
                     <p className="text-gray-500 mt-1">Gestiona y visualiza tus comprobantes fiscales</p>
                 </div>
-                <div className="flex gap-3 w-full md:w-auto">
+                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                     <input
                         type="text"
                         placeholder="Buscar por cliente, # o monto..."

@@ -253,7 +253,7 @@ export const Dashboard = () => {
             </div>
 
             {/* Recent Invoices Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
                     <h3 className="font-bold text-gray-800">Facturas Recientes</h3>
                     <Link to="/invoices" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1">

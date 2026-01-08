@@ -124,7 +124,7 @@ export const InventoryPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+                            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden overflow-x-auto">
                                 <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2 font-semibold text-gray-700">
                                     <History size={18} /> Historial de Movimientos
                                 </div>

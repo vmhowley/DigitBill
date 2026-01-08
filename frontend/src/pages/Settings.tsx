@@ -47,12 +47,12 @@ export const Settings: React.FC = () => {
         }
     };
 
-    const  onUpdateSequence = async (id: number, next_number: number, end_date: string, current_end_number?: number) => {
+    const onUpdateSequence = async (id: number, next_number: number, end_date: string, current_end_number?: number) => {
         try {
-           await axios.put(`/api/settings/sequences/${id}`, { next_number, end_date, current_end_number });
-           toast.success('Secuencia actualizada');
-           fetchAllData();
-        } catch(err) {
+            await axios.put(`/api/settings/sequences/${id}`, { next_number, end_date, current_end_number });
+            toast.success('Secuencia actualizada');
+            fetchAllData();
+        } catch (err) {
             toast.error('Error actualizando secuencia');
         }
     }
@@ -72,7 +72,7 @@ export const Settings: React.FC = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-200 mb-8">
+            <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
                 <button
                     onClick={() => setActiveTab('company')}
                     className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'company' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
@@ -105,7 +105,7 @@ export const Settings: React.FC = () => {
 
             {/* Content */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                
+
                 {/* COMPANY TAB */}
                 {activeTab === 'company' && (
                     <CompanySettings defaultValues={company} onSave={onUpdateCompany} />
@@ -123,7 +123,7 @@ export const Settings: React.FC = () => {
 
                 {/* SECURITY TAB */}
                 {activeTab === 'security' && (
-                  <SecuritySettings />
+                    <SecuritySettings />
                 )}
             </div>
         </div>
