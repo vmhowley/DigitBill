@@ -1,8 +1,8 @@
 import { Check, ShieldCheck } from 'lucide-react';
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import axios from '../api';
 import { toast } from 'react-hot-toast';
+import axios from '../api';
+import { useAuth } from '../context/AuthContext';
 
 export const UpgradePlan: React.FC = () => {
     const { profile, fetchProfile } = useAuth();
@@ -39,7 +39,7 @@ export const UpgradePlan: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Emprendedor Plan */}
-                <UpgradeCard 
+                <UpgradeCard
                     title="Emprendedor"
                     price="RD$ 1,500"
                     period="/ mes"
@@ -57,7 +57,7 @@ export const UpgradePlan: React.FC = () => {
                 />
 
                 {/* Pyme Plan */}
-                <UpgradeCard 
+                <UpgradeCard
                     title="Pyme"
                     price="RD$ 3,500"
                     period="/ mes"
@@ -65,7 +65,7 @@ export const UpgradePlan: React.FC = () => {
                     features={[
                         "Todo lo de Emprendedor",
                         "3 Usuarios habilitados",
-                        "App Móvil (Próximamente)",
+                        "App Móvil (iOS & Android)",
                         "Reportes Avanzados",
                         "Soporte Prioritario"
                     ]}
@@ -76,7 +76,7 @@ export const UpgradePlan: React.FC = () => {
                 />
 
                 {/* Enterprise Plan */}
-                <UpgradeCard 
+                <UpgradeCard
                     title="Empresarial"
                     price="RD$ 6,500"
                     period="/ mes"
@@ -110,7 +110,7 @@ const UpgradeCard = ({ title, price, period, description, features, highlight, i
             <span className="text-4xl font-bold text-gray-900">{price}</span>
             <span className="text-gray-500 font-medium"> {period}</span>
         </div>
-        
+
         <ul className="space-y-4 mb-10 flex-1">
             {features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
@@ -127,14 +127,13 @@ const UpgradeCard = ({ title, price, period, description, features, highlight, i
                 Plan Actual
             </div>
         ) : (
-            <button 
+            <button
                 onClick={onUpgrade}
                 disabled={loading}
-                className={`block w-full text-center py-3.5 rounded-2xl font-bold transition-all transform active:scale-95 disabled:opacity-50 ${
-                    highlight 
-                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200' 
-                    : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200'
-                }`}
+                className={`block w-full text-center py-3.5 rounded-2xl font-bold transition-all transform active:scale-95 disabled:opacity-50 ${highlight
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200'
+                        : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200'
+                    }`}
             >
                 {loading ? 'Redirigiendo...' : 'Actualizar Ahora'}
             </button>

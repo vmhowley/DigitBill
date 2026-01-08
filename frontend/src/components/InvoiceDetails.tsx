@@ -1,9 +1,9 @@
-import { ArrowLeft, Printer, ShoppingCart, Mail, Send } from 'lucide-react';
+import { ArrowLeft, Copy, Mail, MessageCircle, Printer, Send, ShoppingCart } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import axios from '../api';
-import { toast } from 'react-hot-toast';
 
 interface InvoiceDetail {
     id: number;
@@ -13,6 +13,7 @@ interface InvoiceDetail {
     client_email: string;
     issue_date: string;
     status: string;
+    share_token?: string;
     total: string;
     net_total: string;
     tax_total: string;
@@ -38,9 +39,15 @@ export const InvoiceDetails: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [sendingEmail, setSendingEmail] = useState(false);
 
+    const getShareUrl = () => {
+        if (!invoice?.share_token) return window.location.href;
+        const baseUrl = window.location.protocol + '//' + window.location.host;
+        return `${baseUrl}/p/${invoice.share_token}`;
+    };
+
     const handleSendEmail = async () => {
         if (!invoice) return;
-        
+
         const email = prompt('¿A qué correo deseas enviar esta factura?', invoice.client_email || '');
         if (!email) return;
 
@@ -111,13 +118,36 @@ export const InvoiceDetails: React.FC = () => {
                         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                     >
                         {sendingEmail ? <Send size={18} className="animate-pulse" /> : <Mail size={18} />}
-                        {sendingEmail ? 'Enviando...' : 'Enviar por Correo'}
+                        <span className="hidden sm:inline">{sendingEmail ? 'Enviando...' : 'Correo'}</span>
                     </button>
+
+                    <button
+                        onClick={() => {
+                            const message = `Hola ${invoice.client_name}, aquí le envío su *${getTypeName(invoice.type_code)}* #${invoice.sequential_number || invoice.id}. Total: RD$ ${parseFloat(invoice.total).toLocaleString('es-DO', { minimumFractionDigits: 2 })}. Ver aquí: ${getShareUrl()}`;
+                            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                        }}
+                        className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                        title="Enviar por WhatsApp"
+                    >
+                        <MessageCircle size={18} /> <span className="hidden sm:inline">WhatsApp</span>
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText(getShareUrl());
+                            toast.success('Enlace público copiado al portapapeles');
+                        }}
+                        className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        title="Copiar Enlace Público"
+                    >
+                        <Copy size={18} />
+                    </button>
+
                     <button
                         onClick={() => window.print()}
                         className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
                     >
-                        <Printer size={18} /> Imprimir
+                        <Printer size={18} />
                     </button>
                 </div>
             </div>

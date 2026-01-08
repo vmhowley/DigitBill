@@ -10,7 +10,11 @@ export const createProvider = async (tenantId: number, data: any) => {
   return res.rows[0];
 };
 
-export const updateProvider = async (tenantId: number, id: number, data: any) => {
+export const updateProvider = async (
+  tenantId: number,
+  id: number,
+  data: any
+) => {
   const res = await query(
     `UPDATE providers SET name=$1, rnc=$2, phone=$3, email=$4, address=$5 
          WHERE id=$6 AND tenant_id=$7 RETURNING *`,
@@ -20,7 +24,10 @@ export const updateProvider = async (tenantId: number, id: number, data: any) =>
 };
 
 export const deleteProvider = async (tenantId: number, id: number) => {
-  await query("DELETE FROM providers WHERE id=$1 AND tenant_id=$2", [id, tenantId]);
+  await query("DELETE FROM providers WHERE id=$1 AND tenant_id=$2", [
+    id,
+    tenantId,
+  ]);
 };
 
 export const getProvider = async (tenantId: number, id: number) => {
@@ -77,6 +84,21 @@ export const getExpenseStats = async (tenantId: number) => {
          FROM expenses 
          WHERE tenant_id = $1 
          GROUP BY category`,
+    [tenantId]
+  );
+  return res.rows;
+};
+
+export const getExpenseStatsByDate = async (tenantId: number) => {
+  const res = await query(
+    `SELECT 
+      TO_CHAR(expense_date, 'YYYY-MM-DD') as date, 
+      SUM(amount) as total 
+    FROM expenses 
+    WHERE tenant_id = $1 
+      AND expense_date >= NOW() - INTERVAL '7 days'
+    GROUP BY date
+    ORDER BY date`,
     [tenantId]
   );
   return res.rows;

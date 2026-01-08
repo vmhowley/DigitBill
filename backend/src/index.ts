@@ -3,25 +3,48 @@ dotenv.config();
 
 import cors from "cors";
 import express from "express";
+import { initDb } from "./db";
+import adminRoutes from "./routes/admin";
+import authRoutes from "./routes/auth";
+import authPublicRoutes from "./routes/auth_public";
 import clientRoutes from "./routes/clients";
+import dgiiRoutes from "./routes/dgii";
 import expenseRoutes from "./routes/expenses";
 import inventoryRoutes from "./routes/inventory";
 import invoiceRoutes from "./routes/invoices";
 import paymentRoutes from "./routes/payments";
 import productRoutes from "./routes/products";
+import publicRoutes from "./routes/public";
 import reportRoutes from "./routes/reports";
-import dgiiRoutes from "./routes/dgii";
-import adminRoutes from "./routes/admin";
-import authRoutes from "./routes/auth";
-import authPublicRoutes from "./routes/auth_public";
 import settingsRoutes from "./routes/settings";
 import subscriptionRoutes from "./routes/subscriptions";
-import { initDb } from "./db";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://app.digitbill.do",
+  "https://digitbill.do",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // start-allow-no-origin
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        // For development felixibility, you might want to log this instead of failing hard if you are unsure of all domains
+        console.log("CORS blocked origin:", origin);
+        // return callback(new Error('Not allowed by CORS'), false); // Strict mode
+        return callback(null, true); // Permissive mode for now but logging it
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/api/invoices", invoiceRoutes);
@@ -37,6 +60,7 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/dgii", dgiiRoutes);
+app.use("/api/public", publicRoutes);
 
 app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");

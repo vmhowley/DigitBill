@@ -1,4 +1,4 @@
-import { Banknote, CheckCircle, FileText, Send } from 'lucide-react';
+import { Banknote, Bell, CheckCircle, FileText, Send } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
@@ -83,6 +83,15 @@ export const InvoiceList: React.FC = () => {
             link.remove();
         } catch (err) {
             toast.error('Error al descargar el XML');
+        }
+    };
+
+    const sendReminder = async (id: number) => {
+        try {
+            await axios.post(`/api/invoices/${id}/reminder`);
+            toast.success('Recordatorio enviado correctamente');
+        } catch (err: any) {
+            toast.error(err.response?.data?.error || 'Error al enviar recordatorio');
         }
     };
 
@@ -272,12 +281,21 @@ export const InvoiceList: React.FC = () => {
                                         </>
                                     )}
                                     {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
-                                        <button
-                                            onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
-                                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
-                                        >
-                                            <Banknote size={14} /> Pagar
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={() => sendReminder(inv.id)}
+                                                className="flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-800 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
+                                                title="Enviar Recordatorio de Pago"
+                                            >
+                                                <Bell size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
+                                                className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                                            >
+                                                <Banknote size={14} /> Pagar
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             )}
@@ -285,12 +303,21 @@ export const InvoiceList: React.FC = () => {
                                 <div className="flex items-center justify-end gap-2">
                                     <span className="text-sm text-gray-400 font-medium px-3">Enviada</span>
                                     {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
-                                        <button
-                                            onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
-                                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
-                                        >
-                                            <Banknote size={14} /> Pagar
-                                        </button>
+                                        <>
+                                            <button
+                                                onClick={() => sendReminder(inv.id)}
+                                                className="flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-800 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
+                                                title="Enviar Recordatorio de Pago"
+                                            >
+                                                <Bell size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
+                                                className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                                            >
+                                                <Banknote size={14} /> Pagar
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             )}
@@ -397,12 +424,21 @@ export const InvoiceList: React.FC = () => {
                                                     </>
                                                 )}
                                                 {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
-                                                    <button
-                                                        onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
-                                                        className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
-                                                    >
-                                                        <Banknote size={14} /> Pagar
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => sendReminder(inv.id)}
+                                                            className="flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-800 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
+                                                            title="Enviar Recordatorio de Pago"
+                                                        >
+                                                            <Bell size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
+                                                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                                                        >
+                                                            <Banknote size={14} /> Pagar
+                                                        </button>
+                                                    </>
                                                 )}
                                             </div>
                                         )}
@@ -410,12 +446,21 @@ export const InvoiceList: React.FC = () => {
                                             <div className="flex items-center justify-end gap-2">
                                                 <span className="text-sm text-gray-400 font-medium px-3">Enviada</span>
                                                 {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
-                                                    <button
-                                                        onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
-                                                        className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
-                                                    >
-                                                        <Banknote size={14} /> Pagar
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => sendReminder(inv.id)}
+                                                            className="flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-800 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors"
+                                                            title="Enviar Recordatorio de Pago"
+                                                        >
+                                                            <Bell size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setSelectedInvoice(inv); setIsPaymentModalOpen(true); }}
+                                                            className="flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors"
+                                                        >
+                                                            <Banknote size={14} /> Pagar
+                                                        </button>
+                                                    </>
                                                 )}
                                             </div>
                                         )}

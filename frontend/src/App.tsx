@@ -28,9 +28,12 @@ import { ProviderForm } from './components/ProviderForm';
 import { ProviderList } from './components/ProviderList';
 import { ClientStatement } from './pages/ClientStatement';
 import { InventoryPage } from './pages/Inventory';
+import { PaymentCancel, PaymentSuccess } from './pages/PaymentStatus';
+import { PublicInvoice } from './pages/PublicInvoice';
 import { ResetPassword } from './pages/ResetPassword';
 import { UpgradePlan } from './pages/UpgradePlan';
-import { PaymentSuccess, PaymentCancel } from './pages/PaymentStatus';
+
+
 
 // Protected Route Component
 const ProtectedRoute = ({ children, roles }: { children: ReactNode, roles?: string[] }) => {
@@ -71,6 +74,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
+      <Route path="/p/:token" element={<PublicInvoice />} />
       <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
       <Route path="/pricing" element={<PublicRoute><Pricing /></PublicRoute>} />
 
@@ -106,7 +110,7 @@ function AppRoutes() {
 
       {/* Admin Only */}
       <Route path="/settings" element={<ProtectedRoute roles={['admin']}><Settings /></ProtectedRoute>} />
-      
+
       {/* Platform Subscriptions */}
       <Route path="/upgrade" element={<ProtectedRoute roles={['admin']}><UpgradePlan /></ProtectedRoute>} />
       <Route path="/payment/success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />

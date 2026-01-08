@@ -349,14 +349,34 @@ router.post("/:id/email", async (req, res) => {
       phone: config.phone || "",
     };
 
-    const senderEmail = req.user?.email;
-    // Try to get a friendly name, fallback to part of email
-    const senderName =
-      req.user?.user_metadata?.full_name ||
-      req.user?.user_metadata?.name ||
-      (senderEmail ? senderEmail.split("@")[0] : "DigitBill");
+    // Fetch tenant email for reply-to
+    const tenantRes = await query("SELECT email FROM tenants WHERE id = $1", [
+      req.tenantId,
+    ]);
+    const tenantEmail = tenantRes.rows[0]?.email;
 
-    await sendInvoiceEmail(email, invoice, company, senderEmail, senderName);
+    // Use Company Name as the Sender Name (e.g. "Hell Sec.Srl")
+    const senderName = config.company_name || "DigitBill";
+
+    // Reply-To should be the company email if available, otherwise the user email
+    const replyToEmail = tenantEmail || req.user?.email;
+
+    // Check Plan for Premium Email Features
+    const planRes = await query("SELECT plan FROM tenants WHERE id = $1", [
+      req.tenantId,
+    ]);
+    const plan = planRes.rows[0]?.plan;
+    const isPremium = plan === "pyme" || plan === "enterprise";
+
+    await sendInvoiceEmail(
+      email,
+      invoice,
+      company,
+      replyToEmail,
+      senderName,
+      tenantEmail,
+      isPremium
+    );
 
     res.json({ success: true, message: "Factura enviada correctamente" });
   } catch (err: any) {
@@ -364,6 +384,98 @@ router.post("/:id/email", async (req, res) => {
     res
       .status(500)
       .json({ error: "Error al enviar el correo: " + err.message });
+  }
+});
+
+// POST /api/invoices/:id/reminder
+router.post("/:id/reminder", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const invRes = await query(
+      `SELECT i.*, c.name as client_name, c.email as client_email 
+       FROM invoices i 
+       JOIN clients c ON i.client_id = c.id 
+       WHERE i.id = $1 AND i.tenant_id = $2`,
+      [id, req.tenantId]
+    );
+
+    if (invRes.rows.length === 0)
+      return res.status(404).json({ error: "Invoice not found" });
+
+    const invoice = invRes.rows[0];
+
+    if (invoice.status === "paid" || invoice.status === "draft") {
+      return res.status(400).json({
+        error: "Solo se pueden enviar recordatorios de facturas pendientes",
+      });
+    }
+
+    if (!invoice.client_email) {
+      return res.status(400).json({
+        error: "El cliente no tiene un correo electrónico registrado",
+      });
+    }
+
+    const { getCompanyConfig } = require("../services/configService");
+    const { sendPaymentReminderEmail } = require("../services/emailService");
+    const config = await getCompanyConfig(req.tenantId);
+
+    // Prepare company info for the email
+    const company = {
+      name: config.company_name,
+      address: config.address || "Dominican Republic",
+      phone: config.phone || "",
+    };
+
+    // Fetch tenant email for reply-to
+    const tenantRes = await query("SELECT email FROM tenants WHERE id = $1", [
+      req.tenantId,
+    ]);
+    const tenantEmail = tenantRes.rows[0]?.email;
+
+    // Use Company Name as the Sender Name
+    const senderName = config.company_name || "DigitBill";
+
+    // Reply-To should be the company email if available
+    const replyToEmail = tenantEmail || req.user?.email;
+
+    // Construct Public URL if share_token exists
+    let publicUrl;
+    if (invoice.share_token) {
+      // We need the frontend URL. Since we don't strictly have it in ENV for backend, assume standard or pass via req?
+      // Let's assume standard production URL or localhost based on origin header if possible
+      const origin = req.get("origin") || "https://app.digitbill.do";
+      publicUrl = `${origin}/p/${invoice.share_token}`;
+    }
+
+    // Check Plan for Premium Email Features
+    const planRes = await query("SELECT plan FROM tenants WHERE id = $1", [
+      req.tenantId,
+    ]);
+    const plan = planRes.rows[0]?.plan;
+    const isPremium = plan === "pyme" || plan === "enterprise";
+
+    await sendPaymentReminderEmail(
+      invoice.client_email,
+      invoice,
+      company,
+      publicUrl,
+      replyToEmail,
+      senderName,
+      tenantEmail,
+      isPremium
+    );
+
+    res.json({
+      success: true,
+      message: "Recordatorio de pago enviado correctamente",
+    });
+  } catch (err: any) {
+    console.error("Reminder Send Error:", err);
+    res
+      .status(500)
+      .json({ error: "Error al enviar el recordatorio: " + err.message });
   }
 });
 

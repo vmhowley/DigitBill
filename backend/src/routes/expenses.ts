@@ -17,13 +17,20 @@ router.post("/providers", async (req, res) => {
 });
 
 router.get("/providers/:id", async (req, res) => {
-  const provider = await expenseService.getProvider(req.tenantId!, parseInt(req.params.id));
+  const provider = await expenseService.getProvider(
+    req.tenantId!,
+    parseInt(req.params.id)
+  );
   if (!provider) return res.status(404).json({ error: "Provider not found" });
   res.json(provider);
 });
 
 router.put("/providers/:id", async (req, res) => {
-  const provider = await expenseService.updateProvider(req.tenantId!, parseInt(req.params.id), req.body);
+  const provider = await expenseService.updateProvider(
+    req.tenantId!,
+    parseInt(req.params.id),
+    req.body
+  );
   res.json(provider);
 });
 
@@ -45,6 +52,11 @@ router.post("/", async (req, res) => {
 
 router.get("/stats", async (req, res) => {
   const stats = await expenseService.getExpenseStats(req.tenantId!);
+  res.json(stats);
+});
+
+router.get("/stats-by-date", async (req, res) => {
+  const stats = await expenseService.getExpenseStatsByDate(req.tenantId!);
   res.json(stats);
 });
 
