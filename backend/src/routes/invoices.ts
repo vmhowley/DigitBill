@@ -33,6 +33,59 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/invoices/:id/pdf
+router.get("/:id/pdf", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Fetch Invoice
+    const invRes = await query(
+      `
+        SELECT i.*, c.name as client_name, c.rnc_ci as client_rnc, c.address as client_address, c.phone as client_phone
+        FROM invoices i 
+        JOIN clients c ON i.client_id = c.id 
+        WHERE i.id = $1 AND i.tenant_id = $2
+    `,
+      [id, req.tenantId]
+    );
+
+    if (invRes.rows.length === 0)
+      return res.status(404).json({ error: "Invoice not found" });
+
+    const invoice = invRes.rows[0];
+
+    // 2. Fetch Items
+    const itemsRes = await query(
+      `
+        SELECT ii.*, p.description as product_description 
+        FROM invoice_items ii 
+        LEFT JOIN products p ON ii.product_id = p.id
+        WHERE ii.invoice_id = $1
+    `,
+      [id]
+    );
+    const items = itemsRes.rows;
+
+    // 3. Fetch Company Config
+    const { getCompanyConfig } = require("../services/configService");
+    const { generateInvoicePdf } = require("../services/pdfService");
+    const config = await getCompanyConfig(req.tenantId);
+
+    // 4. Generate PDF
+    const filename = `factura-${
+      invoice.e_ncf || invoice.sequential_number
+    }.pdf`;
+
+    res.setHeader("Content-disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-type", "application/pdf");
+
+    generateInvoicePdf({ invoice, company: config, items }, res);
+  } catch (err: any) {
+    console.error("PDF Generation Error:", err);
+    res.status(500).json({ error: "Error generating PDF" });
+  }
+});
+
 // GET /api/invoices/:id
 router.get("/:id", async (req, res) => {
   try {

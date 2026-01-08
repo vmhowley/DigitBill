@@ -1,4 +1,4 @@
-import { ArrowLeft, Copy, Mail, MessageCircle, Printer, Send, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -60,6 +60,22 @@ export const InvoiceDetails: React.FC = () => {
             toast.error(error.response?.data?.error || 'Error al enviar el correo');
         } finally {
             setSendingEmail(false);
+        }
+    };
+
+    const handleDownloadPdf = async () => {
+        try {
+            const res = await axios.get(`/api/invoices/${id}/pdf`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `factura-${invoice!.e_ncf || invoice!.sequential_number}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error(err);
+            toast.error('Error al descargar el PDF');
         }
     };
 
@@ -141,6 +157,15 @@ export const InvoiceDetails: React.FC = () => {
                         title="Copiar Enlace Público"
                     >
                         <Copy size={18} />
+                    </button>
+
+                    <button
+                        onClick={handleDownloadPdf}
+                        disabled={invoice.status === 'draft'}
+                        className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 border border-gray-200 disabled:opacity-50"
+                        title="Descargar PDF"
+                    >
+                        <Download size={18} /> <span className="hidden sm:inline">PDF</span>
                     </button>
 
                     <button
