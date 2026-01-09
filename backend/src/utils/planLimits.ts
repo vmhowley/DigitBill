@@ -18,7 +18,13 @@ export const PLAN_LIMITS = {
     maxClients: 9999,
     maxUsers: 3,
     maxStorageMB: 5120, // 5 GB
-    features: ["B01", "B02", "Mobile App", "Basic Reports"],
+    features: [
+      "B01",
+      "B02",
+      "Mobile App",
+      "Basic Reports",
+      "Electronic Invoicing",
+    ],
   },
   enterprise: {
     maxInvoicesPerMonth: 9999,
