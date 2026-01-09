@@ -1,4 +1,4 @@
-import { CheckCircle, FileUp, Lock, Save } from 'lucide-react';
+import { AlertTriangle, CheckCircle, FileUp, Lock, Save, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
@@ -34,11 +34,27 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
             setCertFile(null);
             // We don't necessarily need to reset the whole form, 
             // the backend just updated company_settings
+            // the backend just updated company_settings
         } catch (error: any) {
             console.error(error);
             toast.error(error.response?.data?.error || 'Error al subir el certificado');
         } finally {
             setUploading(false);
+        }
+    };
+
+    const handleReset = async () => {
+        const input = window.prompt("⚠️ PELIGRO CRÍTICO ⚠️\n\nEsta acción borrará PERMANENTEMENTE:\n- Todas las facturas y cotizaciones\n- Todos los clientes y proveedores\n- Todo el inventario y configuraciones\n\nPara confirmar, escribe textualmente: BORRAR TODO");
+
+        if (input === "BORRAR TODO") {
+            try {
+                await axios.post('/api/settings/reset-data');
+                toast.success('Base de datos reseteada correctamente');
+                window.location.reload();
+            } catch (error) {
+                console.error(error);
+                toast.error('Error al resetear la base de datos');
+            }
         }
     };
 
@@ -152,6 +168,28 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                 <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors">
                     <Save size={18} /> Guardar Cambios
                 </button>
+            </div>
+
+            <div className="mt-12 pt-8 border-t border-red-200">
+                <div className="flex items-center gap-2 mb-4">
+                    <AlertTriangle className="text-red-500" size={24} />
+                    <h3 className="text-lg font-bold text-red-700">Zona de Peligro</h3>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+                    <h4 className="font-bold text-red-800 mb-2">Reiniciar Base de Datos</h4>
+                    <p className="text-sm text-red-700 mb-6">
+                        Esta acción eliminará todos los datos transaccionales (facturas, pagos, clientes, productos) de tu cuenta.
+                        Úsalo solo si deseas empezar desde cero. <span className="font-bold">Esta acción no se puede deshacer.</span>
+                    </p>
+                    <button
+                        type="button"
+                        onClick={handleReset}
+                        className="bg-white border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-6 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2 shadow-sm"
+                    >
+                        <Trash2 size={18} /> Borrar todos mis datos
+                    </button>
+                </div>
             </div>
         </form>
     );

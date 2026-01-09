@@ -268,4 +268,40 @@ router.post(
   }
 );
 
+// POST /api/settings/reset-data
+// WARNING: This deletes ALL transactional and master data for the tenant.
+router.post("/reset-data", async (req, res) => {
+  const client = await query("BEGIN");
+  try {
+    const tId = req.tenantId;
+
+    // 1. Delete dependent transactional data
+    await query("DELETE FROM invoice_logs WHERE tenant_id = $1", [tId]);
+    await query("DELETE FROM invoice_items WHERE tenant_id = $1", [tId]);
+    await query("DELETE FROM inventory_movements WHERE tenant_id = $1", [tId]);
+    await query("DELETE FROM payments WHERE tenant_id = $1", [tId]);
+
+    // 2. Delete main transactional data
+    await query("DELETE FROM invoices WHERE tenant_id = $1", [tId]);
+    await query("DELETE FROM expenses WHERE tenant_id = $1", [tId]);
+
+    // 3. Delete master data
+    await query("DELETE FROM clients WHERE tenant_id = $1", [tId]);
+    await query("DELETE FROM products WHERE tenant_id = $1", [tId]);
+    await query("DELETE FROM providers WHERE tenant_id = $1", [tId]);
+
+    // 4. Reset sequences
+    await query("UPDATE sequences SET next_number = 1 WHERE tenant_id = $1", [
+      tId,
+    ]);
+
+    await query("COMMIT");
+    res.json({ message: "Datos reseteados correctamente." });
+  } catch (err) {
+    await query("ROLLBACK");
+    console.error("Error resetting data:", err);
+    res.status(500).json({ error: "Error al resetear los datos." });
+  }
+});
+
 export default router;

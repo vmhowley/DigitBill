@@ -1,8 +1,8 @@
-import { Building2, Mail, Phone, Lock, User, MapPin, Briefcase, ArrowRight } from 'lucide-react';
+import { ArrowRight, Briefcase, Building2, Lock, Mail, MapPin, Phone, User } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from '../api';
 
 export const Register: React.FC = () => {
@@ -61,6 +61,7 @@ export const Register: React.FC = () => {
                                         <Building2 className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <input
+                                        required
                                         {...register('company_name', { required: 'El nombre es obligatorio' })}
                                         className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                         placeholder="Ej: Mi Negocio SRL"
@@ -72,10 +73,11 @@ export const Register: React.FC = () => {
                             <div className="col-span-2 md:col-span-1">
                                 <label className="block text-sm font-medium text-gray-700">RNC o Cédula</label>
                                 <div className="mt-1 relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <div className="absolute  inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <User className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <input
+                                        required
                                         {...register('rnc', { required: 'El RNC es obligatorio' })}
                                         className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                         placeholder="Ej: 101-00000-1"
@@ -91,6 +93,7 @@ export const Register: React.FC = () => {
                                         <Phone className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <input
+                                        required
                                         {...register('phone')}
                                         className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                         placeholder="809-000-0000"
@@ -102,7 +105,7 @@ export const Register: React.FC = () => {
                                 <label className="block text-sm font-medium text-gray-700">Tipo de Contribuyente</label>
                                 <select
                                     {...register('type')}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl"
+                                    className="mt-1 border block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl"
                                 >
                                     <option value="juridico">Persona Jurídica</option>
                                     <option value="fisico">Persona Física</option>
@@ -116,6 +119,7 @@ export const Register: React.FC = () => {
                                         <MapPin className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <input
+                                        required
                                         {...register('address')}
                                         className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                         placeholder="Ave. Churchill #123, Santo Domingo"
@@ -137,6 +141,7 @@ export const Register: React.FC = () => {
                                         <Mail className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <input
+                                        required
                                         type="email"
                                         {...register('email', { required: 'El email es obligatorio' })}
                                         className="appearance-none block w-full pl-10 px-3 py-2 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
@@ -153,8 +158,9 @@ export const Register: React.FC = () => {
                                         <Lock className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <input
+                                        required
                                         type="password"
-                                        {...register('password', { 
+                                        {...register('password', {
                                             required: 'La contraseña es obligatoria',
                                             minLength: { value: 6, message: 'Mínimo 6 caracteres' }
                                         })}
