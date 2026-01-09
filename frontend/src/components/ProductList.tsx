@@ -1,7 +1,7 @@
 import { Edit, Package, Plus, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 import api from '../api';
 
 interface Product {
@@ -109,7 +109,7 @@ export const ProductList: React.FC = () => {
                                             {product.type === 'product' ? (
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${(parseFloat(product.stock as any) || 0) <= 5 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                                     }`}>
-                                                    {parseFloat(product.stock as any) || 0}
+                                                    {parseFloat(product.stock_quantity as any) || 0}
                                                 </span>
                                             ) : (
                                                 <span className="text-gray-400">-</span>

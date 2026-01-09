@@ -22,7 +22,7 @@ export const recordMovement = async (tenantId: number, data: any) => {
     // 2. Update product stock
     const multiplier = data.type === "in" ? 1 : -1;
     await client.query(
-      `UPDATE products SET stock = stock + $1 WHERE id = $2 AND tenant_id = $3`,
+      `UPDATE products SET stock_quantity = stock_quantity + $1 WHERE id = $2 AND tenant_id = $3`,
       [data.quantity * multiplier, data.product_id, tenantId]
     );
 
@@ -53,8 +53,8 @@ export const getStockAlerts = async (tenantId: number) => {
   // Products with stock < 5
   const res = await query(
     `SELECT * FROM products 
-         WHERE tenant_id = $1 AND stock < 5 
-         ORDER BY stock ASC`,
+         WHERE tenant_id = $1 AND stock_quantity < 5 
+         ORDER BY stock_quantity ASC`,
     [tenantId]
   );
   return res.rows;

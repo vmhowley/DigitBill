@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from 'express';
-import { query } from '../db';
-import { supabase, supabaseAdmin } from '../services/supabase';
+import { NextFunction, Request, Response } from "express";
+import { query } from "../db";
+import { supabase } from "../services/supabase";
 
 // Helper to check for missing envs, but supabase service handles logging now
 if (!process.env.SUPABASE_URL) {
-   console.error('ERROR: Missing SUPABASE_URL in .env');
+  console.error("ERROR: Missing SUPABASE_URL in .env");
 }
 
 // Extend Express Request
@@ -19,21 +19,28 @@ declare global {
   }
 }
 
-export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const requireAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ error: 'Missing Authorization header' });
+    return res.status(401).json({ error: "Missing Authorization header" });
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  const token = authHeader.replace("Bearer ", "");
 
   try {
     // 1. Verify Token
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
 
     if (error || !user) {
-      return res.status(401).json({ error: 'Invalid token' });
+      return res.status(401).json({ error: "Invalid token" });
     }
 
     // 2. Security Check: Enforce 2FA if enabled
@@ -61,62 +68,104 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
 
     // 3. Resolve Tenant
     // Check if user exists in local DB
-    const userRes = await query(`
-      SELECT u.id, u.tenant_id, u.role, t.plan 
+    const userRes = await query(
+      `
+      SELECT u.id, u.tenant_id, u.role, t.plan, t.subscription_end_date 
       FROM users u 
       JOIN tenants t ON u.tenant_id = t.id 
       WHERE u.supabase_uid = $1
-    `, [user.id]);
-    
+    `,
+      [user.id]
+    );
+
     let tenantId;
     let plan;
     let role;
 
     if (userRes.rows.length === 0) {
       // Check if maybe they exist by email but haven't linked UID yet (migrating legacy users)
-      const emailCheck = await query(`
-        SELECT u.id, u.tenant_id, u.role, t.plan 
+      const emailCheck = await query(
+        `
+        SELECT u.id, u.tenant_id, u.role, t.plan, t.subscription_end_date 
         FROM users u 
         JOIN tenants t ON u.tenant_id = t.id 
         WHERE u.username = $1
-      `, [user.email]);
-      
+      `,
+        [user.email]
+      );
+
       if (emailCheck.rows.length > 0) {
         // Link existing legacy user to the new Supabase UID
         tenantId = emailCheck.rows[0].tenant_id;
         plan = emailCheck.rows[0].plan;
+
+        // CHECK EXPIRATION (Email flow)
+        const endDate = emailCheck.rows[0].subscription_end_date;
+        if (plan !== "free" && endDate) {
+          if (new Date(endDate) < new Date()) {
+            console.warn(
+              `[Auth] Subscription expired for tenant ${tenantId}. Downgrading to free.`
+            );
+            plan = "free";
+            // Optional: Trigger DB update here to persist degradation, but runtime check is safer for now
+          }
+        }
+
         role = emailCheck.rows[0].role;
-        await query('UPDATE users SET supabase_uid = $1 WHERE id = $2', [user.id, emailCheck.rows[0].id]);
+        await query("UPDATE users SET supabase_uid = $1 WHERE id = $2", [
+          user.id,
+          emailCheck.rows[0].id,
+        ]);
       } else {
         // STRICT MODE: If user is not in our DB, deny access.
         // This prevents random people from logging in.
-        console.warn(`Unauthorized login attempt: ${user.email} (UID: ${user.id}) - No tenant assigned.`);
-        return res.status(403).json({ error: 'Access Denied: No active subscription found for this user.' });
+        console.warn(
+          `Unauthorized login attempt: ${user.email} (UID: ${user.id}) - No tenant assigned.`
+        );
+        return res
+          .status(403)
+          .json({
+            error: "Access Denied: No active subscription found for this user.",
+          });
       }
     } else {
       tenantId = userRes.rows[0].tenant_id;
       plan = userRes.rows[0].plan;
+
+      // CHECK EXPIRATION (Standard flow)
+      const endDate = userRes.rows[0].subscription_end_date;
+      if (plan !== "free" && endDate) {
+        if (new Date(endDate) < new Date()) {
+          console.warn(
+            `[Auth] Subscription expired for tenant ${tenantId}. Downgrading to free.`
+          );
+          plan = "free";
+        }
+      }
+
       role = userRes.rows[0].role;
     }
 
     // Attach to request
     req.user = { ...user, role }; // Attach role
     req.tenantId = tenantId;
-    req.plan = plan || 'free';
+    req.plan = plan || "free";
 
     next();
   } catch (err) {
-    console.error('Auth Middleware Error:', err);
-    res.status(401).json({ error: 'Authentication failed' });
+    console.error("Auth Middleware Error:", err);
+    res.status(401).json({ error: "Authentication failed" });
   }
 };
 
 export const requireRole = (allowedRoles: string[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const userRole = req.user?.role;
-        if (!userRole || !allowedRoles.includes(userRole)) {
-            return res.status(403).json({ error: 'Access Denied: Insufficient permissions' });
-        }
-        next();
+  return (req: Request, res: Response, next: NextFunction) => {
+    const userRole = req.user?.role;
+    if (!userRole || !allowedRoles.includes(userRole)) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied: Insufficient permissions" });
     }
+    next();
+  };
 };

@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 export const UpgradePlan: React.FC = () => {
     const { profile, fetchProfile } = useAuth();
     const [loading, setLoading] = React.useState<string | null>(null);
+    const [billingInterval, setBillingInterval] = React.useState<'month' | 'year'>('month');
 
     React.useEffect(() => {
         fetchProfile();
@@ -15,7 +16,10 @@ export const UpgradePlan: React.FC = () => {
     const handleUpgrade = async (planId: string) => {
         setLoading(planId);
         try {
-            const { data } = await axios.post('/api/subscriptions/create-checkout-session', { planId });
+            const { data } = await axios.post('/api/subscriptions/create-checkout-session', {
+                planId,
+                interval: billingInterval
+            });
             if (data.url) {
                 window.location.href = data.url;
             }
@@ -27,11 +31,36 @@ export const UpgradePlan: React.FC = () => {
         }
     };
 
+    const prices = {
+        entrepreneur: { month: 'RD$ 1,500', year: 'RD$ 15,000' },
+        pyme: { month: 'RD$ 3,500', year: 'RD$ 35,000' },
+        enterprise: { month: 'RD$ 6,500', year: 'RD$ 65,000' }
+    };
+
     return (
         <div className="max-w-6xl mx-auto py-8 px-4">
-            <header className="mb-12 text-center">
+            <header className="mb-8 text-center">
                 <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Actualizar Plan</h1>
                 <p className="text-gray-500 mt-2">Eleva tu negocio con herramientas avanzadas</p>
+
+                <div className="mt-6 flex justify-center">
+                    <div className="bg-gray-100 p-1 rounded-xl flex items-center relative">
+                        <button
+                            onClick={() => setBillingInterval('month')}
+                            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${billingInterval === 'month' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                            Mensual
+                        </button>
+                        <button
+                            onClick={() => setBillingInterval('year')}
+                            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${billingInterval === 'year' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                            Anual
+                            <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full">AHORRA 17%</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-blue-600 bg-blue-50 w-fit mx-auto px-4 py-1.5 rounded-full border border-blue-100">
                     <ShieldCheck size={18} /> Plan Actual: <span className="uppercase font-bold">{profile?.plan || 'Free'}</span>
                 </div>
@@ -41,8 +70,8 @@ export const UpgradePlan: React.FC = () => {
                 {/* Emprendedor Plan */}
                 <UpgradeCard
                     title="Emprendedor"
-                    price="RD$ 1,500"
-                    period="/ mes"
+                    price={prices.entrepreneur[billingInterval]}
+                    period={billingInterval === 'month' ? '/ mes' : '/ año'}
                     description="Para pequeños negocios que facturan desde la web."
                     features={[
                         "Facturación Ilimitada",
@@ -59,15 +88,16 @@ export const UpgradePlan: React.FC = () => {
                 {/* Pyme Plan */}
                 <UpgradeCard
                     title="Pyme"
-                    price="RD$ 3,500"
-                    period="/ mes"
+                    price={prices.pyme[billingInterval]}
+                    period={billingInterval === 'month' ? '/ mes' : '/ año'}
                     description="El plan ideal para negocios en crecimiento."
                     features={[
                         "Todo lo de Emprendedor",
                         "3 Usuarios habilitados",
                         "App Móvil (iOS & Android)",
                         "Reportes Avanzados",
-                        "Soporte Prioritario"
+                        "Soporte Prioritario",
+                        "Facturación Electrónica" // Added explicitly based on recent changes
                     ]}
                     highlight={true}
                     isCurrent={profile?.plan === 'pyme'}
@@ -78,8 +108,8 @@ export const UpgradePlan: React.FC = () => {
                 {/* Enterprise Plan */}
                 <UpgradeCard
                     title="Empresarial"
-                    price="RD$ 6,500"
-                    period="/ mes"
+                    price={prices.enterprise[billingInterval]}
+                    period={billingInterval === 'month' ? '/ mes' : '/ año'}
                     description="Para empresas que necesitan control total."
                     features={[
                         "Usuarios Ilimitados",
@@ -131,8 +161,8 @@ const UpgradeCard = ({ title, price, period, description, features, highlight, i
                 onClick={onUpgrade}
                 disabled={loading}
                 className={`block w-full text-center py-3.5 rounded-2xl font-bold transition-all transform active:scale-95 disabled:opacity-50 ${highlight
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200'
-                        : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200'
+                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200'
+                    : 'bg-gray-900 text-white hover:bg-black shadow-lg shadow-gray-200'
                     }`}
             >
                 {loading ? 'Redirigiendo...' : 'Actualizar Ahora'}

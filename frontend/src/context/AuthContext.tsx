@@ -1,7 +1,7 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
 import axios from '../api';
+import { supabase } from '../supabaseClient';
 
 interface UserProfile {
     id: number;
@@ -10,6 +10,8 @@ interface UserProfile {
     tenant_id: number;
     tenant_name: string;
     plan?: string;
+    subscription_status?: string;
+    subscription_end_date?: string;
 }
 
 interface AuthContextType {
@@ -79,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (err: any) {
             console.error('Error fetching profile', err);
             if (err.response?.status === 401 || err.response?.status === 403) {
-                 // Don't clear session immediately to avoid flicker
+                // Don't clear session immediately to avoid flicker
             }
         }
     };
@@ -91,20 +93,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             try {
                 // Get initial session
                 const { data: { session } } = await supabase.auth.getSession();
-                
+
                 if (!mounted) return;
 
                 if (session) {
-                     setSession(session);
-                     setUser(session.user);
-                     
-                     // Run parallel
-                     fetchProfile();
-                     checkMFA(session);
+                    setSession(session);
+                    setUser(session.user);
+
+                    // Run parallel
+                    fetchProfile();
+                    checkMFA(session);
                 } else {
-                     setSession(null);
-                     setUser(null);
-                     setProfile(null);
+                    setSession(null);
+                    setUser(null);
+                    setProfile(null);
                 }
             } catch (err) {
                 console.error("Auth Initialization Error:", err);
@@ -114,18 +116,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
 
         initializeAuth();
-        
+
         // Safety timeout
         const timeoutId = setTimeout(() => {
-             if (mounted && loading) {
-                 console.warn("Auth initialization timed out, forcing load completion.");
-                 setLoading(false);
-             }
+            if (mounted && loading) {
+                console.warn("Auth initialization timed out, forcing load completion.");
+                setLoading(false);
+            }
         }, 3000);
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (!mounted) return;
-            
+
             if (event === 'SIGNED_OUT') {
                 setSession(null);
                 setUser(null);
@@ -134,16 +136,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setLoading(false);
                 return;
             }
-            
+
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                 setSession(session);
-                 setUser(session?.user ?? null);
-                 
-                 if (session) {
-                     fetchProfile();
-                     checkMFA(session);
-                 }
-                 if (mounted) setLoading(false);
+                setSession(session);
+                setUser(session?.user ?? null);
+
+                if (session) {
+                    fetchProfile();
+                    checkMFA(session);
+                }
+                if (mounted) setLoading(false);
             }
         });
 
@@ -163,11 +165,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ 
-            session, 
-            user, 
-            profile, 
-            loading, 
+        <AuthContext.Provider value={{
+            session,
+            user,
+            profile,
+            loading,
             signOut,
             fetchProfile,
             isAdmin: profile?.role === 'admin',
