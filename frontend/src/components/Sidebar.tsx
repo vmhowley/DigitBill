@@ -31,17 +31,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 md:relative md:translate-x-0
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
-                <div className="p-6 flex items-center justify-between overflow-hidden text-center relative">
-                    <img src={logo} alt="DigitBill Logo" className="w-full h-auto max-w-[150px] scale-125" />
+                <Link to="/dashboard" className="flex items-center justify-center overflow-hidden text-center relative">
+                    <img src={logo} alt="DigitBill Logo" className="w-96  scale-150" />
                     <button
                         onClick={onClose}
                         className="md:hidden p-2 text-gray-500 hover:text-gray-700"
                     >
                         <X size={24} />
                     </button>
-                </div>
+                </Link>
 
-                <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+                <nav className="flex-1 px-4 space-y-2  overflow-y-auto">
                     <Link
                         to="/dashboard"
                         onClick={() => onClose()}

@@ -28,7 +28,7 @@ export const Landing: React.FC = () => {
             <NavbarPublic />
 
             {/* Hero Section */}
-            <header className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+            <header className="relative pt-20 lg:pt-20 lg:pb-20 overflow-hidden">
                 <div className="absolute inset-0 -z-10">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-100/50 blur-[100px] rounded-full opacity-50" />
                     <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-purple-50/50 blur-[120px] rounded-full opacity-30" />
@@ -66,53 +66,29 @@ export const Landing: React.FC = () => {
 
                     {/* Dashboard Preview Mockup */}
                     <div className="relative w-full max-w-6xl mx-auto transform hover:scale-[1.01] transition-transform duration-500">
-                        <div className="absolute inset-0 bg-blue-600 blur-3xl opacity-10 rounded-[3rem]"></div>
+                        {/* Clean shadow backing */}
+                        <div className="absolute inset-0 bg-gray-900/5 blur-3xl rounded-[3rem] -z-10"></div>
+
                         <div className="relative bg-white border border-gray-200 rounded-2xl md:rounded-[2rem] shadow-2xl overflow-hidden animate-slide-up">
                             {/* Browser Bar */}
                             <div className="bg-gray-50 border-b border-gray-100 px-6 py-4 flex items-center gap-2">
                                 <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-400"></div>
-                                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-                                    <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                                    <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#ff5f56]/20"></div>
+                                    <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#ffbd2e]/20"></div>
+                                    <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#27c93f]/20"></div>
                                 </div>
-                                <div className="mx-auto bg-white border border-gray-200 px-4 py-1.5 rounded-lg text-xs text-gray-400 font-medium hidden sm:block w-96 text-center">
+                                <div className="mx-auto bg-white border border-gray-200 px-4 py-1.5 rounded-lg text-xs text-gray-400 font-medium hidden sm:block w-96 text-center font-mono shadow-sm">
                                     app.digitbill.do/dashboard
                                 </div>
                             </div>
-                            {/* UI Content Placeholder */}
-                            <div className="p-6 md:p-10 bg-gray-50/30">
-                                <div className="grid grid-cols-12 gap-6">
-                                    {/* Sidebar Mock */}
-                                    <div className="hidden md:block col-span-2 space-y-4">
-                                        <div className="h-8 w-8 bg-blue-600 rounded-lg mb-8"></div>
-                                        {[1, 2, 3, 4, 5].map(i => (
-                                            <div key={i} className={`h-2.5 rounded-full w-2/3 ${i === 1 ? 'bg-blue-100' : 'bg-gray-200'}`}></div>
-                                        ))}
-                                    </div>
-                                    {/* Main Content Mock */}
-                                    <div className="col-span-12 md:col-span-10">
-                                        <div className="flex justify-between items-center mb-8">
-                                            <div className="h-4 w-32 bg-gray-200 rounded-full"></div>
-                                            <div className="h-8 w-24 bg-blue-600 rounded-lg"></div>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                            {[1, 2, 3].map(i => (
-                                                <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                                    <div className="h-8 w-8 bg-blue-50 rounded-lg mb-4"></div>
-                                                    <div className="h-3 w-20 bg-gray-100 rounded-full mb-2"></div>
-                                                    <div className="h-6 w-32 bg-gray-800 rounded-full"></div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="bg-white h-64 rounded-xl border border-gray-100 shadow-sm p-6 flex items-end justify-between gap-4">
-                                            {[40, 60, 45, 70, 50, 80, 65, 85, 75, 90, 60, 95].map((h, i) => (
-                                                <div key={i} className="w-full bg-blue-100 rounded-t-lg relative group" style={{ height: `${h}%` }}>
-                                                    <div className="absolute bottom-0 w-full bg-blue-500 rounded-t-lg transition-all duration-1000" style={{ height: `${h * 0.6}%` }}></div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
+
+                            {/* Real System Screenshot (Clean) */}
+                            <div className="aspect-[16/10] w-full bg-gray-50 relative group overflow-hidden">
+                                <img
+                                    src="/img/dashboard-real.png"
+                                    alt="DigitBill Dashboard Real"
+                                    className="w-full h-full object-cover object-top"
+                                />
                             </div>
                         </div>
                     </div>

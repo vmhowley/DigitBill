@@ -14,7 +14,7 @@ export const NavbarPublic: React.FC = () => {
                     {/* Logo */}
                     {/* Logo */}
                     <div className="flex-shrink-0 flex items-center gap-2 overflow-hidden">
-                        <img src={logo} alt="DigitBill Logo" className="h-12 w-auto scale-150" />
+                        <img src={logo} alt="DigitBill Logo" className="w-70 h-70   " />
                     </div>
 
                     {/* Desktop Menu */}
