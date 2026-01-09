@@ -26,7 +26,7 @@ export const ClientStatement: React.FC = () => {
         try {
             const [clientRes, invRes, payRes] = await Promise.all([
                 axios.get(`/api/clients/${id}`),
-                axios.get(`/api/invoices`), // We'll filter on frontend for simplicity or create a specific endpoint
+                axios.get(`/api/invoices`, { params: { all: 'true' } }), // Fetch all for client filtering
                 axios.get(`/api/payments/client/${id}`)
             ]);
 

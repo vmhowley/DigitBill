@@ -22,10 +22,37 @@ export const InvoiceList: React.FC = () => {
     const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+    // Filters & Pagination State
+    const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalDocs, setTotalDocs] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setPage(1);
+            setDebouncedSearch(searchTerm);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    // Reset page on filter change
+    useEffect(() => {
+        setPage(1);
+    }, [statusFilter, startDate, endDate]);
+
     useEffect(() => {
         fetchInvoices();
         fetchSettings();
-    }, []);
+    }, [page, limit, debouncedSearch, statusFilter, startDate, endDate]);
 
     const fetchSettings = async () => {
         try {
@@ -37,11 +64,31 @@ export const InvoiceList: React.FC = () => {
     };
 
     const fetchInvoices = async () => {
+        setIsLoading(true);
         try {
-            const res = await axios.get('/api/invoices');
-            setInvoices(res.data);
+            const params = {
+                page,
+                limit,
+                search: debouncedSearch,
+                status: statusFilter,
+                startDate,
+                endDate
+            };
+
+            const res = await axios.get('/api/invoices', { params });
+
+            if (res.data.meta) {
+                setInvoices(res.data.data);
+                setTotalPages(res.data.meta.totalPages);
+                setTotalDocs(res.data.meta.total);
+            } else {
+                setInvoices(res.data);
+            }
         } catch (err) {
             console.error(err);
+            toast.error('Error cargando facturas');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -95,52 +142,17 @@ export const InvoiceList: React.FC = () => {
         }
     };
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-
-    const filteredInvoices = invoices.filter(inv => {
-        const query = searchTerm.toLowerCase().trim();
-
-        // Search Filter logic
-        const seqFormatted = (inv.sequential_number || inv.id).toString().padStart(6, '0');
-        const seqRaw = (inv.sequential_number || inv.id).toString();
-
-        const matchesSearch = !query ||
-            seqFormatted.includes(query) ||
-            seqRaw.includes(query) ||
-            (inv.client_name && inv.client_name.toLowerCase().includes(query)) ||
-            inv.total.toString().includes(query);
-
-        // Status Filter logic
-        const matchesStatus = statusFilter === 'all' || inv.status === statusFilter;
-
-        // Date Filter logic
-        const invDate = new Date(inv.created_at);
-        invDate.setHours(0, 0, 0, 0);
-
-        let matchesDate = true;
-        if (startDate) {
-            const start = new Date(startDate);
-            start.setHours(0, 0, 0, 0);
-            if (invDate < start) matchesDate = false;
-        }
-        if (endDate) {
-            const end = new Date(endDate);
-            end.setHours(23, 59, 59, 999);
-            if (invDate > end) matchesDate = false;
-        }
-
-        return matchesSearch && matchesStatus && matchesDate;
-    });
+    // Use server-side filtered data directly
+    const filteredInvoices = invoices;
 
     return (
         <div>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Facturas</h2>
-                    <p className="text-gray-500 mt-1">Gestiona y visualiza tus comprobantes fiscales</p>
+                    <p className="text-gray-500 mt-1">
+                        {totalDocs > 0 ? `${totalDocs} comprobantes encontrados` : 'Gestiona y visualiza tus comprobantes fiscales'}
+                    </p>
                 </div>
                 <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                     <input
@@ -350,7 +362,7 @@ export const InvoiceList: React.FC = () => {
                         <tbody className="divide-y divide-gray-100">
                             {filteredInvoices.map((inv) => (
                                 <tr key={inv.id} className="hover:bg-gray-50/50 transition-colors group">
-                                    <td className="px-6 py-4">
+                                    <td className="p-2">
                                         <div className="flex items-center gap-3">
                                             <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
                                                 <FileText size={18} />
@@ -479,6 +491,49 @@ export const InvoiceList: React.FC = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Pagination & Limit Controls */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8 pt-4 border-t border-gray-100 bg-white p-4 rounded-xl shadow-sm">
+
+                    {/* Rows per page */}
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <span>Mostrar</span>
+                        <select
+                            value={limit}
+                            onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+                            className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 focus:outline-none"
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                        </select>
+                        <span>por página</span>
+                    </div>
+
+                    {/* Pagination Buttons */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-4">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Anterior
+                            </button>
+                            <span className="text-sm font-medium text-gray-600">
+                                Página {page} de {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages || page >= totalPages}
+                                className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Siguiente
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

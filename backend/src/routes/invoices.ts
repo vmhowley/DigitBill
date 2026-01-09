@@ -11,24 +11,104 @@ const router = Router();
 router.use(requireAuth);
 
 // GET /api/invoices
+// GET /api/invoices
 router.get("/", async (req, res) => {
-  // Fetch invoices with client names
   try {
-    const result = await query(
-      `
-        SELECT 
-          i.*, 
-          c.name as client_name,
-          COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = i.id), 0) as total_paid
-        FROM invoices i 
-        LEFT JOIN clients c ON i.client_id = c.id 
-        WHERE i.tenant_id = $1 
-        ORDER BY i.sequential_number DESC
-      `,
-      [req.tenantId]
-    );
-    res.json(result.rows);
+    const {
+      page = "1",
+      limit = "10",
+      search = "",
+      status = "all",
+      startDate = "",
+      endDate = "",
+      all = "false",
+    } = req.query;
+
+    const returnAll = all === "true";
+
+    const pageNum = parseInt(page as string) || 1;
+    const limitNum = parseInt(limit as string) || 10;
+    const offset = (pageNum - 1) * limitNum;
+
+    const queryParams: any[] = [req.tenantId];
+    let whereClause = "WHERE i.tenant_id = $1";
+    let paramIndex = 2;
+
+    // Search Filter
+    if (search) {
+      whereClause += ` AND (
+        i.sequential_number::text ILIKE $${paramIndex} OR 
+        c.name ILIKE $${paramIndex} OR 
+        i.total::text ILIKE $${paramIndex} OR
+        i.ncf ILIKE $${paramIndex}
+      )`;
+      queryParams.push(`%${search}%`);
+      paramIndex++;
+    }
+
+    // Status Filter
+    if (status && status !== "all") {
+      whereClause += ` AND i.status = $${paramIndex}`;
+      queryParams.push(status);
+      paramIndex++;
+    }
+
+    // Date Filters
+    if (startDate) {
+      whereClause += ` AND i.created_at >= $${paramIndex}::date`;
+      queryParams.push(startDate);
+      paramIndex++;
+    }
+
+    if (endDate) {
+      // Add time to include the full end day
+      whereClause += ` AND i.created_at <= ($${paramIndex}::date + INTERVAL '1 day')`;
+      queryParams.push(endDate);
+      paramIndex++;
+    }
+
+    let sql = `
+      SELECT 
+        i.*, 
+        c.name as client_name,
+        COALESCE((SELECT SUM(amount) FROM payments WHERE invoice_id = i.id), 0) as total_paid,
+        COUNT(*) OVER() as full_count
+      FROM invoices i 
+      LEFT JOIN clients c ON i.client_id = c.id 
+      ${whereClause}
+      ORDER BY i.sequential_number DESC
+    `;
+
+    if (!returnAll) {
+      sql += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      queryParams.push(limitNum, offset);
+    }
+
+    const result = await query(sql, queryParams);
+
+    const cleanedRows = result.rows.map((row) => {
+      const { full_count, ...invoiceData } = row; // Remove internal count from item
+      return invoiceData;
+    });
+
+    if (returnAll) {
+      return res.json(cleanedRows);
+    }
+
+    const totalItems = parseInt(result.rows[0]?.full_count || "0");
+    const totalPages = Math.ceil(totalItems / limitNum);
+
+    res.json({
+      data: cleanedRows,
+      meta: {
+        total: totalItems,
+        page: pageNum,
+        limit: limitNum,
+        totalPages,
+      },
+    });
   } catch (err) {
+    logger.error("Error fetching invoices:", err);
     res.status(500).json({ error: "Database error" });
   }
 });

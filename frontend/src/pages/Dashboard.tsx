@@ -24,7 +24,7 @@ export const Dashboard = () => {
         const fetchData = async () => {
             try {
                 const [invoicesRes, alertsRes, expensesRes, expenseStatsRes] = await Promise.all([
-                    axios.get('/api/invoices'),
+                    axios.get('/api/invoices', { params: { all: 'true' } }),
                     axios.get('/api/inventory/alerts'),
                     axios.get('/api/expenses'), // NEW
                     axios.get('/api/expenses/stats-by-date') // NEW
