@@ -25,7 +25,6 @@ export const InvoiceForm: React.FC = () => {
     const navigate = useNavigate();
     const [clients, setClients] = React.useState<Array<{ id: number, name: string }>>([]);
     const [products, setProducts] = React.useState<Array<{ id: number, sku: string, description: string, unit_price: string, tax_rate: number }>>([]);
-    const [isElectronic, setIsElectronic] = React.useState(false);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isClientModalOpen, setIsClientModalOpen] = React.useState(false);
 
@@ -39,14 +38,12 @@ export const InvoiceForm: React.FC = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const [clientsRes, productsRes, configRes] = await Promise.all([
+                const [clientsRes, productsRes] = await Promise.all([
                     api.get('/api/clients'),
                     api.get('/api/products'),
-                    api.get('/api/settings/company')
                 ]);
                 setClients(clientsRes.data);
                 setProducts(productsRes.data);
-                setIsElectronic(configRes.data.electronic_invoicing);
             } catch (err) {
                 console.error('Error fetching data', err);
             }

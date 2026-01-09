@@ -8,6 +8,7 @@ interface Product {
     id: number;
     sku: string;
     description: string;
+    stock_quantity: number;
     unit_price: string;
     tax_rate: string;
     unit: string;
@@ -107,7 +108,7 @@ export const ProductList: React.FC = () => {
                                         </td>
                                         <td className="py-4 px-6 text-center">
                                             {product.type === 'product' ? (
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${(parseFloat(product.stock as any) || 0) <= 5 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${(parseFloat(product.stock_quantity as any) || 0) <= 5 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                                     }`}>
                                                     {parseFloat(product.stock_quantity as any) || 0}
                                                 </span>
