@@ -33,7 +33,6 @@ export const InvoiceList: React.FC = () => {
     const [limit, setLimit] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
     const [totalDocs, setTotalDocs] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
 
     // Debounce search
     useEffect(() => {
@@ -64,7 +63,6 @@ export const InvoiceList: React.FC = () => {
     };
 
     const fetchInvoices = async () => {
-        setIsLoading(true);
         try {
             const params = {
                 page,
@@ -87,8 +85,6 @@ export const InvoiceList: React.FC = () => {
         } catch (err) {
             console.error(err);
             toast.error('Error cargando facturas');
-        } finally {
-            setIsLoading(false);
         }
     };
 
