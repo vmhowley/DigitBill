@@ -10,9 +10,10 @@ export const Dashboard = () => {
         totalRevenue: 0,
         invoiceCount: 0,
         totalAR: 0,
-        totalExpenses: 0, // NEW
+        totalExpenses: 0,
         stockAlerts: 0,
-        taxDue: 0
+        taxDue: 0,
+        revenueTrend: 0 // NEW
     });
     const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
     const [topClients, setTopClients] = useState<any[]>([]);
@@ -96,13 +97,47 @@ export const Dashboard = () => {
 
                 const totalExpenses = expenses.reduce((acc: number, curr: any) => acc + parseFloat(curr.amount), 0);
 
+                // 4. Revenue Trend (Current Month vs Last Month)
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+
+                let lastMonth = currentMonth - 1;
+                let lastMonthYear = currentYear;
+                if (lastMonth < 0) {
+                    lastMonth = 11;
+                    lastMonthYear = currentYear - 1;
+                }
+
+                const currentMonthRevenue = invoices
+                    .filter((i: any) => {
+                        const d = new Date(i.created_at);
+                        return i.status !== 'draft' && d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+                    })
+                    .reduce((acc: number, curr: any) => acc + (curr.total_paid ? parseFloat(curr.total_paid) : 0), 0);
+
+                const lastMonthRevenue = invoices
+                    .filter((i: any) => {
+                        const d = new Date(i.created_at);
+                        return i.status !== 'draft' && d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+                    })
+                    .reduce((acc: number, curr: any) => acc + (curr.total_paid ? parseFloat(curr.total_paid) : 0), 0);
+
+                let trendDiff = 0;
+                if (lastMonthRevenue > 0) {
+                    trendDiff = ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+                } else if (currentMonthRevenue > 0) {
+                    trendDiff = 100;
+                }
+
                 setStats({
                     totalRevenue: revenue,
                     invoiceCount: invoices.length,
                     totalAR: totalAR,
                     totalExpenses: totalExpenses,
                     stockAlerts: alerts.length,
-                    taxDue: totalTax
+                    taxDue: totalTax,
+                    revenueTrend: trendDiff
                 });
 
                 setWeeklyData(scaledChartData);
@@ -147,7 +182,7 @@ export const Dashboard = () => {
                     value={`RD$ ${stats.totalRevenue.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
                     icon={<DollarSign size={24} />}
                     color="green"
-                    trend="+12% este mes"
+                    trend={`${stats.revenueTrend > 0 ? '+' : ''}${stats.revenueTrend.toFixed(1)}% este mes`}
                 />
                 <KpiCard
                     title="Gastos Totales"
