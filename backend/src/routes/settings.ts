@@ -49,7 +49,7 @@ const upload = multer({
 router.get("/company", async (req, res) => {
   try {
     const tenantRes = await query(
-      "SELECT name, rnc, address, phone, email, type FROM tenants WHERE id = $1",
+      "SELECT name, rnc, address, phone, email, type, industry_type, plan FROM tenants WHERE id = $1",
       [req.tenantId]
     );
     if (tenantRes.rows.length === 0)
@@ -188,9 +188,8 @@ router.post("/users/invite", async (req, res) => {
 
     if (currentCount >= limits.maxUsers) {
       return res.status(403).json({
-        error: `Tu plan actual (${req.plan?.toUpperCase()}) solo permite ${
-          limits.maxUsers
-        } usuarios. Actualiza para obtener más.`,
+        error: `Tu plan actual (${req.plan?.toUpperCase()}) solo permite ${limits.maxUsers
+          } usuarios. Actualiza para obtener más.`,
       });
     }
 

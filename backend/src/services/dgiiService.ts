@@ -96,27 +96,86 @@ export const checkStatusDGII = async (trackId: string, tenantId: number) => {
   }
 };
 
-export const checkRNC = async (rnc: string, tenantId: number) => {
-    // Mock database of known RNCs for demonstration
-    const MOCK_DATA: Record<string, any> = {
-        '131652755': { rnc: '131652755', name: 'DIGITBILL DOMINICANA SRL', status: 'ACTIVO', type: 'JURIDICO' },
-        '101017961': { rnc: '101017961', name: 'BANCO POPULAR DOMINICANO', status: 'ACTIVO', type: 'JURIDICO' },
-        '101001429': { rnc: '101001429', name: 'CERVECERIA NACIONAL DOMINICANA', status: 'ACTIVO', type: 'JURIDICO' },
-        '130541127': { rnc: '130541127', name: 'GOOGLE DOMINICANA SRL', status: 'ACTIVO', type: 'JURIDICO' }
-    };
+// Helper to validate RNC (Companies)
+const isValidRNC = (rnc: string): boolean => {
+  if (rnc.length !== 9) return false;
 
+  const weights = [7, 9, 8, 6, 5, 4, 3, 2];
+  let sum = 0;
+
+  for (let i = 0; i < 8; i++) {
+    const digit = parseInt(rnc[i]);
+    if (isNaN(digit)) return false;
+    sum += digit * weights[i];
+  }
+
+  const remainder = sum % 11;
+  let checkDigit = 0;
+
+  if (remainder === 0) checkDigit = 2;
+  else if (remainder === 1) checkDigit = 1;
+  else checkDigit = 11 - remainder;
+
+  return checkDigit === parseInt(rnc[8]);
+};
+
+// Helper to validate Cédula (Individuals) - Luhn Algorithm
+const isValidCedula = (cedula: string): boolean => {
+  if (cedula.length !== 11) return false;
+
+  let sum = 0;
+  const weights = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2];
+
+  for (let i = 0; i < 10; i++) {
+    const digit = parseInt(cedula[i]);
+    if (isNaN(digit)) return false;
+    
+    let product = digit * weights[i];
+    if (product >= 10) {
+      const pStr = product.toString();
+      product = parseInt(pStr[0]) + parseInt(pStr[1]);
+    }
+    sum += product;
+  }
+
+  const checkDigit = (10 - (sum % 10)) % 10;
+  return checkDigit === parseInt(cedula[10]);
+};
+
+export const checkRNC = async (rnc: string, tenantId: number) => {
     try {
-        if (MOCK_DATA[rnc]) {
-            return MOCK_DATA[rnc];
+        // Strip any non-numeric characters just in case
+        const cleanRnc = rnc.replace(/[^\d]/g, '');
+
+        let isValid = false;
+        let type = '';
+
+        if (cleanRnc.length === 9) {
+            isValid = isValidRNC(cleanRnc);
+            type = 'JURIDICO'; // Corporate/Company
+        } else if (cleanRnc.length === 11) {
+            isValid = isValidCedula(cleanRnc);
+            type = 'FISICA'; // Individual
         }
 
-        // Simulating external delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        if (!isValid) {
+            // Invalid checksum or length
+            return null;
+        }
 
-        // Note: For production, this should call a real DGII endpoint or a scraping service.
-        return null;
+        // Return a valid object. 
+        // NOTE: Since we don't have an open DGII API, we return a blank name 
+        // to let the user fill it in, but we CONFIRM the RNC format is valid.
+        return {
+            rnc: cleanRnc,
+            name: '', // The frontend should enable the name input if this is empty
+            status: 'ACTIVO', // Assumed active to allow creation. 
+            type: type,
+            isVerified: false // Flag to seek manual verification if needed
+        };
+
     } catch (error: any) {
-        console.warn(`RNC Check failed for ${rnc}`, error.message);
+        console.warn(`RNC Check error for ${rnc}`, error.message);
         return null;
     }
 };

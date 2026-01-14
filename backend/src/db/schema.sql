@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS tenants (
   email VARCHAR(255),
   type VARCHAR(20) CHECK (type IN ('juridico', 'fisico')),
   plan VARCHAR(20) DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'enterprise')),
+  industry_type VARCHAR(20) DEFAULT 'retail' CHECK (industry_type IN ('retail', 'automotive', 'service')),
   status VARCHAR(20) DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -71,6 +72,7 @@ CREATE TABLE IF NOT EXISTS invoices (
   track_id_dgii VARCHAR(50),
   type_code VARCHAR(2) DEFAULT '31', -- 31=Invoice, 33=Credit Note, 34=Debit Note
   reference_ncf VARCHAR(19), -- For notes, referencing the original e-NCF
+  notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(tenant_id, sequential_number)
 );
@@ -200,3 +202,17 @@ BEFORE INSERT ON invoices
 FOR EACH ROW
 EXECUTE FUNCTION set_invoice_sequential_number();
 
+
+-- Vehicle Loans (Inter-Dealer)
+CREATE TABLE IF NOT EXISTS vehicle_loans (
+  id SERIAL PRIMARY KEY,
+  tenant_id INTEGER REFERENCES tenants(id) NOT NULL,
+  vehicle_id INTEGER REFERENCES vehicles(id) NOT NULL,
+  dealer_name VARCHAR(255) NOT NULL,
+  dealer_phone VARCHAR(50),
+  loan_date DATE NOT NULL,
+  expected_return_date DATE,
+  status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'returned')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

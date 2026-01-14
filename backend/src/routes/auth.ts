@@ -22,7 +22,7 @@ router.get("/me", async (req, res) => {
 
     const user = userRes.rows[0];
     const tenantRes = await query(
-      "SELECT name, plan, subscription_end_date FROM tenants WHERE id = $1",
+      "SELECT name, plan, subscription_end_date, industry_type FROM tenants WHERE id = $1",
       [user.tenant_id]
     );
 
@@ -48,6 +48,7 @@ router.get("/me", async (req, res) => {
       plan,
       subscription_status: status,
       subscription_end_date: endDate,
+      industry_type: tenant.industry_type || "retail",
       email: req.user.email,
     });
   } catch (err) {

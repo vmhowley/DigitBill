@@ -133,9 +133,8 @@ router.get("/:id/pdf", async (req, res) => {
 
       if (totalMB >= limits.maxStorageMB) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de almacenamiento de ${
-            limits.maxStorageMB
-          }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
+          error: `Has alcanzado el límite de almacenamiento de ${limits.maxStorageMB
+            }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
         });
       }
     }
@@ -174,9 +173,8 @@ router.get("/:id/pdf", async (req, res) => {
     const config = await getCompanyConfig(req.tenantId);
 
     // 4. Generate PDF
-    const filename = `factura-${
-      invoice.e_ncf || invoice.sequential_number
-    }.pdf`;
+    const filename = `factura-${invoice.e_ncf || invoice.sequential_number
+      }.pdf`;
 
     res.setHeader("Content-disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-type", "application/pdf");
@@ -244,9 +242,8 @@ router.post("/", async (req, res) => {
 
       if (currentCount >= limits.maxInvoicesPerMonth) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de ${
-            limits.maxInvoicesPerMonth
-          } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
+          error: `Has alcanzado el límite de ${limits.maxInvoicesPerMonth
+            } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
         });
       }
     }
@@ -405,40 +402,75 @@ router.post("/:id/sign", async (req, res) => {
 router.get("/:id/xml", async (req, res) => {
   try {
     const { id } = req.params;
+
+    // 1. First check if we have a stored path
     const result = await query(
-      "SELECT xml_path, tenant_id FROM invoices WHERE id = $1 AND tenant_id = $2",
+      "SELECT i.*, c.name as client_name, c.rnc_ci as client_rnc, c.address as client_address FROM invoices i JOIN clients c ON i.client_id = c.id WHERE i.id = $1 AND i.tenant_id = $2",
       [id, req.tenantId]
     );
 
     if (result.rows.length === 0)
       return res.status(404).json({ error: "Invoice not found" });
 
-    const { getCompanyConfig } = require("../services/configService");
-    const config = await getCompanyConfig(result.rows[0].tenant_id);
-    if (!config.electronic_invoicing) {
-      return res
-        .status(400)
-        .json({ error: "XML is only available for electronic invoices" });
-    }
+    const invoice = result.rows[0];
+    const xmlContent = invoice.xml_path;
 
-    const xmlContent = result.rows[0].xml_path;
-
-    if (!xmlContent || xmlContent === "stored_in_db") {
-      return res.status(404).json({
-        error:
-          "XML content not available for this invoice. Please sign the invoice again or create a new one.",
-      });
-    }
-
-    if (!xmlContent.trim().startsWith("<")) {
-      // If it doesn't look like XML, send as text to avoid browser parsing errors
-      res.header("Content-Type", "text/plain");
+    // If we have stored XML and it looks valid, return it
+    if (xmlContent && xmlContent.trim().startsWith("<")) {
+      res.header("Content-Type", "application/xml");
       return res.send(xmlContent);
     }
 
+    // 2. If no stored XML, GENERATE on the fly (Hybrid/Export Strategy)
+    // Fetch items
+    const itemsRes = await query(
+      "SELECT * FROM invoice_items WHERE invoice_id = $1",
+      [id]
+    );
+    const items = itemsRes.rows;
+
+    // Fetch Company Config
+    const { getCompanyConfig } = require("../services/configService");
+    const config = await getCompanyConfig(req.tenantId);
+
+    // Build Data for XML
+    const { buildECFXML } = require("../services/xmlService");
+
+    // Construct the payload expected by xmlService
+    const invoiceData = {
+      emisor: {
+        rnc: config.company_rnc,
+        nombre: config.company_name
+      },
+      receptor: {
+        rnc: invoice.client_rnc || "000000000",
+        nombre: invoice.client_name
+      },
+      fecha: new Date(invoice.created_at).toISOString().split('T')[0], // YYYY-MM-DD
+      tipo: invoice.type_code, // e.g. 31, 32
+      encf: invoice.e_ncf || `E${invoice.type_code}00000000`, // Fallback if no e-NCF assigned yet
+      items: items.map((it: any) => ({
+        descripcion: it.description,
+        cantidad: it.quantity,
+        precio: it.unit_price,
+        monto: it.line_amount,
+        impuesto: it.line_tax,
+        itbis_rate: it.tax_rate
+      })),
+      subtotal: invoice.net_total,
+      impuestototal: invoice.tax_total,
+      total: invoice.total,
+      fecha_vencimiento: new Date(invoice.created_at).toISOString().split('T')[0] // Default same day
+    };
+
+    const generatedXml = buildECFXML(invoiceData);
+
     res.header("Content-Type", "application/xml");
-    res.send(xmlContent);
+    res.header("Content-disposition", `attachment; filename="invoice-${id}-unsigned.xml"`);
+    res.send(generatedXml);
+
   } catch (err) {
+    console.error("Error fetching/generating XML", err);
     res.status(500).json({ error: "Error fetching XML" });
   }
 });

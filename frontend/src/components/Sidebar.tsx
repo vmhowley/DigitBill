@@ -1,4 +1,4 @@
-import { BarChart3, CreditCard, FilePlus, FileText, LayoutDashboard, LogOut, Package, Receipt, Settings, Truck, Users, Warehouse, X } from 'lucide-react';
+import { BarChart3, Car, CreditCard, FilePlus, FileText, LayoutDashboard, LogOut, Package, Receipt, Settings, ShoppingBag, Truck, Users, Warehouse, Wrench, X } from 'lucide-react';
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo_digitbill.png';
@@ -42,142 +42,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </Link>
 
                 <nav className="flex-1 px-4 space-y-2  overflow-y-auto">
-                    <Link
-                        to="/dashboard"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/dashboard')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <LayoutDashboard size={20} className={isActive('/dashboard') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Dashboard</span>
-                    </Link>
-
-                    <Link
-                        to="/invoices"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/invoices')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <FileText size={20} className={isActive('/invoices') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Facturas</span>
-                    </Link>
-
-                    <Link
-                        to="/create"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/create')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <FilePlus size={20} className={isActive('/create') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Nueva Factura</span>
-                    </Link>
-
-                    <Link
-                        to="/clients"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/clients')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <Users size={20} className={isActive('/clients') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Clientes</span>
-                    </Link>
-
-                    <Link
-                        to="/providers"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/providers')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <Truck size={20} className={isActive('/providers') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Proveedores</span>
-                    </Link>
-
-                    <Link
-                        to="/inventory"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/inventory')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <Warehouse size={20} className={isActive('/inventory') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Inventario</span>
-                    </Link>
-
-                    <Link
-                        to="/expenses"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/expenses')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <Receipt size={20} className={isActive('/expenses') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Gastos</span>
-                    </Link>
-
-                    <Link
-                        to="/products"
-                        onClick={() => onClose()}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/products')
-                            ? 'bg-blue-50 text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            }`}
-                    >
-                        <Package size={20} className={isActive('/products') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                        <span className="font-medium">Productos</span>
-                    </Link>
-
-                    {(role === 'admin' || role === 'accountant') && (
-                        <Link
-                            to="/reports"
-                            onClick={() => onClose()}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/reports')
-                                ? 'bg-blue-50 text-blue-600 shadow-sm'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
-                        >
-                            <BarChart3 size={20} className={isActive('/reports') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                            <span className="font-medium">Reportes</span>
-                        </Link>
-                    )}
-
-                    {role === 'admin' && (
-                        <div className="pt-4 mt-4 border-t border-gray-100 space-y-1">
-                            <Link
-                                to="/upgrade"
-                                onClick={() => onClose()}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/upgrade')
-                                    ? 'bg-blue-50 text-blue-600 shadow-sm'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
-                            >
-                                <CreditCard size={20} className={isActive('/upgrade') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                                <span className="font-medium">Cambiar Plan</span>
-                            </Link>
-                            <Link
-                                to="/settings"
-                                onClick={() => onClose()}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive('/settings')
-                                    ? 'bg-blue-50 text-blue-600 shadow-sm'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                    }`}
-                            >
-                                <Settings size={20} className={isActive('/settings') ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
-                                <span className="font-medium">Configuración</span>
-                            </Link>
-                        </div>
-                    )}
+                    {/* Dynamic Menu Items */}
+                    <NavLinks role={role} industryType={profile?.industry_type || 'retail'} onClose={onClose} isActive={isActive} />
                 </nav>
 
                 <div className="p-4 border-t border-gray-100">
@@ -189,7 +55,115 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                         <span className="font-medium">Cerrar Sesión</span>
                     </button>
                 </div>
-            </aside>
+            </aside >
+        </>
+    );
+};
+
+const NavLinks = ({ role, industryType, onClose, isActive }: any) => {
+    // 1. Common functionality
+    const commonLinks = [
+        { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/invoices', label: 'Facturas', icon: FileText },
+        { path: '/create', label: 'Nueva Factura', icon: FilePlus },
+        { path: '/clients', label: 'Clientes', icon: Users },
+        { path: '/providers', label: 'Proveedores', icon: Truck },
+        { path: '/expenses', label: 'Gastos', icon: Receipt },
+    ];
+
+    // 2. Industry Specific
+    let inventoryLinks = [
+        { path: '/inventory', label: 'Inventario', icon: Warehouse },
+        { path: '/products', label: 'Productos', icon: Package }
+    ];
+
+    if (industryType === 'automotive') {
+        inventoryLinks = [
+            { path: '/automotive/sales/new', label: 'Nueva Venta', icon: ShoppingBag },
+            { path: '/automotive/vehicles', label: 'Vehículos', icon: Car },
+            { path: '/automotive', label: 'Taller', icon: Wrench },
+        ];
+    } else if (industryType === 'service') {
+        inventoryLinks = [
+            { path: '/products', label: 'Servicios', icon: Package }
+        ];
+    }
+
+    // 3. Admin stuff
+    const reportsLink = { path: '/reports', label: 'Reportes', icon: BarChart3 };
+    const adminLinks = [
+        { path: '/upgrade', label: 'Cambiar Plan', icon: CreditCard },
+        { path: '/settings', label: 'Configuración', icon: Settings }
+    ];
+
+    return (
+        <>
+            {commonLinks.map(link => (
+                <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={onClose}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive(link.path)
+                        ? 'bg-blue-50 text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
+                >
+                    <link.icon size={20} className={isActive(link.path) ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
+                    <span className="font-medium">{link.label}</span>
+                </Link>
+            ))}
+
+            <div className="py-2">
+                <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Módulos</p>
+                {inventoryLinks.map(link => (
+                    <Link
+                        key={link.label}
+                        to={link.path}
+                        onClick={onClose}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive(link.path)
+                            ? 'bg-blue-50 text-blue-600 shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                    >
+                        <link.icon size={20} className={isActive(link.path) ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
+                        <span className="font-medium">{link.label}</span>
+                    </Link>
+                ))}
+            </div>
+
+
+            {(role === 'admin' || role === 'accountant') && (
+                <Link
+                    to={reportsLink.path}
+                    onClick={onClose}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive(reportsLink.path)
+                        ? 'bg-blue-50 text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
+                >
+                    <reportsLink.icon size={20} className={isActive(reportsLink.path) ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
+                    <span className="font-medium">{reportsLink.label}</span>
+                </Link>
+            )}
+
+            {role === 'admin' && (
+                <div className="pt-4 mt-4 border-t border-gray-100 space-y-1">
+                    {adminLinks.map(link => (
+                        <Link
+                            key={link.path}
+                            to={link.path}
+                            onClick={onClose}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive(link.path)
+                                ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                }`}
+                        >
+                            <link.icon size={20} className={isActive(link.path) ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'} />
+                            <span className="font-medium">{link.label}</span>
+                        </Link>
+                    ))}
+                </div>
+            )}
         </>
     );
 };

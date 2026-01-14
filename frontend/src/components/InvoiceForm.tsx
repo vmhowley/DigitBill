@@ -21,6 +21,69 @@ interface InvoiceFormData {
     reference_ncf?: string;
 }
 
+// Internal Component for Product Search
+const SearchableProductSelect = ({ products, onSelect }: { products: any[], onSelect: (p: any) => void }) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [search, setSearch] = React.useState('');
+    const wrapperRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const filteredProducts = products.filter(p =>
+        p.description.toLowerCase().includes(search.toLowerCase()) ||
+        (p.sku && p.sku.toLowerCase().includes(search.toLowerCase()))
+    );
+
+    return (
+        <div className="relative" ref={wrapperRef}>
+            <input
+                type="text"
+                placeholder="🔍 Buscar producto..."
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm"
+                onFocus={() => setIsOpen(true)}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                    setIsOpen(true);
+                }}
+                value={search} // Controlled input
+            />
+            {isOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {filteredProducts.length === 0 ? (
+                        <div className="p-3 text-sm text-gray-500 text-center">No encontrado</div>
+                    ) : (
+                        filteredProducts.map(p => (
+                            <div
+                                key={p.id}
+                                className="p-2 hover:bg-blue-50 cursor-pointer text-sm border-b border-gray-50 last:border-none"
+                                onClick={() => {
+                                    onSelect(p);
+                                    setSearch(p.description); // Update input with selection
+                                    setIsOpen(false);
+                                }}
+                            >
+                                <div className="font-medium text-gray-800">{p.description}</div>
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>{p.sku || 'Sin SKU'}</span>
+                                    <span className="font-bold text-blue-600">RD$ {p.unit_price}</span>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 export const InvoiceForm: React.FC = () => {
     const navigate = useNavigate();
     const [clients, setClients] = React.useState<Array<{ id: number, name: string }>>([]);
@@ -193,28 +256,15 @@ export const InvoiceForm: React.FC = () => {
                                 <div className="col-span-12 md:col-span-4">
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Producto / Servicio</label>
                                     <div className="space-y-2">
-                                        <select
-                                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm"
-                                            onChange={(e) => {
-                                                const prodId = parseInt(e.target.value);
-                                                if (prodId) {
-                                                    const product = products.find(p => p.id === prodId);
-                                                    if (product) {
-                                                        setValue(`items.${index}.product_id`, product.id);
-                                                        setValue(`items.${index}.description`, product.description);
-                                                        setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
-                                                        setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
-                                                    }
-                                                } else {
-                                                    setValue(`items.${index}.product_id`, 0);
-                                                }
+                                        <SearchableProductSelect
+                                            products={products}
+                                            onSelect={(product) => {
+                                                setValue(`items.${index}.product_id`, product.id);
+                                                setValue(`items.${index}.description`, product.description);
+                                                setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
+                                                setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
                                             }}
-                                        >
-                                            <option value="">Seleccionar del catálogo (Opcional)...</option>
-                                            {products.map(p => (
-                                                <option key={p.id} value={p.id}>{p.sku ? `[${p.sku}] ` : ''}{p.description} - RD${p.unit_price}</option>
-                                            ))}
-                                        </select>
+                                        />
                                         <input
                                             {...register(`items.${index}.description`)}
                                             className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"

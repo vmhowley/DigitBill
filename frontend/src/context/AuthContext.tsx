@@ -12,6 +12,7 @@ interface UserProfile {
     plan?: string;
     subscription_status?: string;
     subscription_end_date?: string;
+    industry_type?: string;
 }
 
 interface AuthContextType {

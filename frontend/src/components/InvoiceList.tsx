@@ -277,6 +277,7 @@ export const InvoiceList: React.FC = () => {
                                             <button
                                                 onClick={() => downloadXml(inv.id)}
                                                 className="text-sm font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                                                title="Descargar XML para Firma Externa"
                                             >
                                                 XML
                                             </button>
@@ -415,22 +416,23 @@ export const InvoiceList: React.FC = () => {
                                                 >
                                                     Ver
                                                 </Link>
-                                                {inv.status === 'signed' && (
-                                                    <>
-                                                        <button
-                                                            onClick={() => downloadXml(inv.id)}
-                                                            className="text-sm font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                                                        >
-                                                            XML
-                                                        </button>
+                                                <>
+                                                    <button
+                                                        onClick={() => downloadXml(inv.id)}
+                                                        className="text-sm font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                                                        title="Descargar XML"
+                                                    >
+                                                        XML
+                                                    </button>
+                                                    {inv.status === 'signed' && (
                                                         <button
                                                             onClick={() => sendToDGII(inv.id)}
                                                             className="flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-3 py-1.5 rounded-lg transition-colors"
                                                         >
                                                             <Send size={14} /> Enviar
                                                         </button>
-                                                    </>
-                                                )}
+                                                    )}
+                                                </>
                                                 {parseFloat(inv.total) - parseFloat(inv.total_paid as string) > 0 && (
                                                     <>
                                                         <button

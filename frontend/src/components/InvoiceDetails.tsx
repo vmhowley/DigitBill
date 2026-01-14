@@ -1,4 +1,4 @@
-import { ArrowLeft, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -76,6 +76,22 @@ export const InvoiceDetails: React.FC = () => {
         } catch (err) {
             console.error(err);
             toast.error('Error al descargar el PDF');
+        }
+    };
+
+    const handleDownloadDeliveryNote = async () => {
+        try {
+            const res = await axios.get(`/api/delivery/${id}/pdf`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `conduce-${invoice!.sequential_number}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            console.error(err);
+            toast.error('Error al generar el Conduce');
         }
     };
 
@@ -167,6 +183,17 @@ export const InvoiceDetails: React.FC = () => {
                     >
                         <Download size={18} /> <span className="hidden sm:inline">PDF</span>
                     </button>
+
+                    {company?.industry_type === 'automotive' && (
+                        <button
+                            onClick={handleDownloadDeliveryNote}
+                            disabled={invoice.status === 'draft'}
+                            className="flex items-center gap-2 bg-orange-100 text-orange-800 px-4 py-2 rounded-lg hover:bg-orange-200 border border-orange-200 disabled:opacity-50"
+                            title="Imprimir Conduce de Salida"
+                        >
+                            <Truck size={18} /> <span className="hidden sm:inline">Conduce</span>
+                        </button>
+                    )}
 
                     <button
                         onClick={() => window.print()}

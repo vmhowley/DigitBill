@@ -7,7 +7,11 @@ import { initDb } from "./db";
 import adminRoutes from "./routes/admin";
 import authRoutes from "./routes/auth";
 import authPublicRoutes from "./routes/auth_public";
+import automotiveRoutes from "./routes/automotive";
+import automotiveSalesRoutes from "./routes/automotive_sales";
+import automotiveWorkshopRoutes from "./routes/automotive_workshop";
 import clientRoutes from "./routes/clients";
+import deliveryRoutes from "./routes/delivery";
 import dgiiRoutes from "./routes/dgii";
 import expenseRoutes from "./routes/expenses";
 import inventoryRoutes from "./routes/inventory";
@@ -56,11 +60,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/delivery", deliveryRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/dgii", dgiiRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/automotive", automotiveRoutes);
+app.use("/api/automotive", automotiveSalesRoutes);
+app.use("/api/automotive/workshop", automotiveWorkshopRoutes); // Mounts sales routes like /sales, /calculate-payment
 
 app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");

@@ -26,6 +26,12 @@ import { ProductForm } from './components/ProductForm';
 import { ProductList } from './components/ProductList';
 import { ProviderForm } from './components/ProviderForm';
 import { ProviderList } from './components/ProviderList';
+import { SaleForm } from './pages/automotive/SaleForm';
+import { VehicleDetail } from './pages/automotive/VehicleDetail';
+import { VehicleForm } from './pages/automotive/VehicleForm';
+import { VehicleList } from './pages/automotive/VehicleList';
+import { WorkOrderDetail } from './pages/automotive/WorkOrderDetail';
+import { WorkshopList } from './pages/automotive/WorkshopList';
 import { ClientStatement } from './pages/ClientStatement';
 import { InventoryPage } from './pages/Inventory';
 import { PaymentCancel, PaymentSuccess } from './pages/PaymentStatus';
@@ -107,6 +113,16 @@ function AppRoutes() {
       <Route path="/providers/new" element={<ProtectedRoute roles={['admin', 'accountant']}><ProviderForm /></ProtectedRoute>} />
       <Route path="/providers/edit/:id" element={<ProtectedRoute roles={['admin', 'accountant']}><ProviderForm /></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute roles={['admin', 'accountant']}><InventoryPage /></ProtectedRoute>} />
+
+      <Route path="/automotive/vehicles" element={<ProtectedRoute roles={['admin', 'accountant']}><VehicleList /></ProtectedRoute>} />
+      <Route path="/automotive/vehicles/new" element={<ProtectedRoute roles={['admin', 'accountant']}><VehicleForm /></ProtectedRoute>} />
+      <Route path="/automotive/vehicles/:id" element={<ProtectedRoute roles={['admin', 'accountant']}><VehicleDetail /></ProtectedRoute>} />
+      <Route path="/automotive/vehicles/edit/:id" element={<ProtectedRoute roles={['admin', 'accountant']}><VehicleForm /></ProtectedRoute>} />
+      <Route path="/automotive/sales/new" element={<ProtectedRoute roles={['admin', 'accountant']}><SaleForm /></ProtectedRoute>} />
+
+      {/* Workshop Module */}
+      <Route path="/automotive" element={<ProtectedRoute roles={['admin', 'accountant']}><WorkshopList /></ProtectedRoute>} />
+      <Route path="/automotive/workshop/:id" element={<ProtectedRoute roles={['admin', 'accountant']}><WorkOrderDetail /></ProtectedRoute>} />
 
       {/* Admin Only */}
       <Route path="/settings" element={<ProtectedRoute roles={['admin']}><Settings /></ProtectedRoute>} />
