@@ -1,8 +1,8 @@
-import { ArrowLeft, Save, Search, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Search } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
 
 interface ClientFormData {
@@ -92,49 +92,49 @@ export const ClientForm: React.FC = () => {
     return (
         <div className="max-w-2xl mx-auto">
             <div className="mb-8">
-                <Link to="/clients" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors">
+                <Link to="/clients" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 mb-4 transition-colors">
                     <ArrowLeft size={16} className="mr-1" /> Volver a la lista
                 </Link>
-                <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-white tracking-tight">
                     {isEditMode ? 'Editar Cliente' : 'Nuevo Cliente'}
                 </h2>
-                <p className="text-gray-500 mt-1">
+                <p className="text-gray-500 dark:text-slate-400 mt-1">
                     {isEditMode ? 'Actualiza la información del cliente' : 'Registra un nuevo cliente en el sistema'}
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-card-dark p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border-dark space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Nombre o Razón Social</label>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Nombre o Razón Social</label>
                         <input
                             {...register('name', { required: 'El nombre es obligatorio' })}
-                            className={`w-full px-4 py-2.5 bg-gray-50 border rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none ${errors.name ? 'border-red-300' : 'border-gray-200'}`}
+                            className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-background-dark border rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none dark:text-white ${errors.name ? 'border-red-300 dark:border-red-500/50' : 'border-slate-200 dark:border-border-dark'}`}
                             placeholder="Ej: Empresa SRL"
                         />
                         {errors.name && <span className="text-xs text-red-500 mt-1">{errors.name.message}</span>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">RNC / Cédula</label>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">RNC / Cédula</label>
                         <div className="relative">
                             <input
                                 {...register('rnc_ci', { required: 'El RNC/Cédula es obligatorio' })}
-                                className={`w-full px-4 py-2.5 bg-gray-50 border rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none ${errors.rnc_ci ? 'border-red-300' : 'border-gray-200'}`}
+                                className={`w-full px-4 py-2.5 bg-slate-50 dark:bg-background-dark border rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none dark:text-white ${errors.rnc_ci ? 'border-red-300 dark:border-red-500/50' : 'border-slate-200 dark:border-border-dark'}`}
                                 placeholder="Ej: 101010101"
                             />
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                {isFetchingRNC ? <Loader2 size={18} className="animate-spin text-blue-500" /> : <Search size={18} />}
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                {isFetchingRNC ? <Loader2 size={18} className="animate-spin text-primary" /> : <Search size={18} />}
                             </div>
                         </div>
                         {errors.rnc_ci && <span className="text-xs text-red-500 mt-1">{errors.rnc_ci.message}</span>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Persona</label>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tipo de Persona</label>
                         <select
                             {...register('type')}
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none"
+                            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none dark:text-white"
                         >
                             <option value="juridico">Jurídico</option>
                             <option value="fisico">Físico</option>
@@ -142,39 +142,39 @@ export const ClientForm: React.FC = () => {
                     </div>
 
                     <div className="col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Dirección</label>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Dirección</label>
                         <textarea
                             {...register('address')}
                             rows={3}
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none resize-none"
+                            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none resize-none dark:text-white"
                             placeholder="Dirección completa"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
                         <input
                             type="email"
                             {...register('email')}
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none"
+                            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none dark:text-white"
                             placeholder="correo@ejemplo.com"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Teléfono</label>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Teléfono</label>
                         <input
                             {...register('phone')}
-                            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none"
+                            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none dark:text-white"
                             placeholder="(809) 000-0000"
                         />
                     </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-100 flex justify-end">
+                <div className="pt-4 border-t border-slate-100 dark:border-border-dark flex justify-end">
                     <button
                         type="submit"
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <Save size={20} />
                         {isEditMode ? 'Actualizar Cliente' : 'Guardar Cliente'}

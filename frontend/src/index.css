@@ -1,8 +1,27 @@
 @import "tailwindcss";
 
+:root {
+  --color-primary: #135bec;
+  --color-background-light: #f6f6f8;
+  --color-background-dark: #101622;
+  --color-card-dark: #1a2234;
+  --color-border-dark: #324467;
+}
+
+@theme {
+  --font-display: 'Manrope', sans-serif;
+  --font-sans: 'Manrope', sans-serif;
+
+  --color-primary: var(--color-primary);
+  --color-background-light: var(--color-background-light);
+  --color-background-dark: var(--color-background-dark);
+  --color-card-dark: var(--color-card-dark);
+  --color-border-dark: var(--color-border-dark);
+}
+
 body {
-    font-family: 'Inter', sans-serif;
-    @apply bg-gray-50;
+  font-family: "Manrope", sans-serif;
+  @apply bg-background-light text-slate-900;
 }
 
 /* NProgress Customization */

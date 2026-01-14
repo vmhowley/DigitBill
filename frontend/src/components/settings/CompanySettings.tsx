@@ -68,27 +68,27 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
         <form onSubmit={handleSubmit(onSave)} className="max-w-3xl space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Razón Social</label>
-                    <input {...register('name')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Razón Social</label>
+                    <input {...register('name')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white dark:bg-background-dark dark:border-border-dark dark:text-white dark:focus:bg-card-dark" />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">RNC / Cédula</label>
-                    <input {...register('rnc')} disabled className="w-full px-4 py-2 border rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed" title="Contacta soporte para cambiar esto" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">RNC / Cédula</label>
+                    <input {...register('rnc')} disabled className="w-full px-4 py-2 border rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed dark:bg-background-dark/50 dark:border-border-dark dark:text-slate-500" title="Contacta soporte para cambiar esto" />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                    <input {...register('phone')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Teléfono</label>
+                    <input {...register('phone')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white dark:bg-background-dark dark:border-border-dark dark:text-white dark:focus:bg-card-dark" />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Corporativo</label>
-                    <input {...register('email')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Email Corporativo</label>
+                    <input {...register('email')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white dark:bg-background-dark dark:border-border-dark dark:text-white dark:focus:bg-card-dark" />
                 </div>
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Dirección Física</label>
-                    <input {...register('address')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Dirección Física</label>
+                    <input {...register('address')} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white dark:bg-background-dark dark:border-border-dark dark:text-white dark:focus:bg-card-dark" />
                 </div>
 
-                <div className={`md:col-span-2 p-6 rounded-2xl border space-y-4 ${canEnableECF ? 'bg-blue-50/50 border-blue-100' : 'bg-gray-50 border-gray-200'}`}>
+                <div className={`md:col-span-2 p-6 rounded-2xl border space-y-4 ${canEnableECF ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-800/30' : 'bg-slate-50 border-slate-200 dark:bg-background-dark/30 dark:border-border-dark'}`}>
                     <label className={`flex items-center gap-3 cursor-pointer group ${!canEnableECF ? 'pointer-events-none' : ''}`}>
                         <div className="relative">
                             <input
@@ -97,35 +97,35 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                                 className="sr-only peer"
                                 disabled={!canEnableECF}
                             />
-                            <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${!canEnableECF ? 'bg-gray-300' : 'bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 peer-checked:bg-blue-600'}`}></div>
+                            <div className={`w-11 h-6 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${!canEnableECF ? 'bg-gray-300 dark:bg-slate-600' : 'bg-gray-200 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:bg-primary'}`}></div>
                         </div>
                         <div>
-                            <span className={`text-sm font-bold transition-colors ${!canEnableECF ? 'text-gray-400' : 'text-gray-900 group-hover:text-blue-600'}`}>Facturación Electrónica Activa</span>
+                            <span className={`text-sm font-bold transition-colors ${!canEnableECF ? 'text-gray-400 dark:text-slate-500' : 'text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-blue-400'}`}>Facturación Electrónica Activa</span>
                             {!canEnableECF ? (
-                                <div className="flex items-center gap-1 text-xs text-orange-600 font-medium mt-0.5">
+                                <div className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400 font-bold mt-0.5">
                                     <Lock size={12} /> Desbloquea con Plan Pyme
                                 </div>
                             ) : (
-                                <p className="text-xs text-gray-500">Habilita la firma digital y el envío automático a la DGII.</p>
+                                <p className="text-xs text-gray-500 dark:text-slate-400">Habilita la firma digital y el envío automático a la DGII.</p>
                             )}
                         </div>
                     </label>
 
                     {canEnableECF && (
                         <>
-                            <div className="pt-4 border-t border-blue-100">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña del Certificado (.p12)</label>
+                            <div className="pt-4 border-t border-blue-100 dark:border-blue-800/30">
+                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Contraseña del Certificado (.p12)</label>
                                 <input
                                     type="password"
                                     {...register('certificate_password')}
-                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white dark:bg-background-dark dark:border-border-dark dark:text-white dark:focus:bg-card-dark"
                                     placeholder="••••••••"
                                 />
-                                <p className="text-[10px] text-gray-400 mt-1 italic">La contraseña se encripta para mayor seguridad.</p>
+                                <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1 italic">La contraseña se encripta para mayor seguridad.</p>
                             </div>
 
-                            <div className="pt-4 border-t border-blue-100">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Archivo del Certificado (.p12 / .pfx)</label>
+                            <div className="pt-4 border-t border-blue-100 dark:border-blue-800/30">
+                                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Archivo del Certificado (.p12 / .pfx)</label>
                                 <div className="flex items-center gap-3">
                                     <div className="flex-1 relative">
                                         <input
@@ -137,25 +137,25 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                                         />
                                         <label
                                             htmlFor="cert-upload"
-                                            className="flex items-center justify-between w-full px-4 py-2 border border-dashed rounded-lg cursor-pointer hover:bg-white transition-colors bg-white/50"
+                                            className="flex items-center justify-between w-full px-4 py-2 border border-dashed rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors bg-white/50 dark:bg-background-dark/50 dark:border-border-dark"
                                         >
-                                            <span className="text-sm text-gray-500 truncate mr-2">
+                                            <span className="text-sm text-slate-500 dark:text-slate-400 truncate mr-2">
                                                 {certFile ? certFile.name : (defaultValues?.certificate_path?.split(/[\\/]/).pop() || 'Seleccionar archivo...')}
                                             </span>
-                                            <FileUp size={18} className="text-blue-500 flex-shrink-0" />
+                                            <FileUp size={18} className="text-primary dark:text-blue-400 shrink-0" />
                                         </label>
                                     </div>
                                     <button
                                         type="button"
                                         onClick={handleFileUpload}
                                         disabled={!certFile || uploading}
-                                        className="bg-blue-600 border border-blue-600 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all hover:bg-blue-700 active:scale-95 flex items-center gap-2 whitespace-nowrap"
+                                        className="bg-primary hover:bg-blue-700 border border-transparent disabled:bg-slate-100 dark:disabled:bg-slate-800 disabled:border-slate-200 dark:disabled:border-slate-700 disabled:text-slate-400 dark:disabled:text-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap"
                                     >
                                         {uploading ? 'Subiendo...' : 'Subir'}
                                     </button>
                                 </div>
                                 {defaultValues?.certificate_path && !certFile && (
-                                    <div className="flex items-center gap-1 mt-1 text-[10px] text-green-600">
+                                    <div className="flex items-center gap-1 mt-1 text-[10px] text-emerald-600 dark:text-emerald-400">
                                         <CheckCircle size={10} /> Certificado configurado
                                     </div>
                                 )}
@@ -164,28 +164,28 @@ export const CompanySettings: React.FC<CompanySettingsProps> = ({ defaultValues,
                     )}
                 </div>
             </div>
-            <div className="flex justify-end pt-4 border-t">
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-colors">
+            <div className="flex justify-end pt-4 border-t border-slate-200 dark:border-border-dark">
+                <button type="submit" className="bg-primary hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg flex items-center gap-2 font-bold transition-colors">
                     <Save size={18} /> Guardar Cambios
                 </button>
             </div>
 
-            <div className="mt-12 pt-8 border-t border-red-200">
+            <div className="mt-12 pt-8 border-t border-rose-200 dark:border-rose-900/30">
                 <div className="flex items-center gap-2 mb-4">
-                    <AlertTriangle className="text-red-500" size={24} />
-                    <h3 className="text-lg font-bold text-red-700">Zona de Peligro</h3>
+                    <AlertTriangle className="text-rose-500" size={24} />
+                    <h3 className="text-lg font-bold text-rose-700 dark:text-rose-400">Zona de Peligro</h3>
                 </div>
 
-                <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-                    <h4 className="font-bold text-red-800 mb-2">Reiniciar Base de Datos</h4>
-                    <p className="text-sm text-red-700 mb-6">
+                <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 rounded-xl p-6">
+                    <h4 className="font-bold text-rose-800 dark:text-rose-300 mb-2">Reiniciar Base de Datos</h4>
+                    <p className="text-sm text-rose-700 dark:text-rose-400 mb-6">
                         Esta acción eliminará todos los datos transaccionales (facturas, pagos, clientes, productos) de tu cuenta.
                         Úsalo solo si deseas empezar desde cero. <span className="font-bold">Esta acción no se puede deshacer.</span>
                     </p>
                     <button
                         type="button"
                         onClick={handleReset}
-                        className="bg-white border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-6 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2 shadow-sm"
+                        className="bg-white dark:bg-transparent border-2 border-rose-600 text-rose-600 dark:text-rose-400 dark:border-rose-500 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white px-6 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2 shadow-sm"
                     >
                         <Trash2 size={18} /> Borrar todos mis datos
                     </button>

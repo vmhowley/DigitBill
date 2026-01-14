@@ -1,4 +1,4 @@
-import { Plus, Save, Trash2 } from 'lucide-react';
+import { Plus, Save, Send, Trash2 } from 'lucide-react';
 import React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
@@ -47,7 +47,7 @@ const SearchableProductSelect = ({ products, onSelect }: { products: any[], onSe
             <input
                 type="text"
                 placeholder="🔍 Buscar producto..."
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm"
+                className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm dark:text-white dark:placeholder:text-slate-500"
                 onFocus={() => setIsOpen(true)}
                 onChange={(e) => {
                     setSearch(e.target.value);
@@ -56,24 +56,24 @@ const SearchableProductSelect = ({ products, onSelect }: { products: any[], onSe
                 value={search} // Controlled input
             />
             {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {filteredProducts.length === 0 ? (
-                        <div className="p-3 text-sm text-gray-500 text-center">No encontrado</div>
+                        <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">No encontrado</div>
                     ) : (
                         filteredProducts.map(p => (
                             <div
                                 key={p.id}
-                                className="p-2 hover:bg-blue-50 cursor-pointer text-sm border-b border-gray-50 last:border-none"
+                                className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm border-b border-slate-50 dark:border-border-dark last:border-none"
                                 onClick={() => {
                                     onSelect(p);
                                     setSearch(p.description); // Update input with selection
                                     setIsOpen(false);
                                 }}
                             >
-                                <div className="font-medium text-gray-800">{p.description}</div>
-                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                <div className="font-medium text-slate-800 dark:text-slate-200">{p.description}</div>
+                                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
                                     <span>{p.sku || 'Sin SKU'}</span>
-                                    <span className="font-bold text-blue-600">RD$ {p.unit_price}</span>
+                                    <span className="font-bold text-primary dark:text-blue-400">RD$ {p.unit_price}</span>
                                 </div>
                             </div>
                         ))
@@ -170,185 +170,216 @@ export const InvoiceForm: React.FC = () => {
     return (
         <div className="max-w-5xl mx-auto">
             <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Nueva Factura</h2>
-                <p className="text-gray-500 mt-1">Crea un nuevo comprobante fiscal</p>
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-white tracking-tight">Nueva Factura</h2>
+                <p className="text-gray-500 dark:text-slate-400 mt-1">Crea un nuevo comprobante fiscal</p>
             </div>
 
-            <form onSubmit={handleSubmit((data) => onSubmit(data, false))} className="space-y-6">
-                {/* Client & Type Section */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
-                        Datos Generales
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Cliente</label>
-                            <div className="flex gap-2">
-                                <select
-                                    {...register('client_id', { valueAsNumber: true, required: 'Seleccione un cliente' })}
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none"
-                                >
-                                    <option value="">Seleccionar Cliente...</option>
-                                    {clients.map(client => (
-                                        <option key={client.id} value={client.id}>{client.name}</option>
-                                    ))}
-                                </select>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsClientModalOpen(true)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center"
-                                    title="Crear Nuevo Cliente"
-                                >
-                                    <Plus size={20} />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Tipo de Comprobante</label>
-                            <select
-                                {...register('type_code')}
-                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none"
-                            >
-                                <option value="31">Factura Crédito Fiscal (31)</option>
-                                <option value="32">Factura de Consumo (32)</option>
-                                <option value="33">Nota de Crédito (33)</option>
-                                <option value="34">Nota de Débito (34)</option>
-                                <option value="43">Gastos Menores (43)</option>
-                                <option value="44">Regímenes Especiales (44)</option>
-                                <option value="45">Gubernamental (45)</option>
-                            </select>
-                        </div>
-
-                        {(watch('type_code') === '33' || watch('type_code') === '34') && (
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">NCF Afectado (Referencia)</label>
-                                <input
-                                    {...register('reference_ncf', { required: 'El NCF Afectado es requerido para notas' })}
-                                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all outline-none"
-                                    placeholder="e.g. E3100000001"
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Items Section */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                            <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
-                            Detalle de Productos
+            <form onSubmit={handleSubmit((data) => onSubmit(data, false))} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                {/* Left Column: Form Inputs */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Client & Type Section */}
+                    <div className="bg-white dark:bg-card-dark p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-border-dark">
+                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+                            <div className="w-1 h-6 bg-primary rounded-full"></div>
+                            Datos Generales
                         </h3>
-                        <button
-                            type="button"
-                            onClick={() => append({ description: '', quantity: 1, unit_price: 0, product_id: 0, tax_rate: 18.00 })}
-                            className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                            <Plus size={18} /> Agregar Item
-                        </button>
-                    </div>
-
-                    <div className="space-y-3">
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="group relative grid grid-cols-12 gap-x-4 gap-y-4 items-start bg-gray-50/50 hover:bg-gray-50 p-4 rounded-xl border border-gray-100 hover:border-gray-200 transition-all">
-                                <div className="col-span-12 md:col-span-4">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Producto / Servicio</label>
-                                    <div className="space-y-2">
-                                        <SearchableProductSelect
-                                            products={products}
-                                            onSelect={(product) => {
-                                                setValue(`items.${index}.product_id`, product.id);
-                                                setValue(`items.${index}.description`, product.description);
-                                                setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
-                                                setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
-                                            }}
-                                        />
-                                        <input
-                                            {...register(`items.${index}.description`)}
-                                            className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                                            placeholder="Descripción del producto"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-span-6 md:col-span-2">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                                    />
-                                </div>
-                                <div className="col-span-6 md:col-span-2">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Precio Unitario</label>
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-2 text-gray-400 text-sm">$</span>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            {...register(`items.${index}.unit_price`, { valueAsNumber: true })}
-                                            className="w-full pl-7 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col-span-6 md:col-span-1">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Tax %</label>
-                                    <input
-                                        type="number"
-                                        step="1"
-                                        {...register(`items.${index}.tax_rate`, { valueAsNumber: true })}
-                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all"
-                                    />
-                                </div>
-                                <div className="col-span-6 md:col-span-2">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Total</label>
-                                    <div className="px-3 py-2 bg-gray-100 rounded-lg text-right font-medium text-gray-700 truncate">
-                                        {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toFixed(2)}
-                                    </div>
-                                </div>
-                                <div className="col-span-12 md:col-span-1 flex items-center justify-center md:pt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Cliente</label>
+                                <div className="flex gap-2">
+                                    <select
+                                        {...register('client_id', { valueAsNumber: true, required: 'Seleccione un cliente' })}
+                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-border-dark dark:text-white rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+                                    >
+                                        <option value="">Seleccionar Cliente...</option>
+                                        {clients.map(client => (
+                                            <option key={client.id} value={client.id}>{client.name}</option>
+                                        ))}
+                                    </select>
                                     <button
                                         type="button"
-                                        onClick={() => remove(index)}
-                                        className="w-full md:w-auto p-2 text-red-500 bg-red-50 md:bg-transparent md:text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center gap-2"
-                                        title="Eliminar Item"
+                                        onClick={() => setIsClientModalOpen(true)}
+                                        className="bg-primary hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center"
+                                        title="Crear Nuevo Cliente"
                                     >
-                                        <Trash2 size={18} /> <span className="md:hidden text-sm font-medium">Eliminar</span>
+                                        <Plus size={20} />
                                     </button>
                                 </div>
                             </div>
-                        ))}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Tipo de Comprobante</label>
+                                <select
+                                    {...register('type_code')}
+                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-border-dark dark:text-white rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+                                >
+                                    <option value="31">Factura Crédito Fiscal (31)</option>
+                                    <option value="32">Factura de Consumo (32)</option>
+                                    <option value="33">Nota de Crédito (33)</option>
+                                    <option value="34">Nota de Débito (34)</option>
+                                    <option value="43">Gastos Menores (43)</option>
+                                    <option value="44">Regímenes Especiales (44)</option>
+                                    <option value="45">Gubernamental (45)</option>
+                                </select>
+                            </div>
+
+                            {(watch('type_code') === '33' || watch('type_code') === '34') && (
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">NCF Afectado (Referencia)</label>
+                                    <input
+                                        {...register('reference_ncf', { required: 'El NCF Afectado es requerido para notas' })}
+                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-border-dark dark:text-white rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+                                        placeholder="e.g. E3100000001"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Items Section */}
+                    <div className="bg-white dark:bg-card-dark p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-border-dark">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+                                <div className="w-1 h-6 bg-primary rounded-full"></div>
+                                Detalle de Productos
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => append({ description: '', quantity: 1, unit_price: 0, product_id: 0, tax_rate: 18.00 })}
+                                className="text-sm font-bold text-primary hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                            >
+                                <Plus size={18} /> Agregar Item
+                            </button>
+                        </div>
+
+                        <div className="space-y-3">
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="group relative grid grid-cols-12 gap-x-4 gap-y-4 items-start bg-slate-50/50 dark:bg-background-dark/30 hover:bg-slate-50 dark:hover:bg-background-dark/50 p-4 rounded-xl border border-slate-100 dark:border-border-dark hover:border-slate-200 dark:hover:border-slate-700 transition-all">
+                                    <div className="col-span-12 md:col-span-4">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Producto / Servicio</label>
+                                        <div className="space-y-2">
+                                            <SearchableProductSelect
+                                                products={products}
+                                                onSelect={(product) => {
+                                                    setValue(`items.${index}.product_id`, product.id);
+                                                    setValue(`items.${index}.description`, product.description);
+                                                    setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
+                                                    setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
+                                                }}
+                                            />
+                                            <input
+                                                {...register(`items.${index}.description`)}
+                                                className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                                placeholder="Descripción del producto"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-span-6 md:col-span-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Cantidad</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            {...register(`items.${index}.quantity`, { valueAsNumber: true })}
+                                            className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div className="col-span-6 md:col-span-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Precio Unitario</label>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-2 text-slate-400 dark:text-slate-500 text-sm">$</span>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                {...register(`items.${index}.unit_price`, { valueAsNumber: true })}
+                                                className="w-full pl-7 pr-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-span-6 md:col-span-1">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Tax %</label>
+                                        <input
+                                            type="number"
+                                            step="1"
+                                            {...register(`items.${index}.tax_rate`, { valueAsNumber: true })}
+                                            className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div className="col-span-6 md:col-span-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Total</label>
+                                        <div className="px-3 py-2 bg-slate-100 dark:bg-background-dark border border-transparent dark:border-border-dark rounded-lg text-right font-bold text-slate-700 dark:text-white truncate">
+                                            {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toFixed(2)}
+                                        </div>
+                                    </div>
+                                    <div className="col-span-12 md:col-span-1 flex items-center justify-center md:pt-6">
+                                        <button
+                                            type="button"
+                                            onClick={() => remove(index)}
+                                            className="w-full md:w-auto p-2 text-rose-500 bg-rose-50 dark:bg-rose-500/10 md:bg-transparent md:dark:bg-transparent md:text-slate-400 dark:text-slate-500 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 flex items-center justify-center gap-2"
+                                            title="Eliminar Item"
+                                        >
+                                            <Trash2 size={18} /> <span className="md:hidden text-sm font-bold">Eliminar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Totals Section */}
-                <div className="flex justify-end">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 w-full max-w-sm">
+                {/* Right Column: Calculations & Actions Summary */}
+                <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-8">
+                    <div className="bg-white dark:bg-card-dark p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-border-dark">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Resumen</h3>
                         <div className="space-y-3">
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-slate-600 dark:text-slate-400">
                                 <span>Subtotal</span>
-                                <span className="font-medium">RD$ {subtotal.toFixed(2)}</span>
+                                <span className="font-bold">RD$ {subtotal.toFixed(2)}</span>
                             </div>
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-slate-600 dark:text-slate-400">
                                 <span>ITBIS Total</span>
-                                <span className="font-medium">RD$ {tax.toFixed(2)}</span>
+                                <span className="font-bold">RD$ {tax.toFixed(2)}</span>
                             </div>
-                            <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
-                                <span className="text-lg font-bold text-gray-800">Total</span>
-                                <span className="text-xl font-bold text-blue-600">RD$ {total.toFixed(2)}</span>
+                            <div className="pt-3 border-t border-slate-100 dark:border-border-dark flex justify-between items-center">
+                                <span className="text-lg font-bold text-slate-800 dark:text-white">Total</span>
+                                <span className="text-xl font-bold text-primary dark:text-blue-400">RD$ {total.toFixed(2)}</span>
                             </div>
                         </div>
 
-                        <div className="flex gap-3 mt-6">
+                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-border-dark">
+                            <div className="grid grid-cols-2 gap-3 mb-4 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                <div className="bg-slate-50 dark:bg-background-dark p-2 rounded-lg text-center">
+                                    <p className="mb-0.5">Vence</p>
+                                    <p className="text-slate-900 dark:text-white font-bold">{new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
+                                </div>
+                                <div className="bg-slate-50 dark:bg-background-dark p-2 rounded-lg text-center">
+                                    <p className="mb-0.5">Moneda</p>
+                                    <p className="text-slate-900 dark:text-white font-bold">DOP (RD$)</p>
+                                </div>
+                            </div>
+
+                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">Notas privadas</label>
+                            <textarea
+                                className="w-full text-xs p-3 bg-slate-50 dark:bg-background-dark border border-slate-200 dark:border-border-dark rounded-lg resize-none outline-none dark:text-white min-h-[80px]"
+                                placeholder="Notas internas para el equipo..."
+                            ></textarea>
+                        </div>
+
+                        <div className="flex flex-col gap-3 mt-6">
                             <button
                                 type="button"
                                 onClick={() => handleSubmit((data) => onSubmit(data, false))()}
                                 disabled={isSubmitting}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                                className="w-full bg-primary text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                             >
-                                <Save size={20} /> Crear Factura
+                                <Save size={20} /> Guardar Borrador
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleSubmit((data) => onSubmit(data, true))()}
+                                disabled={isSubmitting}
+                                className="w-full bg-transparent border-2 border-primary text-primary dark:text-blue-400 dark:border-blue-400 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-50"
+                            >
+                                <Send size={20} /> Emitir Ahora
                             </button>
                         </div>
                     </div>

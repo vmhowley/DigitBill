@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import axios from '../api';
 import { CompanySettings } from '../components/settings/CompanySettings';
+import { SecuritySettings } from '../components/settings/SecuritySettings';
 import { SequenceSettings } from '../components/settings/SequenceSettings';
 import { UserSettings } from '../components/settings/UserSettings';
-import { SecuritySettings } from '../components/settings/SecuritySettings';
 
 export const Settings: React.FC = () => {
     const [activeTab, setActiveTab] = useState('company');
@@ -62,49 +62,49 @@ export const Settings: React.FC = () => {
     return (
         <div>
             <div className="flex items-center gap-3 mb-8">
-                <div className="bg-gray-100 p-3 rounded-xl">
-                    <Building2 className="text-gray-600 w-6 h-6" />
+                <div className="bg-slate-100 dark:bg-background-dark p-3 rounded-xl border border-slate-200 dark:border-border-dark">
+                    <Building2 className="text-slate-600 dark:text-slate-400 w-6 h-6" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Configuración</h1>
-                    <p className="text-gray-500">Administra tu empresa, usuarios y secuencias fiscales.</p>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Configuración</h1>
+                    <p className="text-gray-500 dark:text-slate-400">Administra tu empresa, usuarios y secuencias fiscales.</p>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
+            <div className="flex border-b border-gray-200 dark:border-border-dark mb-8 overflow-x-auto">
                 <button
                     onClick={() => setActiveTab('company')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'company' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 font-bold text-sm transition-colors relative ${activeTab === 'company' ? 'text-primary dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                 >
                     Empresa
-                    {activeTab === 'company' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full"></div>}
+                    {activeTab === 'company' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-blue-400 rounded-t-full"></div>}
                 </button>
                 <button
                     onClick={() => setActiveTab('sequences')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'sequences' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 font-bold text-sm transition-colors relative ${activeTab === 'sequences' ? 'text-primary dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                 >
                     Secuencias Fiscales (NCF)
-                    {activeTab === 'sequences' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full"></div>}
+                    {activeTab === 'sequences' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-blue-400 rounded-t-full"></div>}
                 </button>
                 <button
                     onClick={() => setActiveTab('users')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'users' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 font-bold text-sm transition-colors relative ${activeTab === 'users' ? 'text-primary dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                 >
                     Usuarios
-                    {activeTab === 'users' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full"></div>}
+                    {activeTab === 'users' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-blue-400 rounded-t-full"></div>}
                 </button>
                 <button
                     onClick={() => setActiveTab('security')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors relative ${activeTab === 'security' ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-6 py-3 font-bold text-sm transition-colors relative ${activeTab === 'security' ? 'text-primary dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                 >
                     Seguridad
-                    {activeTab === 'security' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full"></div>}
+                    {activeTab === 'security' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-blue-400 rounded-t-full"></div>}
                 </button>
             </div>
 
             {/* Content */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <div className="bg-white dark:bg-card-dark rounded-xl shadow-sm border border-slate-100 dark:border-border-dark p-8">
 
                 {/* COMPANY TAB */}
                 {activeTab === 'company' && (

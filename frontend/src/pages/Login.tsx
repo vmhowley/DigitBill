@@ -89,26 +89,26 @@ export const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-background-dark px-4 font-manrope">
+            <div className="max-w-md w-full bg-white dark:bg-card-dark rounded-2xl shadow-xl dark:shadow-none dark:border dark:border-border-dark overflow-hidden">
                 <div className="p-8">
                     {!showMFA ? (
                         <>
                             <div className="text-center mb-8">
-                                <h2 className="text-3xl font-bold text-gray-900">Bienvenido de nuevo</h2>
-                                <p className="text-gray-500 mt-2">Ingresa a tu cuenta para gestionar tu facturación.</p>
+                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Bienvenido de nuevo</h2>
+                                <p className="text-gray-500 dark:text-slate-400 mt-2">Ingresa a tu cuenta para gestionar tu facturación.</p>
                             </div>
 
                             <form onSubmit={handleLogin} className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Correo Electrónico</label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+                                        <Mail className="absolute left-3 top-3 text-gray-400 dark:text-slate-500" size={20} />
                                         <input
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-border-dark bg-white dark:bg-background-dark text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder-gray-400 dark:placeholder-slate-500"
                                             placeholder="tu@empresa.com"
                                             required
                                         />
@@ -116,14 +116,14 @@ export const Login = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Contraseña</label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+                                        <Lock className="absolute left-3 top-3 text-gray-400 dark:text-slate-500" size={20} />
                                         <input
                                             type="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-border-dark bg-white dark:bg-background-dark text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder-gray-400 dark:placeholder-slate-500"
                                             placeholder="••••••••"
                                             required
                                         />
@@ -133,19 +133,19 @@ export const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full bg-primary hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/30 dark:shadow-none flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {loading ? <Loader className="animate-spin" size={20} /> : <>Ingresar <ArrowRight size={20} /></>}
                                 </button>
                             </form>
 
-                            <div className="mt-8 text-center border-t pt-6">
-                                <p className="text-gray-600 text-sm">
+                            <div className="mt-8 text-center border-t border-gray-100 dark:border-border-dark pt-6">
+                                <p className="text-gray-600 dark:text-slate-400 text-sm">
                                     ¿Nuevo en DigitBill?{' '}
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => navigate('/register')}
-                                        className="text-blue-600 font-bold hover:underline underline-offset-4"
+                                        className="text-primary hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold hover:underline underline-offset-4"
                                     >
                                         Crea tu cuenta gratis
                                     </button>
@@ -155,23 +155,23 @@ export const Login = () => {
                     ) : (
                         <>
                             <div className="text-center mb-8">
-                                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-600">
+                                <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center mb-4 text-primary dark:text-blue-400">
                                     <ShieldCheck size={32} />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Verificación 2FA</h2>
-                                <p className="text-gray-500 mt-2">Ingresa el código de 6 dígitos de tu aplicación de autenticación.</p>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Verificación 2FA</h2>
+                                <p className="text-gray-500 dark:text-slate-400 mt-2">Ingresa el código de 6 dígitos de tu aplicación de autenticación.</p>
                             </div>
 
                             <form onSubmit={handleVerifyMFA} className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Código de Seguridad</label>
+                                    <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Código de Seguridad</label>
                                     <div className="relative">
-                                        <KeyRound className="absolute left-3 top-3 text-gray-400" size={20} />
+                                        <KeyRound className="absolute left-3 top-3 text-gray-400 dark:text-slate-500" size={20} />
                                         <input
                                             type="text"
                                             value={verifyCode}
                                             onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
-                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-center text-2xl tracking-[0.5em] font-mono"
+                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 dark:border-border-dark bg-white dark:bg-background-dark text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-center text-2xl tracking-[0.5em] font-mono"
                                             placeholder="000000"
                                             maxLength={6}
                                             autoFocus
@@ -183,7 +183,7 @@ export const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={loading || verifyCode.length !== 6}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full bg-primary hover:bg-blue-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/30 dark:shadow-none flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {loading ? <Loader className="animate-spin" size={20} /> : 'Verificar'}
                                 </button>
@@ -191,7 +191,7 @@ export const Login = () => {
                                 <button
                                     type="button"
                                     onClick={async () => await supabase.auth.signOut()}
-                                    className="w-full text-gray-500 hover:text-gray-700 text-sm font-medium"
+                                    className="w-full text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200 text-sm font-bold"
                                 >
                                     Cancelar / Cerrar Sesión
                                 </button>

@@ -1,4 +1,3 @@
-import { AlertCircle, ArrowRight, ArrowUpRight, BarChart3, CreditCard, DollarSign, FileText, Plus, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../api';
@@ -13,10 +12,9 @@ export const Dashboard = () => {
         totalExpenses: 0,
         stockAlerts: 0,
         taxDue: 0,
-        revenueTrend: 0 // NEW
+        revenueTrend: 0
     });
     const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
-    const [topClients, setTopClients] = useState<any[]>([]);
     const [weeklyData, setWeeklyData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -27,8 +25,8 @@ export const Dashboard = () => {
                 const [invoicesRes, alertsRes, expensesRes, expenseStatsRes] = await Promise.all([
                     axios.get('/api/invoices', { params: { all: 'true' } }),
                     axios.get('/api/inventory/alerts'),
-                    axios.get('/api/expenses'), // NEW
-                    axios.get('/api/expenses/stats-by-date') // NEW
+                    axios.get('/api/expenses'),
+                    axios.get('/api/expenses/stats-by-date')
                 ]);
 
                 const invoices = invoicesRes.data;
@@ -59,18 +57,15 @@ export const Dashboard = () => {
                 }).reverse();
 
                 const chartData = last7Days.map(date => {
-                    // Income
                     const dayIncome = invoices
                         .filter((i: any) => i.created_at.startsWith(date) && i.status !== 'draft')
                         .reduce((acc: number, curr: any) => acc + parseFloat(curr.total), 0);
 
-                    // Expenses
                     const dayExpense = expenseStats.find((e: any) => e.date === date)?.total || 0;
 
                     return { date, income: dayIncome, expense: parseFloat(dayExpense) };
                 });
 
-                // Find max value for scaling (checking both income and expense)
                 const maxVal = Math.max(...chartData.map(d => Math.max(d.income, d.expense)));
 
                 const scaledChartData = chartData.map(d => ({
@@ -80,24 +75,11 @@ export const Dashboard = () => {
                     dayName: new Date(d.date).toLocaleDateString('es-DO', { weekday: 'short' })
                 }));
 
-                // 3. Top Clients
-                const clientMap = new Map();
-                invoices.forEach((inv: any) => {
-                    if (inv.status !== 'draft') {
-                        const clientName = inv.client_name || 'Cliente Final';
-                        const current = clientMap.get(clientName) || 0;
-                        clientMap.set(clientName, current + parseFloat(inv.total));
-                    }
-                });
-                const sortedClients = Array.from(clientMap.entries())
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 4)
-                    .map(([name, total]) => ({ name, total }));
 
 
                 const totalExpenses = expenses.reduce((acc: number, curr: any) => acc + parseFloat(curr.amount), 0);
 
-                // 4. Revenue Trend (Current Month vs Last Month)
+                // Revenue Trend logic
                 const now = new Date();
                 const currentMonth = now.getMonth();
                 const currentYear = now.getFullYear();
@@ -141,7 +123,6 @@ export const Dashboard = () => {
                 });
 
                 setWeeklyData(scaledChartData);
-                setTopClients(sortedClients);
                 setRecentInvoices(invoices.slice(0, 5));
             } catch (error) {
                 console.error("Error loading dashboard data", error);
@@ -154,190 +135,180 @@ export const Dashboard = () => {
     }, []);
 
     if (loading) {
-        return <div className="p-8 text-center text-gray-500 animate-pulse">Cargando estadísticas del negocio...</div>;
+        return <div className="p-8 text-center text-slate-500 animate-pulse">Cargando dashboard...</div>;
     }
 
     return (
-        <div className="space-y-8 pb-12">
-            {/* Header */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-                    <p className="text-gray-500 mt-1">Visión general y rendimiento financiero</p>
-                </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <Link to="/clients/new" className="px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium flex-1 md:flex-none text-center shadow-sm">
-                        Nuevo Cliente
-                    </Link>
-                    <Link to="/create" className="flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md shadow-blue-600/20 flex-1 md:flex-none">
-                        <Plus size={18} /> Nueva Factura
-                    </Link>
-                </div>
-            </header>
-
-            {/* KPI Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="space-y-8">
+            {/* KPI Section */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <KpiCard
-                    title="Ingresos Totales"
+                    title="Balance Total"
                     value={`RD$ ${stats.totalRevenue.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
-                    icon={<DollarSign size={24} />}
-                    color="green"
-                    trend={`${stats.revenueTrend > 0 ? '+' : ''}${stats.revenueTrend.toFixed(1)}% este mes`}
+                    trendValue={stats.revenueTrend.toFixed(1) + "%"}
+                    trendPositive={stats.revenueTrend > 0}
+                    subtext="Disponible en cuentas"
                 />
                 <KpiCard
-                    title="Gastos Totales"
-                    value={`RD$ ${stats.totalExpenses.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
-                    icon={<ArrowUpRight size={24} />}
-                    color="orange"
-                    subtext="Acumulado del mes"
+                    title="Ingresos Mensuales"
+                    value={`RD$ ${stats.totalRevenue.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
+                    trendValue="-1.2%" // Dummy for design match
+                    trendPositive={false}
+                    subtext="Proyectado fin de mes"
                 />
                 <KpiCard
-                    title="Beneficio Neto"
-                    value={`RD$ ${(stats.totalRevenue - stats.totalExpenses).toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
-                    icon={<TrendingUp size={24} />}
-                    color={stats.totalRevenue - stats.totalExpenses >= 0 ? "blue" : "red"}
-                    subtext="Ingresos - Gastos"
-                />
-                <KpiCard
-                    title="Por Cobrar (CXC)"
+                    title="Facturas Pendientes"
                     value={`RD$ ${stats.totalAR.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
-                    icon={<CreditCard size={24} />}
-                    color="red"
+                    statusTag={`${stats.invoiceCount} Activas`}
+                    subtext="Vencen en 7 días"
+                />
+                <KpiCard
+                    title="Gastos Mensuales"
+                    value={`RD$ ${stats.totalExpenses.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
+                    trendValue="-5.0%"
+                    trendPositive={true}
+                    subtext="32% del ingreso total"
                 />
             </div>
 
-            {/* Middle Section: Chart & Quick Actions/Alerts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Revenue Chart */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-bold text-gray-800 flex items-center gap-2">
-                            <BarChart3 size={20} className="text-gray-400" />
-                            Ingresos de la Semana
-                        </h3>
-                        <span className="text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-full">Últimos 7 días</span>
-                    </div>
-
-                    <div className="h-64 flex items-end justify-between gap-3 sm:gap-6 mt-4 pb-2">
-                        {weeklyData.map((d, i) => (
-                            <div key={i} className="group relative w-full h-full flex flex-col justify-end gap-1">
-                                {/* Tooltip */}
-                                <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 shadow-lg text-center">
-                                    <p className="font-bold border-b border-gray-700 pb-1 mb-1">{d.dayName}</p>
-                                    <div className="flex gap-4">
-                                        <p className="text-green-400">Ing: {d.income.toLocaleString()}</p>
-                                        <p className="text-red-400">Gas: {d.expense.toLocaleString()}</p>
-                                    </div>
-                                </div>
-
-                                {/* Bars Container */}
-                                <div className="flex gap-1 items-end h-full w-full justify-center">
-                                    {/* Income Bar (Green) */}
-                                    <div
-                                        className="w-1/2 bg-emerald-500 rounded-t-sm hover:bg-emerald-400 transition-all duration-500"
-                                        style={{ height: `${d.incomeHeight || 2}%` }}
-                                    ></div>
-                                    {/* Expense Bar (Red) */}
-                                    <div
-                                        className="w-1/2 bg-rose-500 rounded-t-sm hover:bg-rose-400 transition-all duration-500"
-                                        style={{ height: `${d.expenseHeight || 2}%` }}
-                                    ></div>
-                                </div>
-                                <span className="text-xs text-gray-400 text-center mt-3 font-medium uppercase">{d.dayName}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Top Clients or Alerts */}
-                <div className="space-y-6">
-                    {/* Stock Alerts (if any) */}
-                    {stats.stockAlerts > 0 && (
-                        <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
-                            <div className="flex items-center gap-3 mb-2">
-                                <AlertCircle className="text-red-500" />
-                                <h3 className="font-bold text-red-800">Atención Requerida</h3>
-                            </div>
-                            <p className="text-red-600 text-sm mb-4">Tienes <strong>{stats.stockAlerts} productos</strong> con inventario bajo o agotado.</p>
-                            <Link to="/inventory" className="text-xs font-bold text-white bg-red-500 px-4 py-2 rounded-lg inline-block hover:bg-red-600 transition-colors">Ver Inventario</Link>
+            {/* Middle Content: Charts and Feed */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                {/* Revenue Chart Area */}
+                <div className="xl:col-span-2 bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-border-dark p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 className="text-lg font-bold">Rendimiento</h3>
+                            <p className="text-sm text-slate-500">Comparación anual</p>
                         </div>
-                    )}
+                        <div className="flex gap-2">
+                            <button className="px-3 py-1.5 text-xs font-bold bg-slate-100 dark:bg-background-dark rounded-lg hover:bg-primary/10 transition-colors">6 Meses</button>
+                            <button className="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded-lg">12 Meses</button>
+                        </div>
+                    </div>
+                    <div className="w-full">
+                        <div className="flex items-end gap-2 mb-4">
+                            <span className="text-4xl font-bold tracking-tight">RD$ {stats.totalRevenue.toLocaleString('es-DO', { compactDisplay: 'short' })}</span>
+                            <span className="text-emerald-500 font-bold mb-1 flex items-center">
+                                <span className="material-symbols-outlined text-sm">trending_up</span>
+                                {stats.revenueTrend.toFixed(1)}%
+                            </span>
+                        </div>
 
-                    {/* Top Clients */}
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <Users size={18} className="text-gray-400" /> Top Clientes
-                        </h3>
-                        <div className="space-y-4">
-                            {topClients.length === 0 ? (
-                                <p className="text-gray-400 text-sm">Aún no hay datos suficientes</p>
-                            ) : topClients.map((client: any, i) => (
-                                <div key={i} className="flex justify-between items-center pb-3 border-b border-gray-50 last:border-0 last:pb-0">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
-                                            {client.name.charAt(0)}
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-700 truncate max-w-[120px]">{client.name}</span>
+                        {/* Simplified Chart (Bar representation for now to match data structure) */}
+                        <div className="h-64 flex items-end justify-between gap-2 mt-6">
+                            {weeklyData.map((d, i) => (
+                                <div key={i} className="group relative w-full h-full flex flex-col justify-end gap-1">
+                                    <div className="flex gap-1 items-end h-full w-full justify-center">
+                                        <div className="w-1/2 bg-primary/80 rounded-t-sm" style={{ height: `${d.incomeHeight}%` }}></div>
+                                        <div className="w-1/2 bg-slate-200 dark:bg-slate-700 rounded-t-sm" style={{ height: `${d.expenseHeight}%` }}></div>
                                     </div>
-                                    <span className="text-sm font-bold text-gray-900">RD$ {client.total.toLocaleString('es-DO', { compactDisplay: 'short', notation: 'compact' })}</span>
+                                    <span className="text-xs text-slate-400 text-center mt-3 font-medium uppercase">{d.dayName}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
+
+                {/* Activity Feed */}
+                <div className="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-border-dark p-6 shadow-sm overflow-hidden flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Actividad Reciente</h3>
+                        <button className="text-primary text-sm font-bold hover:underline">Ver Todo</button>
+                    </div>
+                    <div className="space-y-6 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        {recentInvoices.slice(0, 3).map((inv) => (
+                            <div key={inv.id} className="flex gap-4">
+                                <div className="size-10 rounded-full bg-blue-500/10 flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-outlined text-blue-500 text-xl">description</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white">Nueva Factura Creada</p>
+                                        <span className="text-[10px] text-slate-400 font-medium">Hace 1h</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Factura #{inv.sequential_number}</p>
+                                    <p className="text-primary text-sm font-bold mt-1">RD$ {parseFloat(inv.total).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        ))}
+                        {stats.stockAlerts > 0 && (
+                            <div className="flex gap-4">
+                                <div className="size-10 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-outlined text-rose-500 text-xl">warning</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <p className="text-sm font-bold text-rose-500">Alerta de Inventario</p>
+                                        <span className="text-[10px] text-slate-400 font-medium">Ahora</span>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{stats.stockAlerts} productos bajos en stock</p>
+                                    <Link to="/inventory" className="text-rose-500 text-xs font-bold mt-1 block hover:underline">Revisar</Link>
+                                </div>
+                            </div>
+                        )}
+                        <div className="flex gap-4">
+                            <div className="size-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                                <span className="material-symbols-outlined text-emerald-500 text-xl">add_shopping_cart</span>
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-white">Nuevo Pago</p>
+                                    <span className="text-[10px] text-slate-400 font-medium">Ayer</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Transferencia recibida</p>
+                                <p className="text-emerald-500 text-sm font-bold mt-1">+RD$ 4,250.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Recent Invoices Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden overflow-x-auto">
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
-                    <h3 className="font-bold text-gray-800">Facturas Recientes</h3>
-                    <Link to="/invoices" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                        Ver todas <ArrowRight size={16} />
+            {/* Footer/Bottom List section */}
+            <div className="bg-white dark:bg-card-dark rounded-xl border border-slate-200 dark:border-border-dark shadow-sm">
+                <div className="p-6 border-b border-slate-200 dark:border-border-dark flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Transacciones Recientes</h3>
+                    <Link to="/invoices">
+                        <button className="flex items-center gap-1 text-primary text-sm font-bold hover:underline">
+                            Ver todas
+                            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
                     </Link>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <thead className="bg-slate-50 dark:bg-background-dark/30 text-xs text-slate-500 uppercase font-bold tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">NCF / ID</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Cliente</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Fecha</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Total</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Estado</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase"></th>
+                                <th className="px-6 py-4">Transacción / Cliente</th>
+                                <th className="px-6 py-4">Categoría</th>
+                                <th className="px-6 py-4">Estado</th>
+                                <th className="px-6 py-4">Fecha</th>
+                                <th className="px-6 py-4 text-right">Monto</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-slate-100 dark:divide-border-dark">
                             {recentInvoices.map((inv) => (
-                                <tr key={inv.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900 font-mono text-xs">
-                                        {inv.reference_ncf || `#${inv.sequential_number.toString().padStart(6, '0')}`}
+                                <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-background-dark transition-colors cursor-pointer">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                                <span className="material-symbols-outlined text-slate-500">receipt</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-sm font-semibold block">{inv.client_name || 'Cliente Final'}</span>
+                                                <span className="text-xs text-slate-400 font-mono">{inv.reference_ncf || `#${inv.sequential_number}`}</span>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">{inv.client_name || 'Cliente Final'}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-500">{new Date(inv.created_at).toLocaleDateString()}</td>
-                                    <td className="px-6 py-4 font-bold text-gray-900">RD$ {parseFloat(inv.total).toLocaleString()}</td>
+                                    <td className="px-6 py-4">
+                                        <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">Venta</span>
+                                    </td>
                                     <td className="px-6 py-4">
                                         <StatusBadge status={inv.status} />
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <Link to={`/invoices/${inv.id}`} className="text-gray-400 hover:text-blue-600">
-                                            <ArrowUpRight size={18} />
-                                        </Link>
-                                    </td>
+                                    <td className="px-6 py-4 text-sm text-slate-500">{new Date(inv.created_at).toLocaleDateString()}</td>
+                                    <td className="px-6 py-4 text-right font-bold text-sm">RD$ {parseFloat(inv.total).toLocaleString()}</td>
                                 </tr>
                             ))}
-                            {recentInvoices.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                        <div className="flex flex-col items-center gap-3">
-                                            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                                                <FileText size={24} />
-                                            </div>
-                                            <p>No hay facturas recientes</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
                         </tbody>
                     </table>
                 </div>
@@ -346,51 +317,46 @@ export const Dashboard = () => {
     );
 };
 
-// Sub-components for cleaner code
-const KpiCard = ({ title, value, icon, color, trend, subtext }: any) => {
-    const colorClasses: any = {
-        green: 'bg-green-50 text-green-600',
-        red: 'bg-red-50 text-red-600',
-        blue: 'bg-blue-50 text-blue-600',
-        indigo: 'bg-indigo-50 text-indigo-600',
-        orange: 'bg-orange-50 text-orange-600',
-    };
-
+// Components
+const KpiCard = ({ title, value, trendValue, trendPositive, subtext, statusTag }: any) => {
     return (
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl ${colorClasses[color] || colorClasses.blue}`}>
-                    {icon}
-                </div>
-                {trend && (
-                    <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full">{trend}</span>
+        <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark shadow-sm">
+            <div className="flex justify-between items-start mb-4">
+                <span className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">{title}</span>
+                {statusTag ? (
+                    <div className="text-amber-500 bg-amber-500/10 px-2 py-1 rounded text-xs font-bold">{statusTag}</div>
+                ) : (
+                    trendValue && (
+                        <div className={`px-2 py-1 rounded text-xs font-bold ${trendPositive ? 'text-emerald-500 bg-emerald-500/10' : 'text-rose-500 bg-rose-500/10'}`}>
+                            {trendValue}
+                        </div>
+                    )
                 )}
             </div>
-            <p className="text-gray-500 text-sm font-medium">{title}</p>
-            <h3 className="text-2xl font-bold text-gray-900 mt-1">{value}</h3>
-            {subtext && <p className="text-xs text-gray-400 mt-2">{subtext}</p>}
+            <div className="text-3xl font-bold mb-1">{value}</div>
+            <p className="text-xs text-slate-400">{subtext}</p>
         </div>
     );
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
     const styles: any = {
-        draft: 'bg-gray-100 text-gray-700',
-        signed: 'bg-blue-50 text-blue-700',
-        sent: 'bg-green-100 text-green-700',
-        paid: 'bg-indigo-100 text-indigo-700'
+        draft: 'text-slate-500',
+        signed: 'text-blue-500',
+        sent: 'text-emerald-500',
+        paid: 'text-indigo-500'
     };
 
     const labels: any = {
         draft: 'Borrador',
         signed: 'Firmada',
-        sent: 'Aceptada DGII',
+        sent: 'Completado',
         paid: 'Pagada'
     };
 
     return (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || styles.draft}`}>
-            {status === 'sent' && <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>}
+        <span className={`flex items-center gap-1 text-xs font-bold ${styles[status] || 'text-slate-500'}`}>
+            <span className={`size-1.5 rounded-full ${status === 'sent' ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
             {labels[status] || status}
         </span>
     );
