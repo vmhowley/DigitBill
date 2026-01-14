@@ -1,5 +1,5 @@
 
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
     page: {
@@ -102,7 +102,6 @@ export const DeliveryNotePDF = ({ sale }: { sale: any }) => {
     const {
         client_name, client_tax_id,
         make, model, year, vin, color, plate,
-        created_at
     } = sale;
 
     return (

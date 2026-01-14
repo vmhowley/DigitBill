@@ -38,7 +38,7 @@ export const WorkOrderDetail = () => {
                 quantity: parseFloat(data.quantity),
                 unit_cost: parseFloat(data.unit_cost)
             };
-            const res = await axios.post(`/api/automotive/workshop/orders/${id}/items`, payload);
+            await axios.post(`/api/automotive/workshop/orders/${id}/items`, payload);
             toast.success('Item agregado');
             reset();
             loadData(); // Refresh totals

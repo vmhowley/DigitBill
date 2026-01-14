@@ -1,8 +1,8 @@
 
+import { CheckCircle, Phone, RotateCcw, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { X, Calendar, User, Phone, CheckCircle, RotateCcw } from 'lucide-react';
 import axios from "../../../api";
 
 interface LoanModalProps {
@@ -12,7 +12,7 @@ interface LoanModalProps {
 }
 
 export const LoanModal = ({ vehicle, onClose, onSuccess }: LoanModalProps) => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit } = useForm();
     const [loading, setLoading] = useState(false);
     const [activeLoan, setActiveLoan] = useState<any>(null);
 

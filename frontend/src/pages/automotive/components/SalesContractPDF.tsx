@@ -1,5 +1,5 @@
 
-import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
     page: {
@@ -99,7 +99,7 @@ export const SalesContractPDF = ({ sale }: { sale: any }) => {
     if (!sale) return null;
 
     const {
-        client_name, client_address, client_phone, client_tax_id,
+        client_name, client_phone, client_tax_id,
         make, model, year, vin, color, plate,
         sale_price, down_payment, financed_amount, monthly_payment,
         interest_rate, term_months

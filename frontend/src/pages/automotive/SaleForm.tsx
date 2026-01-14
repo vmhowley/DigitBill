@@ -14,7 +14,7 @@ export const SaleForm = () => {
     const [paymentPlan, setPaymentPlan] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, watch, setValue } = useForm({
         defaultValues: {
             vehicle_id: '',
             client_id: '',
@@ -103,15 +103,15 @@ export const SaleForm = () => {
         }
     };
 
-    const handleVehicleSelect = (e: any) => {
-        const vId = e.target.value;
-        const vehicle = vehicles.find(v => v.id.toString() === vId);
-        setSelectedVehicle(vehicle);
-        if (vehicle) {
-            setValue('sale_price', parseFloat(vehicle.price));
-            setValue('vehicle_id', vId);
-        }
-    };
+    // const handleVehicleSelect = (e: any) => {
+    //     const vId = e.target.value;
+    //     const vehicle = vehicles.find(v => v.id.toString() === vId);
+    //     setSelectedVehicle(vehicle);
+    //     if (vehicle) {
+    //         setValue('sale_price', parseFloat(vehicle.price));
+    //         setValue('vehicle_id', vId);
+    //     }
+    // };
 
     return (
         <div className="max-w-5xl mx-auto pb-12">

@@ -1,13 +1,13 @@
 
-import { Plus, Car, Calendar, DollarSign, Filter, Search, Trash2, Edit, Printer, FileText, Share2 } from 'lucide-react';
+import { pdf } from '@react-pdf/renderer';
+import { Edit, FileText, Plus, Printer, Search, Share2, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
-import { pdf } from '@react-pdf/renderer';
-import { SalesContractPDF } from './components/SalesContractPDF';
+import axios from '../../api';
 import { DeliveryNotePDF } from './components/DeliveryNotePDF';
 import { LoanModal } from './components/LoanModal';
-import axios from '../../api';
+import { SalesContractPDF } from './components/SalesContractPDF';
 
 export const VehicleList = () => {
     const [vehicles, setVehicles] = useState<any[]>([]);
