@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo_digitbill.png';
+import { useAuth } from '../context/AuthContext';
 interface SidebarProps {
     isOpen: boolean;
     onClose: () => void;

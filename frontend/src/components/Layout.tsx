@@ -30,6 +30,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         >
                             <span className="material-symbols-outlined">menu</span>
                         </button>
+                        <div>
+                            <div className="flex items-center gap-2 md:hidden">
+                                <h1 className="text-2xl font-bold">DigitBill</h1>
+                            </div>
+                        </div>
 
                         <div className="relative group flex-1 hidden md:block">
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>

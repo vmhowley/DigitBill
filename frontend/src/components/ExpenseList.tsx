@@ -75,7 +75,42 @@ export const ExpenseList: React.FC = () => {
                         />
                     </div>
                 </div>
-                <div className="overflow-x-auto">
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-gray-100 dark:divide-border-dark">
+                    {filteredExpenses.length === 0 ? (
+                        <div className="py-12 text-center text-gray-400 dark:text-slate-500">
+                            No se encontraron gastos registrados.
+                        </div>
+                    ) : (
+                        filteredExpenses.map((exp) => (
+                            <div key={exp.id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white">{exp.provider_name || 'Gasto General'}</p>
+                                        <p className="text-xs text-gray-500">{new Date(exp.expense_date).toLocaleDateString()}</p>
+                                    </div>
+                                    <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold uppercase ${exp.status === 'paid' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'}`}>
+                                        {exp.status === 'paid' ? 'Pagado' : 'Pendiente'}
+                                    </span>
+                                </div>
+                                <div className="text-sm text-gray-600 dark:text-slate-300">
+                                    {exp.description}
+                                    {exp.category && (
+                                        <span className="ml-2 px-2 py-0.5 bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-300 rounded text-[10px] uppercase font-bold">
+                                            {exp.category}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="flex justify-end">
+                                    <span className="font-bold text-gray-900 dark:text-white">RD$ {parseFloat(exp.amount).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-gray-50/50 dark:bg-background-dark/50 border-b border-gray-100 dark:border-border-dark">

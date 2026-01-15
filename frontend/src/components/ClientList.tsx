@@ -66,7 +66,75 @@ export const ClientList: React.FC = () => {
             </div>
 
             <div className="bg-white dark:bg-card-dark rounded-2xl shadow-sm border border-slate-200 dark:border-border-dark overflow-hidden">
-                <div className="overflow-x-auto">
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-slate-100 dark:divide-border-dark">
+                    {clients.length === 0 ? (
+                        <div className="py-8 text-center text-slate-500 dark:text-slate-400">
+                            No hay clientes registrados.
+                        </div>
+                    ) : (
+                        clients.map((client) => (
+                            <div key={client.id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-primary dark:text-blue-400">
+                                            <User size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-slate-900 dark:text-white line-clamp-1">{client.name}</div>
+                                            <div className="text-xs text-slate-500 font-mono">{client.rnc_ci}</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <Link
+                                            to={`/clients/${client.id}/statement`}
+                                            className="p-2 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400"
+                                            title="Estado de Cuenta"
+                                        >
+                                            <FileText size={18} />
+                                        </Link>
+                                        <Link
+                                            to={`/clients/edit/${client.id}`}
+                                            className="p-2 text-slate-400 hover:text-primary dark:hover:text-blue-400"
+                                        >
+                                            <Edit size={18} />
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(client.id)}
+                                            className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="font-medium">Contacto:</span>
+                                        <span>{client.email || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="font-medium">Tel:</span>
+                                        <span>{client.phone || 'N/A'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg mt-1">
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${client.type === 'juridico'
+                                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300'
+                                        : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300'
+                                        }`}>
+                                        {client.type === 'juridico' ? 'Jurídico' : 'Físico'}
+                                    </span>
+                                    <span className="text-xs text-slate-400 truncate max-w-[150px]">{client.address || 'Sin dirección'}</span>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="bg-slate-50 dark:bg-background-dark/30 border-b border-slate-100 dark:border-border-dark">

@@ -13,7 +13,6 @@ interface Product {
     tax_rate: string;
     unit: string;
     type?: 'product' | 'service';
-    stock?: number;
     category?: string;
 }
 
@@ -69,7 +68,67 @@ export const ProductList: React.FC = () => {
             </div>
 
             <div className="bg-white dark:bg-card-dark rounded-2xl shadow-sm border border-slate-200 dark:border-border-dark overflow-hidden">
-                <div className="overflow-x-auto">
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-slate-100 dark:divide-border-dark">
+                    {products.length === 0 ? (
+                        <div className="py-8 text-center text-slate-500 dark:text-slate-400">
+                            No hay productos registrados.
+                        </div>
+                    ) : (
+                        products.map((product) => (
+                            <div key={product.id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${product.type === 'service' ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400'}`}>
+                                            <Package size={20} />
+                                        </div>
+                                        <div>
+                                            <span className="font-bold text-slate-800 dark:text-white block">{product.sku || '-'}</span>
+                                            <span className="text-xs text-slate-500 dark:text-slate-400 uppercase">{product.type === 'service' ? 'Servicio' : 'Producto'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <Link
+                                            to={`/products/edit/${product.id}`}
+                                            className="p-2 text-slate-400 hover:text-primary dark:hover:text-blue-400"
+                                        >
+                                            <Edit size={18} />
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(product.id)}
+                                            className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="font-bold text-slate-900 dark:text-slate-200">{product.description}</div>
+                                    <div className="text-sm text-slate-500">{product.category || 'General'} • {product.unit || 'Unidad'}</div>
+                                </div>
+                                <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg mt-1">
+                                    <div>
+                                        <p className="text-[10px] text-slate-400 uppercase font-bold">Existencia</p>
+                                        <p className="font-bold text-sm">
+                                            {product.type === 'product' ? (
+                                                <span className={(parseFloat(product.stock_quantity as any) || 0) <= 5 ? 'text-rose-600' : 'text-emerald-600'}>
+                                                    {parseFloat(product.stock_quantity as any) || 0}
+                                                </span>
+                                            ) : '-'}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[10px] text-slate-400 uppercase font-bold">Precio</p>
+                                        <p className="font-bold text-sm text-primary dark:text-white">RD$ {parseFloat(product.unit_price).toLocaleString('es-DO', { minimumFractionDigits: 2 })}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="bg-slate-50 dark:bg-background-dark/30 border-b border-slate-100 dark:border-border-dark">
@@ -84,7 +143,7 @@ export const ProductList: React.FC = () => {
                         <tbody className="divide-y divide-slate-100 dark:divide-border-dark">
                             {products.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="py-8 text-center text-slate-500 dark:text-slate-400">
+                                    <td colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400">
                                         No hay productos registrados.
                                     </td>
                                 </tr>

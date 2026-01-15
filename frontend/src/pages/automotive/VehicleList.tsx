@@ -124,7 +124,79 @@ export const VehicleList = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-gray-100">
+                    {filteredVehicles.length === 0 ? (
+                        <div className="py-12 text-center text-gray-500">
+                            No se encontraron vehículos
+                        </div>
+                    ) : (
+                        filteredVehicles.map((vehicle) => (
+                            <div key={vehicle.id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <Link to={`/automotive/vehicles/${vehicle.id}`} className="block group">
+                                        <div className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                            {vehicle.make} {vehicle.model}
+                                        </div>
+                                        <div className="text-xs text-gray-500">{vehicle.year} • {vehicle.color}</div>
+                                    </Link>
+                                    <div className="flex items-center gap-1">
+                                        {(vehicle.status === 'available' || vehicle.status === 'loaned') && (
+                                            <button
+                                                onClick={() => setSelectedForLoan(vehicle)}
+                                                className="p-2 text-gray-400 hover:text-orange-600"
+                                                title={vehicle.status === 'loaned' ? 'Ver Préstamo' : 'Prestar a Dealer'}
+                                            >
+                                                <Share2 size={18} />
+                                            </button>
+                                        )}
+                                        {vehicle.status === 'sold' && (
+                                            <button
+                                                onClick={async () => {
+                                                    if (!vehicle.sale_id) return toast.error('Venta no encontrada');
+                                                    const toastId = toast.loading('Generando contrato...');
+                                                    try {
+                                                        const res = await axios.get(`/api/automotive/sales/${vehicle.sale_id}`);
+                                                        const blob = await pdf(<SalesContractPDF sale={res.data} />).toBlob();
+                                                        const url = URL.createObjectURL(blob);
+                                                        window.open(url, '_blank');
+                                                        toast.success('Contrato generado', { id: toastId });
+                                                    } catch (error) {
+                                                        console.error(error);
+                                                        toast.error('Error generando contrato', { id: toastId });
+                                                    }
+                                                }}
+                                                className="p-2 text-gray-400 hover:text-blue-600"
+                                            >
+                                                <Printer size={18} />
+                                            </button>
+                                        )}
+                                        <Link to={`/automotive/vehicles/edit/${vehicle.id}`} className="p-2 text-gray-400 hover:text-blue-600">
+                                            <Edit size={18} />
+                                        </Link>
+                                        <button onClick={() => handleDelete(vehicle.id)} className="p-2 text-gray-400 hover:text-red-600">
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-end">
+                                    <div className="space-y-1">
+                                        <div className="text-xs font-mono text-gray-500">{vehicle.vin || 'N/A'}</div>
+                                        {vehicle.plate && <div className="text-xs font-bold text-blue-600">{vehicle.plate}</div>}
+                                        <div className="mt-1">{getStatusBadge(vehicle.status)}</div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-sm text-gray-500">Precio</div>
+                                        <div className="font-bold text-gray-900">RD$ {parseFloat(vehicle.price).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100">
                             <tr>

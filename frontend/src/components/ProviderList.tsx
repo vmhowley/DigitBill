@@ -1,8 +1,8 @@
 import { Edit, Mail, Phone, Plus, Search, Trash2, Truck } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import axios from '../api';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import axios from '../api';
 
 export const ProviderList: React.FC = () => {
     const [providers, setProviders] = useState<any[]>([]);
@@ -72,7 +72,57 @@ export const ProviderList: React.FC = () => {
                         />
                     </div>
                 </div>
-                <div className="overflow-x-auto">
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-gray-100 dark:divide-border-dark">
+                    {filteredProviders.length === 0 ? (
+                        <div className="py-12 text-center text-gray-400 dark:text-slate-500">
+                            No se encontraron proveedores.
+                        </div>
+                    ) : (
+                        filteredProviders.map((p) => (
+                            <div key={p.id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-blue-50 dark:bg-blue-500/10 p-2 rounded-lg text-blue-600 dark:text-blue-400">
+                                            <Truck size={18} />
+                                        </div>
+                                        <div>
+                                            <span className="font-bold text-gray-900 dark:text-white block">{p.name}</span>
+                                            <span className="text-xs text-gray-500 font-mono">{p.rnc || '---'}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <button
+                                            onClick={() => navigate(`/providers/edit/${p.id}`)}
+                                            className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                                        >
+                                            <Edit size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteProvider(p.id)}
+                                            className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+                                    <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                        <Mail size={14} className="shrink-0" />
+                                        <span className="truncate">{p.email || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                                        <Phone size={14} className="shrink-0" />
+                                        <span>{p.phone || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-gray-50/50 dark:bg-background-dark/50 border-b border-gray-100 dark:border-border-dark">

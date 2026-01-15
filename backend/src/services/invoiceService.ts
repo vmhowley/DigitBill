@@ -76,7 +76,7 @@ export const issueInvoice = async (tenantId: number, invoiceId: number) => {
         nombre: tenant.name || config.company_name,
       },
       receptor: { rnc: client.rnc_ci, nombre: client.name },
-      fecha: new Date().toISOString(),
+      fecha: new Date().toISOString().split("T")[0],
       tipo: invoice.type_code || "31",
       encf: ncf,
       items: items.map((it: any) => ({
@@ -93,9 +93,9 @@ export const issueInvoice = async (tenantId: number, invoiceId: number) => {
       subtotal: invoice.net_total,
       impuestototal: invoice.tax_total,
       total: invoice.total,
-      fecha_vencimiento: new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
-      ).toISOString(),
+      fecha_vencimiento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
       metodo_pago: "01",
     };
 

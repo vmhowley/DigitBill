@@ -88,7 +88,7 @@ router.post("/", requireRole(["admin"]), async (req, res) => {
           product_id: newProduct.id,
           type: "in",
           quantity: initialStock,
-          reference_id: `INIT-${newProduct.id}`,
+          reference_id: null,
           reason: "Inventario Inicial",
         });
         // Update returned object to reflect new stock

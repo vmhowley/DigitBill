@@ -1,10 +1,10 @@
-import { ArrowLeft, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck, Banknote } from 'lucide-react';
-import { PaymentModal } from './PaymentModal';
+import { AlertCircle, ArrowLeft, Banknote, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import axios from '../api';
+import { PaymentModal } from './PaymentModal';
 
 interface InvoiceDetail {
     id: number;
@@ -42,6 +42,7 @@ export const InvoiceDetails: React.FC = () => {
     const [sendingEmail, setSendingEmail] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [sendingDGII, setSendingDGII] = useState(false);
 
     const getShareUrl = () => {
         if (!invoice?.share_token) return window.location.href;
@@ -99,6 +100,24 @@ export const InvoiceDetails: React.FC = () => {
         }
     };
 
+    const handleSendToDGII = async () => {
+        if (!invoice) return;
+        try {
+            const conf = window.confirm('¿Estás seguro de enviar esta factura a la DGII?');
+            if (!conf) return;
+
+            setSendingDGII(true);
+            await axios.post(`/api/invoices/${id}/send`);
+            toast.success('Factura enviada correctamente');
+            setRefreshTrigger(prev => prev + 1);
+        } catch (err: any) {
+            console.error(err);
+            toast.error('Error al enviar: ' + (err.response?.data?.error || 'Error desconocido'));
+        } finally {
+            setSendingDGII(false);
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -114,7 +133,10 @@ export const InvoiceDetails: React.FC = () => {
                 // Parse QR if exists
                 if ((invData.status === 'signed' || invData.status === 'sent') && invData.xml_path?.includes('<UrlQR>')) {
                     const match = invData.xml_path.match(/<UrlQR>(.*?)<\/UrlQR>/);
-                    if (match && match[1]) setQrValue(match[1]);
+                    if (match && match[1]) {
+                        // Unescape &amp; to & for the QR code to be a valid URL
+                        setQrValue(match[1].replace(/&amp;/g, '&'));
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -169,6 +191,18 @@ export const InvoiceDetails: React.FC = () => {
                     </button>
 
                     <button
+                        onClick={handleSendToDGII}
+                        disabled={sendingDGII || invoice.status !== 'signed'}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${invoice.status === 'sent' ? 'bg-purple-100 text-purple-700' : 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed'}`}
+                        title="Enviar a DGII"
+                    >
+                        <Send size={18} className={sendingDGII ? 'animate-pulse' : ''} />
+                        <span className="hidden sm:inline">
+                            {sendingDGII ? 'Enviando...' : invoice.status === 'sent' ? 'Enviada' : 'DGII'}
+                        </span>
+                    </button>
+
+                    <button
                         onClick={() => {
                             navigator.clipboard.writeText(getShareUrl());
                             toast.success('Enlace público copiado al portapapeles');
@@ -215,6 +249,16 @@ export const InvoiceDetails: React.FC = () => {
             </div>
 
             <div className="bg-white border border-gray-200 shadow-lg rounded-xl p-6 md:p-8 print:shadow-none print:border-none">
+                {invoice?.status === 'signed' && (
+                    <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3 text-amber-800 print:hidden">
+                        <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+                        <div>
+                            <p className="font-bold text-sm">Factura pendiente de envío a DGII</p>
+                            <p className="text-xs opacity-90">Esta factura ya está firmada legalmente, pero el código QR solo podrá ser validado en el portal de la DGII después de que pulses el botón <strong>DGII</strong> para enviarla.</p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start border-b border-gray-100 pb-8 mb-8 gap-6 md:gap-0">
                     <div>
@@ -265,7 +309,7 @@ export const InvoiceDetails: React.FC = () => {
                         <tbody className="divide-y divide-gray-100">
                             {invoice.items.map((item) => (
                                 <tr key={item.id} className="align-top">
-                                    <td className="py-3 text-gray-800 break-words pr-2">{item.description}</td>
+                                    <td className="py-3 text-gray-800 wrap-break-word pr-2">{item.description}</td>
                                     <td className="py-3 text-right text-gray-600 whitespace-nowrap">{item.quantity}</td>
                                     <td className="py-3 text-right text-gray-600 whitespace-nowrap">{parseFloat(item.unit_price).toFixed(2)}</td>
                                     <td className="py-3 text-right text-gray-600 whitespace-nowrap">

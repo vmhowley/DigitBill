@@ -201,7 +201,7 @@ export const Dashboard = () => {
     return (
         <div className="space-y-8">
             {/* KPI Section */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <KpiCard
                     title="Balance Total"
                     value={`RD$ ${stats.totalRevenue.toLocaleString('es-DO', { minimumFractionDigits: 2 })}`}
@@ -256,9 +256,9 @@ export const Dashboard = () => {
                         </div>
                     </div>
                     <div className="w-full">
-                        <div className="flex items-end gap-2 mb-4">
-                            <span className="text-4xl font-bold tracking-tight">RD$ {stats.totalRevenue.toLocaleString('es-DO', { compactDisplay: 'short' })}</span>
-                            <span className="text-emerald-500 font-bold mb-1 flex items-center">
+                        <div className="flex items-end gap-2 mb-4 overflow-hidden">
+                            <span className="text-2xl sm:text-3xl font-bold tracking-tight truncate">RD$ {stats.totalRevenue.toLocaleString('es-DO', { compactDisplay: 'short' })}</span>
+                            <span className="text-emerald-500 font-bold mb-1 flex items-center shrink-0">
                                 <span className="material-symbols-outlined text-sm">trending_up</span>
                                 {stats.revenueTrend.toFixed(1)}%
                             </span>
@@ -296,7 +296,7 @@ export const Dashboard = () => {
                                         <p className="text-sm font-bold text-gray-900 dark:text-white">Nueva Factura Creada</p>
                                         <span className="text-[10px] text-slate-400 font-medium">Hace 1h</span>
                                     </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Factura #{inv.sequential_number}</p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Factura #{inv.sequential_number}</p>
                                     <p className="text-primary text-sm font-bold mt-1">RD$ {parseFloat(inv.total).toLocaleString()}</p>
                                 </div>
                             </div>
@@ -333,7 +333,35 @@ export const Dashboard = () => {
                         </button>
                     </Link>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="md:hidden divide-y divide-slate-100 dark:divide-border-dark">
+                    {recentInvoices.map((inv) => (
+                        <div key={inv.id} className="p-4 flex flex-col gap-3">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="size-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                        <span className="material-symbols-outlined text-slate-500">receipt</span>
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-sm font-semibold block truncate">{inv.client_name || 'Cliente Final'}</span>
+                                        <span className="text-xs text-slate-400 font-mono truncate block">{inv.reference_ncf || `#${inv.sequential_number}`}</span>
+                                    </div>
+                                </div>
+                                <div className="shrink-0">
+                                    <StatusBadge status={inv.status} />
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-500">{new Date(inv.created_at).toLocaleDateString()}</span>
+                                <span className="font-bold">RD$ {parseFloat(inv.total).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    ))}
+                    {recentInvoices.length === 0 && (
+                        <div className="p-8 text-center text-slate-500">No hay transacciones recientes</div>
+                    )}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-slate-50 dark:bg-background-dark/30 text-xs text-slate-500 uppercase font-bold tracking-wider">
                             <tr>
@@ -380,20 +408,22 @@ export const Dashboard = () => {
 const KpiCard = ({ title, value, trendValue, trendPositive, subtext, statusTag }: any) => {
     return (
         <div className="bg-white dark:bg-card-dark p-6 rounded-xl border border-slate-200 dark:border-border-dark shadow-sm">
-            <div className="flex justify-between items-start mb-4">
-                <span className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">{title}</span>
-                {statusTag ? (
-                    <div className="text-amber-500 bg-amber-500/10 px-2 py-1 rounded text-xs font-bold">{statusTag}</div>
-                ) : (
-                    trendValue && (
-                        <div className={`px-2 py-1 rounded text-xs font-bold ${trendPositive ? 'text-emerald-500 bg-emerald-500/10' : 'text-rose-500 bg-rose-500/10'}`}>
-                            {trendValue}
-                        </div>
-                    )
-                )}
+            <div className="flex justify-between items-start mb-4 gap-2">
+                <span className="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider truncate" title={title}>{title}</span>
+                <div className="shrink-0">
+                    {statusTag ? (
+                        <div className="text-amber-500 bg-amber-500/10 px-2 py-1 rounded text-xs font-bold whitespace-nowrap">{statusTag}</div>
+                    ) : (
+                        trendValue && (
+                            <div className={`px-2 py-1 rounded text-xs font-bold whitespace-nowrap ${trendPositive ? 'text-emerald-500 bg-emerald-500/10' : 'text-rose-500 bg-rose-500/10'}`}>
+                                {trendValue}
+                            </div>
+                        )
+                    )}
+                </div>
             </div>
-            <div className="text-3xl font-bold mb-1">{value}</div>
-            <p className="text-xs text-slate-400">{subtext}</p>
+            <div className="text-xl sm:text-2xl font-bold mb-1 break-all">{value}</div>
+            <p className="text-xs text-slate-400 truncate">{subtext}</p>
         </div>
     );
 };

@@ -86,59 +86,102 @@ export const WorkshopList = () => {
             </div>
 
             {/* List */}
+            {/* List */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Vehículo</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Fecha Inicio</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Estado</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700">Items</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700 text-right">Total Costo</th>
-                            <th className="px-6 py-4 font-semibold text-gray-700"></th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {loading ? (
-                            <tr><td colSpan={6} className="text-center py-8">Cargando...</td></tr>
-                        ) : orders.length === 0 ? (
-                            <tr><td colSpan={6} className="text-center py-8 text-gray-500">No hay órdenes activas</td></tr>
-                        ) : (
-                            orders.map((order) => (
-                                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="font-medium text-gray-900">
+                {/* Mobile View */}
+                <div className="md:hidden divide-y divide-gray-100">
+                    {loading ? (
+                        <div className="text-center py-8">Cargando...</div>
+                    ) : orders.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">No hay órdenes activas</div>
+                    ) : (
+                        orders.map((order) => (
+                            <div key={order.id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <div className="font-bold text-gray-900">
                                             {order.make} {order.model} {order.year}
                                         </div>
                                         <div className="text-xs text-gray-500 font-mono">VIN: {order.vin.slice(-6)}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {new Date(order.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
-                                            {getStatusLabel(order.status)}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        {order.item_count} items
-                                    </td>
-                                    <td className="px-6 py-4 text-right font-medium text-gray-900">
+                                    </div>
+                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
+                                        {getStatusLabel(order.status)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <div className="text-sm text-gray-500 italic">
+                                        {new Date(order.created_at).toLocaleDateString()} • {order.item_count} items
+                                    </div>
+                                    <div className="font-bold text-gray-900">
                                         RD$ {parseFloat(order.total_cost).toLocaleString()}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <Link
-                                            to={`/automotive/workshop/${order.id}`}
-                                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                                        >
-                                            Ver Detalles
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                    </div>
+                                </div>
+                                <Link
+                                    to={`/automotive/workshop/${order.id}`}
+                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium border-t border-gray-50 pt-2 text-center"
+                                >
+                                    Ver Detalles
+                                </Link>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Vehículo</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Fecha Inicio</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Estado</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Items</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700 text-right">Total Costo</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700"></th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {loading ? (
+                                <tr><td colSpan={6} className="text-center py-8">Cargando...</td></tr>
+                            ) : orders.length === 0 ? (
+                                <tr><td colSpan={6} className="text-center py-8 text-gray-500">No hay órdenes activas</td></tr>
+                            ) : (
+                                orders.map((order) => (
+                                    <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-gray-900">
+                                                {order.make} {order.model} {order.year}
+                                            </div>
+                                            <div className="text-xs text-gray-500 font-mono">VIN: {order.vin.slice(-6)}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {new Date(order.created_at).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`}>
+                                                {getStatusLabel(order.status)}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-600">
+                                            {order.item_count} items
+                                        </td>
+                                        <td className="px-6 py-4 text-right font-medium text-gray-900">
+                                            RD$ {parseFloat(order.total_cost).toLocaleString()}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <Link
+                                                to={`/automotive/workshop/${order.id}`}
+                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                            >
+                                                Ver Detalles
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* New Modal */}
