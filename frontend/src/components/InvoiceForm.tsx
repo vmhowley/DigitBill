@@ -1,10 +1,11 @@
 import { Plus, Save, Send, Trash2 } from 'lucide-react';
 import React from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { QuickClientModal } from './QuickClientModal';
+import { SearchableSelect } from './SearchableSelect';
 
 interface InvoiceItem {
     product_id: number; // Simplified for now, would be a select in real app
@@ -21,73 +22,12 @@ interface InvoiceFormData {
     reference_ncf?: string;
 }
 
-// Internal Component for Product Search
-const SearchableProductSelect = ({ products, onSelect }: { products: any[], onSelect: (p: any) => void }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [search, setSearch] = React.useState('');
-    const wrapperRef = React.useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    const filteredProducts = products.filter(p =>
-        p.description.toLowerCase().includes(search.toLowerCase()) ||
-        (p.sku && p.sku.toLowerCase().includes(search.toLowerCase()))
-    );
-
-    return (
-        <div className="relative" ref={wrapperRef}>
-            <input
-                type="text"
-                placeholder="🔍 Buscar producto..."
-                className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm dark:text-white dark:placeholder:text-slate-500"
-                onFocus={() => setIsOpen(true)}
-                onChange={(e) => {
-                    setSearch(e.target.value);
-                    setIsOpen(true);
-                }}
-                value={search} // Controlled input
-            />
-            {isOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {filteredProducts.length === 0 ? (
-                        <div className="p-3 text-sm text-slate-500 dark:text-slate-400 text-center">No encontrado</div>
-                    ) : (
-                        filteredProducts.map(p => (
-                            <div
-                                key={p.id}
-                                className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm border-b border-slate-50 dark:border-border-dark last:border-none"
-                                onClick={() => {
-                                    onSelect(p);
-                                    setSearch(p.description); // Update input with selection
-                                    setIsOpen(false);
-                                }}
-                            >
-                                <div className="font-medium text-slate-800 dark:text-slate-200">{p.description}</div>
-                                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                    <span>{p.sku || 'Sin SKU'}</span>
-                                    <span className="font-bold text-primary dark:text-blue-400">RD$ {p.unit_price}</span>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-        </div>
-    );
-};
+// Product data is now handled by SearchableSelect
 
 export const InvoiceForm: React.FC = () => {
     const navigate = useNavigate();
     const [clients, setClients] = React.useState<Array<{ id: number, name: string }>>([]);
-    const [products, setProducts] = React.useState<Array<{ id: number, sku: string, description: string, unit_price: string, tax_rate: number }>>([]);
+    const [products, setProducts] = React.useState<Array<{ id: number, sku: string, description: string, unit_price: string, tax_rate: number, stock_quantity: number, type: string }>>([]);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [isClientModalOpen, setIsClientModalOpen] = React.useState(false);
 
@@ -168,7 +108,7 @@ export const InvoiceForm: React.FC = () => {
     }, [JSON.stringify(items)]); // Use JSON.stringify to detect deep changes
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
             <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-800 dark:text-white tracking-tight">Nueva Factura</h2>
                 <p className="text-gray-500 dark:text-slate-400 mt-1">Crea un nuevo comprobante fiscal</p>
@@ -187,19 +127,25 @@ export const InvoiceForm: React.FC = () => {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Cliente</label>
                                 <div className="flex gap-2">
-                                    <select
-                                        {...register('client_id', { valueAsNumber: true, required: 'Seleccione un cliente' })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-border-dark dark:text-white rounded-xl focus:bg-white dark:focus:bg-card-dark focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
-                                    >
-                                        <option value="">Seleccionar Cliente...</option>
-                                        {clients.map(client => (
-                                            <option key={client.id} value={client.id}>{client.name}</option>
-                                        ))}
-                                    </select>
+                                    <div className="flex-1">
+                                        <Controller
+                                            control={control}
+                                            name="client_id"
+                                            rules={{ required: 'Seleccione un cliente' }}
+                                            render={({ field }: { field: any }) => (
+                                                <SearchableSelect
+                                                    options={clients.map(c => ({ id: c.id, title: c.name, subtitle: c.id.toString() }))}
+                                                    onSelect={(opt: any) => field.onChange(opt.id)}
+                                                    selectedId={field.value}
+                                                    placeholder="Seleccionar Cliente..."
+                                                />
+                                            )}
+                                        />
+                                    </div>
                                     <button
                                         type="button"
                                         onClick={() => setIsClientModalOpen(true)}
-                                        className="bg-primary hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center"
+                                        className="h-[46px] w-[46px] bg-primary hover:bg-blue-700 text-white rounded-xl transition-colors flex items-center justify-center shrink-0"
                                         title="Crear Nuevo Cliente"
                                     >
                                         <Plus size={20} />
@@ -255,32 +201,41 @@ export const InvoiceForm: React.FC = () => {
                         <div className="space-y-3">
                             {/* Desktop Headers */}
                             <div className="hidden md:grid grid-cols-12 gap-4 px-4 mb-2 text-xs font-bold text-slate-500 dark:text-slate-400">
-                                <div className="col-span-4">Producto / Servicio</div>
-                                <div className="col-span-1">Cant</div>
+                                <div className="col-span-5">Producto / Servicio</div>
+                                <div className="col-span-1 text-center">Cant</div>
                                 <div className="col-span-2">Precio</div>
-                                <div className="col-span-2">Tax %</div>
-                                <div className="col-span-2 text-right">Total</div>
+                                <div className="col-span-1 text-center">Tax %</div>
+                                <div className="col-span-2 text-right pr-4">Total</div>
                                 <div className="col-span-1"></div>
                             </div>
 
                             {fields.map((field, index) => (
                                 <div key={field.id} className="group relative grid grid-cols-12 gap-x-4 gap-y-4 items-start bg-slate-50/50 dark:bg-background-dark/30 hover:bg-slate-50 dark:hover:bg-background-dark/50 p-4 rounded-xl border border-slate-100 dark:border-border-dark hover:border-slate-200 dark:hover:border-slate-700 transition-all">
-                                    <div className="col-span-12 md:col-span-4">
+                                    <div className="col-span-12 md:col-span-5">
                                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Producto / Servicio</label>
                                         <div className="space-y-2">
-                                            <SearchableProductSelect
-                                                products={products}
-                                                onSelect={(product) => {
-                                                    setValue(`items.${index}.product_id`, product.id);
-                                                    setValue(`items.${index}.description`, product.description);
-                                                    setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
-                                                    setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
+                                            <SearchableSelect
+                                                options={products.map(p => ({
+                                                    id: p.id,
+                                                    title: p.description,
+                                                    subtitle: p.sku || 'Sin SKU',
+                                                    extra: p.type === 'service' ? `RD$ ${p.unit_price}` : `RD$ ${p.unit_price} | Stock: ${p.stock_quantity}`
+                                                }))}
+                                                onSelect={(productOpt: any) => {
+                                                    const product = products.find(p => p.id === productOpt.id);
+                                                    if (product) {
+                                                        setValue(`items.${index}.product_id`, product.id);
+                                                        setValue(`items.${index}.description`, product.description);
+                                                        setValue(`items.${index}.unit_price`, parseFloat(product.unit_price));
+                                                        setValue(`items.${index}.tax_rate`, parseFloat(product.tax_rate as any) || 18.00);
+                                                    }
                                                 }}
+                                                placeholder="Buscar producto..."
                                             />
                                             <input
                                                 {...register(`items.${index}.description`)}
                                                 className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                                                placeholder="Descripción del producto"
+                                                placeholder="Descripción detallada (opcional)"
                                             />
                                         </div>
                                     </div>
@@ -290,8 +245,18 @@ export const InvoiceForm: React.FC = () => {
                                             type="number"
                                             step="0.01"
                                             {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-                                            className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                            className={`w-full px-3 py-2 bg-white dark:bg-card-dark border ${items[index]?.product_id &&
+                                                products.find(p => p.id === items[index].product_id)?.type === 'product' &&
+                                                (items[index]?.quantity || 0) > (products.find(p => p.id === items[index].product_id)?.stock_quantity || 0)
+                                                ? 'border-rose-500 ring-1 ring-rose-500'
+                                                : 'border-slate-200 dark:border-border-dark'
+                                                } text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all`}
                                         />
+                                        {items[index]?.product_id &&
+                                            products.find(p => p.id === items[index].product_id)?.type === 'product' &&
+                                            (items[index]?.quantity || 0) > (products.find(p => p.id === items[index].product_id)?.stock_quantity || 0) && (
+                                                <p className="text-[10px] text-rose-500 font-bold mt-1 line-clamp-1">Stock insuficiente ({products.find(p => p.id === items[index].product_id)?.stock_quantity})</p>
+                                            )}
                                     </div>
                                     <div className="col-span-4 md:col-span-2">
                                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Precio Unitario</label>
@@ -305,19 +270,19 @@ export const InvoiceForm: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-span-4 md:col-span-2">
+                                    <div className="col-span-4 md:col-span-1">
                                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Tax %</label>
                                         <input
                                             type="number"
                                             step="1"
                                             {...register(`items.${index}.tax_rate`, { valueAsNumber: true })}
-                                            className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                            className="w-full px-2 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-center"
                                         />
                                     </div>
                                     <div className="col-span-12 md:col-span-2">
                                         <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Total</label>
-                                        <div className="px-3 py-2 bg-slate-100 dark:bg-background-dark border border-transparent dark:border-border-dark rounded-lg text-right font-bold text-slate-700 dark:text-white truncate">
-                                            {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toFixed(2)}
+                                        <div className="px-3 py-2 bg-slate-100 dark:bg-background-dark border border-transparent dark:border-border-dark rounded-lg text-right font-bold text-slate-700 dark:text-white">
+                                            {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </div>
                                     </div>
                                     <div className="col-span-12 md:col-span-1 flex items-center justify-center md:pt-1">
@@ -378,7 +343,10 @@ export const InvoiceForm: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => handleSubmit((data) => onSubmit(data, false))()}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || items.some(item => {
+                                    const p = products.find(prod => prod.id === item.product_id);
+                                    return p?.type === 'product' && (item.quantity || 0) > (p.stock_quantity || 0);
+                                })}
                                 className="w-full bg-primary text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                             >
                                 <Save size={20} /> Guardar Borrador
@@ -386,7 +354,10 @@ export const InvoiceForm: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => handleSubmit((data) => onSubmit(data, true))()}
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || items.some(item => {
+                                    const p = products.find(prod => prod.id === item.product_id);
+                                    return p?.type === 'product' && (item.quantity || 0) > (p.stock_quantity || 0);
+                                })}
                                 className="w-full bg-transparent border-2 border-primary text-primary dark:text-blue-400 dark:border-blue-400 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-50"
                             >
                                 <Send size={20} /> Emitir Ahora

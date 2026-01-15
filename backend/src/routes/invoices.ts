@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
         i.sequential_number::text ILIKE $${paramIndex} OR 
         c.name ILIKE $${paramIndex} OR 
         i.total::text ILIKE $${paramIndex} OR
-        i.ncf ILIKE $${paramIndex}
+        i.e_ncf ILIKE $${paramIndex}
       )`;
       queryParams.push(`%${search}%`);
       paramIndex++;
@@ -133,8 +133,9 @@ router.get("/:id/pdf", async (req, res) => {
 
       if (totalMB >= limits.maxStorageMB) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de almacenamiento de ${limits.maxStorageMB
-            }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
+          error: `Has alcanzado el límite de almacenamiento de ${
+            limits.maxStorageMB
+          }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
         });
       }
     }
@@ -173,8 +174,9 @@ router.get("/:id/pdf", async (req, res) => {
     const config = await getCompanyConfig(req.tenantId);
 
     // 4. Generate PDF
-    const filename = `factura-${invoice.e_ncf || invoice.sequential_number
-      }.pdf`;
+    const filename = `factura-${
+      invoice.e_ncf || invoice.sequential_number
+    }.pdf`;
 
     res.setHeader("Content-disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-type", "application/pdf");
@@ -242,8 +244,9 @@ router.post("/", async (req, res) => {
 
       if (currentCount >= limits.maxInvoicesPerMonth) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de ${limits.maxInvoicesPerMonth
-            } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
+          error: `Has alcanzado el límite de ${
+            limits.maxInvoicesPerMonth
+          } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
         });
       }
     }
@@ -440,13 +443,13 @@ router.get("/:id/xml", async (req, res) => {
     const invoiceData = {
       emisor: {
         rnc: config.company_rnc,
-        nombre: config.company_name
+        nombre: config.company_name,
       },
       receptor: {
         rnc: invoice.client_rnc || "000000000",
-        nombre: invoice.client_name
+        nombre: invoice.client_name,
       },
-      fecha: new Date(invoice.created_at).toISOString().split('T')[0], // YYYY-MM-DD
+      fecha: new Date(invoice.created_at).toISOString().split("T")[0], // YYYY-MM-DD
       tipo: invoice.type_code, // e.g. 31, 32
       encf: invoice.e_ncf || `E${invoice.type_code}00000000`, // Fallback if no e-NCF assigned yet
       items: items.map((it: any) => ({
@@ -455,20 +458,24 @@ router.get("/:id/xml", async (req, res) => {
         precio: it.unit_price,
         monto: it.line_amount,
         impuesto: it.line_tax,
-        itbis_rate: it.tax_rate
+        itbis_rate: it.tax_rate,
       })),
       subtotal: invoice.net_total,
       impuestototal: invoice.tax_total,
       total: invoice.total,
-      fecha_vencimiento: new Date(invoice.created_at).toISOString().split('T')[0] // Default same day
+      fecha_vencimiento: new Date(invoice.created_at)
+        .toISOString()
+        .split("T")[0], // Default same day
     };
 
     const generatedXml = buildECFXML(invoiceData);
 
     res.header("Content-Type", "application/xml");
-    res.header("Content-disposition", `attachment; filename="invoice-${id}-unsigned.xml"`);
+    res.header(
+      "Content-disposition",
+      `attachment; filename="invoice-${id}-unsigned.xml"`
+    );
     res.send(generatedXml);
-
   } catch (err) {
     console.error("Error fetching/generating XML", err);
     res.status(500).json({ error: "Error fetching XML" });

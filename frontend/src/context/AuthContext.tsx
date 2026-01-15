@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 console.warn("Auth initialization timed out, forcing load completion.");
                 setLoading(false);
             }
-        }, 3000);
+        }, 10000);
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (!mounted) return;

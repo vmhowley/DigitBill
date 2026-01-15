@@ -1,11 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { BottomNav } from './BottomNav';
 import { Sidebar } from './Sidebar';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showResults, setShowResults] = useState(false);
     const { profile } = useAuth();
+    const navigate = useNavigate();
+    const searchRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSearch = async (query: string) => {
+        setSearchQuery(query);
+        if (query.length < 2) {
+            setSearchResults([]);
+            setShowResults(false);
+            return;
+        }
+
+        setIsSearching(true);
+        setShowResults(true);
+        try {
+            const res = await api.get(`/api/search?q=${encodeURIComponent(query)}`);
+            setSearchResults(res.data);
+        } catch (error) {
+            console.error('Search error:', error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
 
     return (
         <div className="flex h-screen bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 overflow-hidden">
@@ -36,13 +74,63 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             </div>
                         </div>
 
-                        <div className="relative group flex-1 hidden md:block">
+                        <div className="relative group flex-1 hidden md:block" ref={searchRef}>
                             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
                             <input
                                 type="text"
                                 placeholder="Buscar transacciones, facturas, o clientes..."
                                 className="w-full pl-12 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-card-dark focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none dark:placeholder:text-slate-500 text-sm dark:text-white"
+                                value={searchQuery}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                onFocus={() => searchQuery.length >= 2 && setShowResults(true)}
                             />
+
+                            {showResults && (
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="max-h-[70vh] overflow-y-auto">
+                                        {isSearching ? (
+                                            <div className="p-4 text-center text-slate-500 text-sm">Buscando...</div>
+                                        ) : searchResults.length === 0 ? (
+                                            <div className="p-4 text-center text-slate-500 text-sm italic">No se encontraron resultados para "{searchQuery}"</div>
+                                        ) : (
+                                            <div className="divide-y divide-slate-100 dark:divide-border-dark">
+                                                {searchResults.map((result: any, idx: number) => (
+                                                    <div
+                                                        key={`${result.type}-${result.id}-${idx}`}
+                                                        className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors flex items-center gap-4"
+                                                        onClick={() => {
+                                                            navigate(result.url);
+                                                            setShowResults(false);
+                                                            setSearchQuery('');
+                                                        }}
+                                                    >
+                                                        <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${result.type === 'invoice' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600' :
+                                                            result.type === 'client' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600' :
+                                                                'bg-purple-50 dark:bg-purple-500/10 text-purple-600'
+                                                            }`}>
+                                                            <span className="material-symbols-outlined">
+                                                                {result.type === 'invoice' ? 'receipt' : result.type === 'client' ? 'person' : 'inventory_2'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="font-bold text-slate-900 dark:text-white truncate">{result.title}</div>
+                                                            <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{result.subtitle}</div>
+                                                        </div>
+                                                        {result.extra && (
+                                                            <div className="text-[10px] font-mono font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded truncate max-w-[100px]">
+                                                                {result.extra}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="p-3 bg-slate-50 dark:bg-background-dark border-t border-slate-100 dark:border-border-dark text-center">
+                                        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Presiona ESC para cerrar</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -20,6 +20,7 @@ import paymentRoutes from "./routes/payments";
 import productRoutes from "./routes/products";
 import publicRoutes from "./routes/public";
 import reportRoutes from "./routes/reports";
+import searchRoutes from "./routes/search";
 import settingsRoutes from "./routes/settings";
 import subscriptionRoutes from "./routes/subscriptions";
 
@@ -69,6 +70,7 @@ app.use("/api/public", publicRoutes);
 app.use("/api/automotive", automotiveRoutes);
 app.use("/api/automotive", automotiveSalesRoutes);
 app.use("/api/automotive/workshop", automotiveWorkshopRoutes); // Mounts sales routes like /sales, /calculate-payment
+app.use("/api/search", searchRoutes);
 
 app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");
