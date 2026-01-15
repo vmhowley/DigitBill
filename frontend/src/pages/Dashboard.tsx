@@ -309,7 +309,7 @@ export const Dashboard = () => {
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
                                         <p className="text-sm font-bold text-rose-500">Alerta de Inventario</p>
-                                        <span className="text-[10px] text-slate-400 font-medium">Ahora</span>
+                                        <span className="text-[10px] text-slate-400 font-medium">{ }</span>
                                     </div>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{stats.stockAlerts} productos bajos en stock</p>
                                     <Link to="/inventory" className="text-rose-500 text-xs font-bold mt-1 block hover:underline">Revisar</Link>

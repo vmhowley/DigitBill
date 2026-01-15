@@ -75,6 +75,7 @@ export const getStockAlerts = async (tenantId: number) => {
   const res = await query(
     `SELECT * FROM products 
          WHERE tenant_id = $1 AND stock_quantity < 5 
+         AND type = 'product'
          ORDER BY stock_quantity ASC`,
     [tenantId]
   );
