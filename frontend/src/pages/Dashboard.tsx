@@ -14,6 +14,8 @@ export const Dashboard = () => {
         taxDue: 0,
         revenueTrend: 0
     });
+
+    const [timeRange, setTimeRange] = useState<'7d' | '6m'>('7d');
     const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
     const [weeklyData, setWeeklyData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,34 +50,6 @@ export const Dashboard = () => {
                     .reduce((acc: number, curr: any) => acc + parseFloat(curr.tax_total || 0), 0);
 
                 const totalAR = totalInvoiced - revenue;
-
-                // 2. Weekly Data for Chart (Income vs Expenses)
-                const last7Days = Array.from({ length: 7 }, (_, i) => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    return d.toISOString().split('T')[0];
-                }).reverse();
-
-                const chartData = last7Days.map(date => {
-                    const dayIncome = invoices
-                        .filter((i: any) => i.created_at.startsWith(date) && i.status !== 'draft')
-                        .reduce((acc: number, curr: any) => acc + parseFloat(curr.total), 0);
-
-                    const dayExpense = expenseStats.find((e: any) => e.date === date)?.total || 0;
-
-                    return { date, income: dayIncome, expense: parseFloat(dayExpense) };
-                });
-
-                const maxVal = Math.max(...chartData.map(d => Math.max(d.income, d.expense)));
-
-                const scaledChartData = chartData.map(d => ({
-                    ...d,
-                    incomeHeight: maxVal > 0 ? (d.income / maxVal) * 100 : 0,
-                    expenseHeight: maxVal > 0 ? (d.expense / maxVal) * 100 : 0,
-                    dayName: new Date(d.date).toLocaleDateString('es-DO', { weekday: 'short' })
-                }));
-
-
 
                 const totalExpenses = expenses.reduce((acc: number, curr: any) => acc + parseFloat(curr.amount), 0);
 
@@ -122,8 +96,21 @@ export const Dashboard = () => {
                     revenueTrend: trendDiff
                 });
 
-                setWeeklyData(scaledChartData);
-                setRecentInvoices(invoices.slice(0, 5));
+                // Sort invoices by date descending for Recent Activity
+                const sortedInvoices = [...invoices].sort((a: any, b: any) =>
+                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                );
+                setRecentInvoices(sortedInvoices.slice(0, 5));
+
+                // Process Chart Data based on current selection
+                // Store raw data to re-process on toggle
+                // HOWEVER, since we are inside useEffect, we can't easily react unless we move logic out.
+                // For simplicity, let's store the raw data in a ref or state and use a separate effect for chart.
+                // But refactoring too much might be risky.
+                // Let's create a helper function outside or inside component.
+
+                setRawData({ invoices, expenseStats }); // Need to add this state
+
             } catch (error) {
                 console.error("Error loading dashboard data", error);
             } finally {
@@ -133,6 +120,79 @@ export const Dashboard = () => {
 
         fetchData();
     }, []);
+
+    // New state for raw data to support toggling
+    const [rawData, setRawData] = useState<{ invoices: any[], expenseStats: any[] }>({ invoices: [], expenseStats: [] });
+
+    useEffect(() => {
+        if (!rawData.invoices.length && !rawData.expenseStats.length) return;
+
+        let chartDataPoints: any[] = [];
+
+        if (timeRange === '7d') {
+            const last7Days = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                return d.toISOString().split('T')[0];
+            }).reverse();
+
+            chartDataPoints = last7Days.map(date => {
+                const dayIncome = rawData.invoices
+                    .filter((i: any) => i.created_at.startsWith(date) && i.status !== 'draft')
+                    .reduce((acc: number, curr: any) => acc + parseFloat(curr.total), 0);
+
+                const dayExpense = rawData.expenseStats.find((e: any) => e.date === date)?.total || 0;
+
+                return {
+                    label: new Date(date).toLocaleDateString('es-DO', { weekday: 'short' }),
+                    income: dayIncome,
+                    expense: parseFloat(dayExpense)
+                };
+            });
+        } else {
+            // 6 Months Logic
+            const months = Array.from({ length: 6 }, (_, i) => {
+                const d = new Date();
+                d.setMonth(d.getMonth() - i);
+                return {
+                    month: d.getMonth(),
+                    year: d.getFullYear(),
+                    label: d.toLocaleDateString('es-DO', { month: 'short' })
+                };
+            }).reverse();
+
+            chartDataPoints = months.map(({ month, year, label }) => {
+                const monthIncome = rawData.invoices
+                    .filter((i: any) => {
+                        const d = new Date(i.created_at);
+                        return d.getMonth() === month && d.getFullYear() === year && i.status !== 'draft';
+                    })
+                    .reduce((acc: number, curr: any) => acc + parseFloat(curr.total), 0);
+
+                // For expenses, we need to correct aggregation if expenseStats is daily
+                const monthExpense = rawData.expenseStats
+                    .filter((e: any) => {
+                        const d = new Date(e.date);
+                        return d.getMonth() === month && d.getFullYear() === year;
+                    })
+                    .reduce((acc: number, curr: any) => acc + parseFloat(curr.total), 0);
+
+                return { label, income: monthIncome, expense: monthExpense };
+            });
+        }
+
+        const maxVal = Math.max(...chartDataPoints.map(d => Math.max(d.income, d.expense)));
+
+        const scaledChartData = chartDataPoints.map(d => ({
+            ...d,
+            incomeHeight: maxVal > 0 ? (d.income / maxVal) * 100 : 0,
+            expenseHeight: maxVal > 0 ? (d.expense / maxVal) * 100 : 0,
+            dayName: d.label // Reuse the property
+        }));
+
+        setWeeklyData(scaledChartData);
+
+    }, [timeRange, rawData]);
 
     if (loading) {
         return <div className="p-8 text-center text-slate-500 animate-pulse">Cargando dashboard...</div>;
@@ -181,8 +241,18 @@ export const Dashboard = () => {
                             <p className="text-sm text-slate-500">Comparación anual</p>
                         </div>
                         <div className="flex gap-2">
-                            <button className="px-3 py-1.5 text-xs font-bold bg-slate-100 dark:bg-background-dark rounded-lg hover:bg-primary/10 transition-colors">6 Meses</button>
-                            <button className="px-3 py-1.5 text-xs font-bold bg-primary text-white rounded-lg">12 Meses</button>
+                            <button
+                                onClick={() => setTimeRange('6m')}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${timeRange === '6m' ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-background-dark hover:bg-slate-200'}`}
+                            >
+                                6 Meses
+                            </button>
+                            <button
+                                onClick={() => setTimeRange('7d')}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${timeRange === '7d' ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-background-dark hover:bg-slate-200'}`}
+                            >
+                                7 Días
+                            </button>
                         </div>
                     </div>
                     <div className="w-full">
@@ -199,8 +269,8 @@ export const Dashboard = () => {
                             {weeklyData.map((d, i) => (
                                 <div key={i} className="group relative w-full h-full flex flex-col justify-end gap-1">
                                     <div className="flex gap-1 items-end h-full w-full justify-center">
-                                        <div className="w-1/2 bg-primary/80 rounded-t-sm" style={{ height: `${d.incomeHeight}%` }}></div>
-                                        <div className="w-1/2 bg-slate-200 dark:bg-slate-700 rounded-t-sm" style={{ height: `${d.expenseHeight}%` }}></div>
+                                        <div className="w-1/2 bg-primary/80 rounded-t-sm transition-all duration-500" style={{ height: `${d.incomeHeight}%` }}></div>
+                                        <div className="w-1/2 bg-slate-200 dark:bg-slate-700 rounded-t-sm transition-all duration-500" style={{ height: `${d.expenseHeight}%` }}></div>
                                     </div>
                                     <span className="text-xs text-slate-400 text-center mt-3 font-medium uppercase">{d.dayName}</span>
                                 </div>
@@ -246,19 +316,8 @@ export const Dashboard = () => {
                                 </div>
                             </div>
                         )}
-                        <div className="flex gap-4">
-                            <div className="size-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-emerald-500 text-xl">add_shopping_cart</span>
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <p className="text-sm font-bold text-gray-900 dark:text-white">Nuevo Pago</p>
-                                    <span className="text-[10px] text-slate-400 font-medium">Ayer</span>
-                                </div>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Transferencia recibida</p>
-                                <p className="text-emerald-500 text-sm font-bold mt-1">+RD$ 4,250.00</p>
-                            </div>
-                        </div>
+
+
                     </div>
                 </div>
             </div>

@@ -253,10 +253,20 @@ export const InvoiceForm: React.FC = () => {
                         </div>
 
                         <div className="space-y-3">
+                            {/* Desktop Headers */}
+                            <div className="hidden md:grid grid-cols-12 gap-4 px-4 mb-2 text-xs font-bold text-slate-500 dark:text-slate-400">
+                                <div className="col-span-4">Producto / Servicio</div>
+                                <div className="col-span-1">Cant</div>
+                                <div className="col-span-2">Precio</div>
+                                <div className="col-span-2">Tax %</div>
+                                <div className="col-span-2 text-right">Total</div>
+                                <div className="col-span-1"></div>
+                            </div>
+
                             {fields.map((field, index) => (
                                 <div key={field.id} className="group relative grid grid-cols-12 gap-x-4 gap-y-4 items-start bg-slate-50/50 dark:bg-background-dark/30 hover:bg-slate-50 dark:hover:bg-background-dark/50 p-4 rounded-xl border border-slate-100 dark:border-border-dark hover:border-slate-200 dark:hover:border-slate-700 transition-all">
                                     <div className="col-span-12 md:col-span-4">
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Producto / Servicio</label>
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Producto / Servicio</label>
                                         <div className="space-y-2">
                                             <SearchableProductSelect
                                                 products={products}
@@ -274,8 +284,8 @@ export const InvoiceForm: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-span-6 md:col-span-2">
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Cantidad</label>
+                                    <div className="col-span-4 md:col-span-1">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Cant</label>
                                         <input
                                             type="number"
                                             step="0.01"
@@ -283,8 +293,8 @@ export const InvoiceForm: React.FC = () => {
                                             className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                         />
                                     </div>
-                                    <div className="col-span-6 md:col-span-2">
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Precio Unitario</label>
+                                    <div className="col-span-4 md:col-span-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Precio Unitario</label>
                                         <div className="relative">
                                             <span className="absolute left-3 top-2 text-slate-400 dark:text-slate-500 text-sm">$</span>
                                             <input
@@ -295,8 +305,8 @@ export const InvoiceForm: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-span-6 md:col-span-1">
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Tax %</label>
+                                    <div className="col-span-4 md:col-span-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Tax %</label>
                                         <input
                                             type="number"
                                             step="1"
@@ -304,13 +314,13 @@ export const InvoiceForm: React.FC = () => {
                                             className="w-full px-3 py-2 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark text-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                         />
                                     </div>
-                                    <div className="col-span-6 md:col-span-2">
-                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Total</label>
+                                    <div className="col-span-12 md:col-span-2">
+                                        <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 md:hidden">Total</label>
                                         <div className="px-3 py-2 bg-slate-100 dark:bg-background-dark border border-transparent dark:border-border-dark rounded-lg text-right font-bold text-slate-700 dark:text-white truncate">
                                             {((items[index]?.quantity || 0) * (items[index]?.unit_price || 0) * (1 + (items[index]?.tax_rate || 0) / 100)).toFixed(2)}
                                         </div>
                                     </div>
-                                    <div className="col-span-12 md:col-span-1 flex items-center justify-center md:pt-6">
+                                    <div className="col-span-12 md:col-span-1 flex items-center justify-center md:pt-1">
                                         <button
                                             type="button"
                                             onClick={() => remove(index)}

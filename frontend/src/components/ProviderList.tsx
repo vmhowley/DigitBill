@@ -48,10 +48,10 @@ export const ProviderList: React.FC = () => {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Proveedores</h2>
-                    <p className="text-gray-500 mt-1">Gestiona tus suministradores y acreedores</p>
+                    <h2 className="text-3xl font-bold text-gray-800 dark:text-white tracking-tight">Proveedores</h2>
+                    <p className="text-gray-500 dark:text-slate-400 mt-1">Gestiona tus suministradores y acreedores</p>
                 </div>
-                <button 
+                <button
                     onClick={() => navigate('/providers/new')}
                     className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition font-medium flex items-center gap-2 shadow-lg shadow-blue-600/20"
                 >
@@ -59,14 +59,14 @@ export const ProviderList: React.FC = () => {
                 </button>
             </div>
 
-            <div className="bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
-                <div className="p-4 border-b border-gray-100 bg-gray-50/30 flex gap-4">
+            <div className="bg-white dark:bg-card-dark shadow-sm border border-gray-200 dark:border-border-dark rounded-2xl overflow-hidden">
+                <div className="p-4 border-b border-gray-100 dark:border-border-dark bg-gray-50/30 dark:bg-background-dark/30 flex gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input
                             type="text"
                             placeholder="Buscar por nombre o RNC..."
-                            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full pl-10 pr-4 py-2 bg-white dark:bg-background-dark border border-gray-200 dark:border-border-dark rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -75,51 +75,51 @@ export const ProviderList: React.FC = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-gray-50/50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Proveedor</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">RNC</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contacto</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Acciones</th>
+                            <tr className="bg-gray-50/50 dark:bg-background-dark/50 border-b border-gray-100 dark:border-border-dark">
+                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Proveedor</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">RNC</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">Contacto</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-border-dark">
                             {filteredProviders.map((p) => (
-                                <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                                <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
+                                            <div className="bg-blue-50 dark:bg-blue-500/10 p-2 rounded-lg text-blue-600 dark:text-blue-400">
                                                 <Truck size={18} />
                                             </div>
-                                            <span className="font-medium text-gray-900">{p.name}</span>
+                                            <span className="font-medium text-gray-900 dark:text-white">{p.name}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
+                                        <span className="text-sm text-gray-600 dark:text-slate-300 font-mono bg-gray-50 dark:bg-slate-800 px-2 py-0.5 rounded border border-gray-100 dark:border-slate-700">
                                             {p.rnc || '---'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
                                                 <Mail size={12} /> {p.email || '---'}
                                             </div>
-                                            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
                                                 <Phone size={12} /> {p.phone || '---'}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <button 
+                                            <button
                                                 onClick={() => navigate(`/providers/edit/${p.id}`)}
-                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" 
+                                                className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-all"
                                                 title="Editar"
                                             >
                                                 <Edit size={18} />
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => handleDeleteProvider(p.id)}
-                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
+                                                className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
                                                 title="Eliminar"
                                             >
                                                 <Trash2 size={18} />
@@ -130,7 +130,7 @@ export const ProviderList: React.FC = () => {
                             ))}
                             {filteredProviders.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
+                                    <td colSpan={4} className="px-6 py-12 text-center text-gray-400 dark:text-slate-500">
                                         No se encontraron proveedores.
                                     </td>
                                 </tr>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
+import logo from '../assets/logo_digitbill.png';
 interface SidebarProps {
     isOpen: boolean;
     onClose: () => void;
@@ -29,10 +29,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 <div className="p-6 flex items-center gap-3">
-                    <div className="bg-primary size-8 rounded-lg flex items-center justify-center">
-                        <span className="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
+                    <div className="rounded bg-slate-200 dark:bg-slate-700/50 overflow-hidden">
+                        <img className='w-80 h-20  object-cover object-center' src={logo} alt="" />
                     </div>
-                    <h1 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white">DigitBill</h1>
                     <button onClick={onClose} className="ml-auto md:hidden text-slate-400">
                         <span className="material-symbols-outlined">close</span>
                     </button>

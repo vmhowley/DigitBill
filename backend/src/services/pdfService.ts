@@ -173,10 +173,10 @@ function generateTableRow(
   doc
     .fontSize(10)
     .text(item, 50, y)
-    .text(description, 150, y, { width: 190, lineGap: 2 }) // Limited width for desc
-    .text(unitCost, 280, y, { width: 90, align: "right" })
-    .text(quantity, 370, y, { width: 90, align: "right" })
-    .text(lineTotal, 0, y, { align: "right" });
+    .text(description, 90, y, { width: 200, lineGap: 2 }) // Increased width and shifted left
+    .text(unitCost, 300, y, { width: 80, align: "right" }) // Shifted right to avoid overlap
+    .text(quantity, 390, y, { width: 60, align: "right" }) // Adjusted position
+    .text(lineTotal, 460, y, { width: 80, align: "right" }); // Ensure total aligns right within bounds
 }
 
 function generateHr(doc: PDFKit.PDFDocument, y: number) {

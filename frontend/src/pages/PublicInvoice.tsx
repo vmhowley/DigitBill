@@ -129,24 +129,24 @@ export const PublicInvoice = () => {
 
                     {/* Items */}
                     <div className="overflow-x-auto">
-                        <table className="w-full mb-8">
+                        <table className="w-full mb-8 table-fixed">
                             <thead>
                                 <tr className="border-b-2 border-gray-100">
-                                    <th className="text-left py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Descripción</th>
-                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Cant</th>
-                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Precio</th>
-                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">ITBIS</th>
-                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Total</th>
+                                    <th className="text-left py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-[40%]">Descripción</th>
+                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%]">Cant</th>
+                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-[15%]">Precio</th>
+                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-[15%]">ITBIS</th>
+                                    <th className="text-right py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-[20%]">Total</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {invoice.items.map((item: any, idx: number) => (
-                                    <tr key={idx}>
-                                        <td className="py-4 text-gray-800 font-medium">{item.description}</td>
-                                        <td className="py-4 text-right text-gray-600">{parseFloat(item.quantity).toFixed(2)}</td>
-                                        <td className="py-4 text-right text-gray-600">{parseFloat(item.unit_price).toFixed(2)}</td>
-                                        <td className="py-4 text-right text-gray-500 text-xs">({parseFloat(item.tax_rate || '18').toFixed(0)}%) {parseFloat(item.line_tax).toFixed(2)}</td>
-                                        <td className="py-4 text-right font-bold text-gray-900">{parseFloat(item.line_amount).toFixed(2)}</td>
+                                    <tr key={idx} className="align-top">
+                                        <td className="py-4 text-gray-800 font-medium break-words pr-2">{item.description}</td>
+                                        <td className="py-4 text-right text-gray-600 whitespace-nowrap">{parseFloat(item.quantity).toFixed(2)}</td>
+                                        <td className="py-4 text-right text-gray-600 whitespace-nowrap">{parseFloat(item.unit_price).toFixed(2)}</td>
+                                        <td className="py-4 text-right text-gray-500 text-xs whitespace-nowrap">({parseFloat(item.tax_rate || '18').toFixed(0)}%) {parseFloat(item.line_tax).toFixed(2)}</td>
+                                        <td className="py-4 text-right font-bold text-gray-900 whitespace-nowrap">{parseFloat(item.line_amount).toFixed(2)}</td>
                                     </tr>
                                 ))}
                             </tbody>

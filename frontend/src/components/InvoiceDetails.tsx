@@ -1,4 +1,5 @@
-import { ArrowLeft, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck } from 'lucide-react';
+import { ArrowLeft, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck, Banknote } from 'lucide-react';
+import { PaymentModal } from './PaymentModal';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -17,6 +18,7 @@ interface InvoiceDetail {
     total: string;
     net_total: string;
     tax_total: string;
+    total_paid: string | number; // Added
     e_ncf?: string;
     xml_path?: string;
     type_code: string;
@@ -38,6 +40,8 @@ export const InvoiceDetails: React.FC = () => {
     const [company, setCompany] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [sendingEmail, setSendingEmail] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const getShareUrl = () => {
         if (!invoice?.share_token) return window.location.href;
@@ -119,7 +123,7 @@ export const InvoiceDetails: React.FC = () => {
             }
         };
         fetchData();
-    }, [id]);
+    }, [id, refreshTrigger]);
 
     if (loading) return <div className="p-10 text-center">Cargando factura...</div>;
     if (!invoice) return <div className="p-10 text-center text-red-500">Factura no encontrada</div>;
@@ -177,7 +181,6 @@ export const InvoiceDetails: React.FC = () => {
 
                     <button
                         onClick={handleDownloadPdf}
-                        disabled={invoice.status === 'draft'}
                         className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 border border-gray-200 disabled:opacity-50"
                         title="Descargar PDF"
                     >
@@ -187,13 +190,20 @@ export const InvoiceDetails: React.FC = () => {
                     {company?.industry_type === 'automotive' && (
                         <button
                             onClick={handleDownloadDeliveryNote}
-                            disabled={invoice.status === 'draft'}
                             className="flex items-center gap-2 bg-orange-100 text-orange-800 px-4 py-2 rounded-lg hover:bg-orange-200 border border-orange-200 disabled:opacity-50"
                             title="Imprimir Conduce de Salida"
                         >
                             <Truck size={18} /> <span className="hidden sm:inline">Conduce</span>
                         </button>
                     )}
+
+                    <button
+                        onClick={() => setIsPaymentModalOpen(true)}
+                        className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                        title="Registrar Pago"
+                    >
+                        <Banknote size={18} /> <span className="hidden sm:inline">Pagar</span>
+                    </button>
 
                     <button
                         onClick={() => window.print()}
@@ -242,25 +252,27 @@ export const InvoiceDetails: React.FC = () => {
 
                 {/* Items */}
                 <div className="overflow-x-auto mb-8">
-                    <table className="w-full min-w-[600px]">
+                    <table className="w-full min-w-[600px] table-fixed">
                         <thead>
                             <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 text-sm font-semibold text-gray-600">Descripción</th>
-                                <th className="text-right py-3 text-sm font-semibold text-gray-600">Cant</th>
-                                <th className="text-right py-3 text-sm font-semibold text-gray-600">Precio</th>
-                                <th className="text-right py-3 text-sm font-semibold text-gray-600">ITBIS</th>
-                                <th className="text-right py-3 text-sm font-semibold text-gray-600">Total</th>
+                                <th className="text-left py-3 text-sm font-semibold text-gray-600 w-[40%]">Descripción</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600 w-[10%]">Cant</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600 w-[15%]">Precio</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600 w-[15%]">ITBIS</th>
+                                <th className="text-right py-3 text-sm font-semibold text-gray-600 w-[20%]">Total</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {invoice.items.map((item) => (
-                                <tr key={item.id}>
-                                    <td className="py-3 text-gray-800">{item.description}</td>
-                                    <td className="py-3 text-right text-gray-600">{item.quantity}</td>
-                                    <td className="py-3 text-right text-gray-600">{parseFloat(item.unit_price).toFixed(2)}</td>
-                                    <td className="py-3 text-right text-gray-500 text-xs">({parseFloat(item.tax_rate || '18').toFixed(0)}%)</td>
-                                    <td className="py-3 text-right text-gray-600">{parseFloat(item.line_tax).toFixed(2)}</td>
-                                    <td className="py-3 text-right font-medium text-gray-900">{parseFloat(item.line_amount).toFixed(2)}</td>
+                                <tr key={item.id} className="align-top">
+                                    <td className="py-3 text-gray-800 break-words pr-2">{item.description}</td>
+                                    <td className="py-3 text-right text-gray-600 whitespace-nowrap">{item.quantity}</td>
+                                    <td className="py-3 text-right text-gray-600 whitespace-nowrap">{parseFloat(item.unit_price).toFixed(2)}</td>
+                                    <td className="py-3 text-right text-gray-600 whitespace-nowrap">
+                                        <span className="text-xs text-gray-500 mr-1">({parseFloat(item.tax_rate || '18').toFixed(0)}%)</span>
+                                        {parseFloat(item.line_tax).toFixed(2)}
+                                    </td>
+                                    <td className="py-3 text-right font-medium text-gray-900 whitespace-nowrap">{parseFloat(item.line_amount).toFixed(2)}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -293,6 +305,14 @@ export const InvoiceDetails: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {invoice && (
+                <PaymentModal
+                    isOpen={isPaymentModalOpen}
+                    onClose={() => setIsPaymentModalOpen(false)}
+                    invoice={invoice}
+                    onSuccess={() => setRefreshTrigger(prev => prev + 1)}
+                />
+            )}
         </div>
     );
 };
