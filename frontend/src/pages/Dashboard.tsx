@@ -238,7 +238,7 @@ export const Dashboard = () => {
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h3 className="text-lg font-bold">Rendimiento</h3>
-                            <p className="text-sm text-slate-500">Comparación anual</p>
+                            <p className="text-sm text-slate-500">Resumen del periodo</p>
                         </div>
                         <div className="flex gap-2">
                             <button

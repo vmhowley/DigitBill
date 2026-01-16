@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --color-primary: #135bec;
   --color-background-light: #f6f6f8;
@@ -26,7 +28,8 @@ body {
 
 /* NProgress Customization */
 #nprogress .bar {
-  background: #2563eb !important; /* blue-600 */
+  background: #2563eb !important;
+  /* blue-600 */
   height: 3px !important;
 }
 
@@ -50,4 +53,25 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
 }

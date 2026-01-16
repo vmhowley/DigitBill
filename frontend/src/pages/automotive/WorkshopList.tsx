@@ -187,24 +187,24 @@ export const WorkshopList = () => {
             {/* New Modal */}
             {showNewModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl w-full max-w-md">
-                        <h2 className="text-xl font-bold mb-4">Nueva Orden de Trabajo</h2>
+                    <div className="bg-white dark:bg-card-dark p-6 rounded-xl w-full max-w-md border border-gray-200 dark:border-border-dark">
+                        <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Nueva Orden de Trabajo</h2>
                         <form onSubmit={handleSubmit(onSubmitNew)} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Vehículo</label>
-                                <select {...register('vehicle_id')} className="w-full border p-2 rounded-lg">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Vehículo</label>
+                                <select {...register('vehicle_id')} className="w-full border dark:border-border-dark p-2 rounded-lg bg-white dark:bg-background-dark dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                                     {vehicles.map(v => (
                                         <option key={v.id} value={v.id}>{v.make} {v.model} - {v.vin}</option>
                                     ))}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Notas Iniciales</label>
-                                <textarea {...register('notes')} className="w-full border p-2 rounded-lg" rows={3} placeholder="Descripción del problema..." />
+                                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Notas Iniciales</label>
+                                <textarea {...register('notes')} className="w-full border dark:border-border-dark p-2 rounded-lg bg-white dark:bg-background-dark dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" rows={3} placeholder="Descripción del problema..." />
                             </div>
                             <div className="flex justify-end gap-2 pt-2">
-                                <button type="button" onClick={() => setShowNewModal(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancelar</button>
-                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Crear Orden</button>
+                                <button type="button" onClick={() => setShowNewModal(false)} className="px-4 py-2 text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">Cancelar</button>
+                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-500/20">Crear Orden</button>
                             </div>
                         </form>
                     </div>

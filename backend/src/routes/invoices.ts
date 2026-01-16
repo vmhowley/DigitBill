@@ -133,9 +133,8 @@ router.get("/:id/pdf", async (req, res) => {
 
       if (totalMB >= limits.maxStorageMB) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de almacenamiento de ${
-            limits.maxStorageMB
-          }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
+          error: `Has alcanzado el límite de almacenamiento de ${limits.maxStorageMB
+            }MB para tu plan ${req.plan?.toUpperCase()}. Por favor, actualiza tu plan para continuar generando facturas.`,
         });
       }
     }
@@ -174,9 +173,8 @@ router.get("/:id/pdf", async (req, res) => {
     const config = await getCompanyConfig(req.tenantId);
 
     // 4. Generate PDF
-    const filename = `factura-${
-      invoice.e_ncf || invoice.sequential_number
-    }.pdf`;
+    const filename = `factura-${invoice.e_ncf || invoice.sequential_number
+      }.pdf`;
 
     res.setHeader("Content-disposition", `attachment; filename="${filename}"`);
     res.setHeader("Content-type", "application/pdf");
@@ -244,9 +242,8 @@ router.post("/", async (req, res) => {
 
       if (currentCount >= limits.maxInvoicesPerMonth) {
         return res.status(403).json({
-          error: `Has alcanzado el límite de ${
-            limits.maxInvoicesPerMonth
-          } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
+          error: `Has alcanzado el límite de ${limits.maxInvoicesPerMonth
+            } facturas mensuales para tu plan ${req.plan?.toUpperCase()}.`,
         });
       }
     }
@@ -705,6 +702,104 @@ router.post("/:id/reminder", async (req, res) => {
     res
       .status(500)
       .json({ error: "Error al enviar el recordatorio: " + err.message });
+  }
+});
+
+// POST /api/invoices/:id/void
+router.post("/:id/void", async (req, res) => {
+  const dbClient = await pool.connect();
+  try {
+    const { id } = req.params;
+
+    // 1. Fetch Original Invoice
+    const invRes = await dbClient.query(
+      "SELECT * FROM invoices WHERE id = $1 AND tenant_id = $2",
+      [id, req.tenantId]
+    );
+
+    if (invRes.rows.length === 0) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+    const original = invRes.rows[0];
+
+    // 2. Fetch Items
+    const itemsRes = await dbClient.query(
+      "SELECT * FROM invoice_items WHERE invoice_id = $1",
+      [id]
+    );
+    const items = itemsRes.rows;
+
+    // 3. Start Transaction
+    await dbClient.query("BEGIN");
+
+    // 4. Create Credit Note Header
+    const typeCode = "33"; // Nota de Crédito
+    const netTotal = original.net_total;
+    const taxTotal = original.tax_total;
+    const total = original.total;
+
+    // Determine reference NCF (e-NCF usually, or NCF if traditional)
+    // We prioritize e_ncf as the system seems e-CF focused
+    const refNcf = original.e_ncf || original.ncf;
+
+    if (!refNcf) {
+      // Should rarely happen for signed invoices
+      throw new Error("Cannot void an invoice without a valid NCF/e-NCF");
+    }
+
+    const insertRes = await dbClient.query(
+      `INSERT INTO invoices 
+       (tenant_id, client_id, net_total, tax_total, total, type_code, reference_ncf, status, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id`,
+      [
+        req.tenantId,
+        original.client_id,
+        netTotal,
+        taxTotal,
+        total,
+        typeCode,
+        refNcf,
+        "draft", // Start as draft so user can see it
+        `Anulación de Factura #${original.sequential_number || original.id}`
+      ]
+    );
+    const newId = insertRes.rows[0].id;
+
+    // 5. Copy Items
+    for (const item of items) {
+      await dbClient.query(
+        `INSERT INTO invoice_items 
+          (tenant_id, invoice_id, product_id, quantity, unit_price, line_amount, line_tax, tax_rate, description)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          req.tenantId,
+          newId,
+          item.product_id,
+          item.quantity,
+          item.unit_price,
+          item.line_amount,
+          item.line_tax,
+          item.tax_rate,
+          item.description
+        ]
+      );
+    }
+
+    await dbClient.query("COMMIT");
+
+    res.json({
+      success: true,
+      message: "Nota de crédito creada",
+      newInvoiceId: newId
+    });
+
+  } catch (err: any) {
+    await dbClient.query("ROLLBACK");
+    console.error("Error voiding invoice:", err);
+    res.status(500).json({ error: "Error creating credit note: " + err.message });
+  } finally {
+    dbClient.release();
   }
 });
 

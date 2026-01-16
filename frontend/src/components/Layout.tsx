@@ -4,6 +4,9 @@ import api from '../api';
 import { useAuth } from '../context/AuthContext';
 import { BottomNav } from './BottomNav';
 import { Sidebar } from './Sidebar';
+import { ThemeToggle } from './ThemeToggle';
+import { NotificationCenter } from './NotificationCenter';
+import { HelpCenter } from './HelpCenter';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -135,25 +138,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     </div>
 
                     <div className="flex items-center gap-4 ml-8">
-                        <button className="size-10 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-card-dark transition-colors relative">
-                            <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">notifications</span>
-                            <span className="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
-                        </button>
-                        <button className="size-10 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-card-dark transition-colors">
-                            <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">help_outline</span>
-                        </button>
+                        <ThemeToggle />
+                        <NotificationCenter />
+                        <HelpCenter />
                     </div>
                 </header>
 
-                <div className="flex-1 overflow-y-auto w-full p-4 md:p-8 space-y-8 pb-24 md:pb-8 scroll-smooth">
-                    {/* Expiration Banner */}
-                    {profile?.subscription_status === 'expired' && (
-                        <div className="bg-red-600 text-white text-center py-2 px-4 text-sm font-medium rounded-lg shadow-sm mb-4">
-                            ⚠️ Tu suscripción ha expirado.
-                        </div>
-                    )}
+                <div className="flex-1 overflow-y-auto w-full p-4 md:p-8 pb-24 md:pb-8 scroll-smooth">
+                    <div className="max-w-7xl mx-auto space-y-8">
+                        {/* Expiration Banner */}
+                        {profile?.subscription_status === 'expired' && (
+                            <div className="bg-red-600 text-white text-center py-2 px-4 text-sm font-medium rounded-lg shadow-sm mb-4">
+                                ⚠️ Tu suscripción ha expirado.
+                            </div>
+                        )}
 
-                    {children}
+                        {children}
+                    </div>
                 </div>
 
                 <BottomNav />

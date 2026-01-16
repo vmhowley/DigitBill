@@ -20,6 +20,7 @@ interface InvoiceData {
   total: string;
   fecha_vencimiento?: string;
   metodo_pago?: string;
+  reference_ncf?: string;
 }
 
 // Helper to generate 6-char Security Code (standard e-CF logic)
@@ -192,8 +193,22 @@ export const buildECFXML = (data: InvoiceData): string => {
     .txt(qrUrl)
     .up()
     .up()
-    .up() // Encabezado
-    .ele("DetallesItems");
+    .up(); // Encabezado
+
+  // Add Reference Info for Credit/Debit Notes
+  if (data.reference_ncf) {
+    root
+      .ele("TablaInformacionReferencia")
+      .ele("NCFModificado")
+      .txt(data.reference_ncf)
+      .up()
+      .ele("CodigoModificacion")
+      .txt("01") // 01 = Anulación Total (Most common for full credit notes)
+      .up()
+      .up();
+  }
+
+  root.ele("DetallesItems");
 
   let lineNum = 1;
   data.items.forEach((it) => {

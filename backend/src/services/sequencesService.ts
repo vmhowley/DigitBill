@@ -52,8 +52,9 @@ export const getNextNCF = async (
     }
 
     // 4. Generate NCF
-    const seqStr = sequence.next_number.toString().padStart(10, "0");
     const prefix = isElectronic ? "E" : "B";
+    const paddingLength = isElectronic ? 10 : 8;
+    const seqStr = sequence.next_number.toString().padStart(paddingLength, "0");
     const ncf = `${prefix}${typeCode}${seqStr}`;
 
     // 5. Increment sequence
@@ -70,8 +71,8 @@ export const getNextNCF = async (
     await dbClient.query("ROLLBACK");
     logger.error("Error generating NCF", { tenantId, typeCode, error });
     throw error;
-    } finally {
-        dbClient.release();
-    }
+  } finally {
+    dbClient.release();
+  }
 };
 

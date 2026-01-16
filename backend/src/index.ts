@@ -23,6 +23,7 @@ import reportRoutes from "./routes/reports";
 import searchRoutes from "./routes/search";
 import settingsRoutes from "./routes/settings";
 import subscriptionRoutes from "./routes/subscriptions";
+import notificationRoutes from "./routes/notifications";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -71,6 +72,7 @@ app.use("/api/automotive", automotiveRoutes);
 app.use("/api/automotive", automotiveSalesRoutes);
 app.use("/api/automotive/workshop", automotiveWorkshopRoutes); // Mounts sales routes like /sales, /calculate-payment
 app.use("/api/search", searchRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");

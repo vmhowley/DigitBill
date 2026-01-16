@@ -60,10 +60,13 @@ export const issueInvoice = async (tenantId: number, invoiceId: number) => {
       if (item.product_id) {
         await inventoryService.recordMovement(tenantId, {
           product_id: item.product_id,
-          type: "out",
+          type:
+            invoice.type_code === "33" || invoice.type_code === "34"
+              ? "in"
+              : "out", // Credit Note = Return to stock
           quantity: item.quantity,
           reference_id: invoiceId,
-          reason: `Venta (Factura #${invoiceId})`,
+          reason: `Movimiento (Factura #${invoiceId})`,
         });
       }
     }
@@ -97,6 +100,7 @@ export const issueInvoice = async (tenantId: number, invoiceId: number) => {
         .toISOString()
         .split("T")[0],
       metodo_pago: "01",
+      reference_ncf: invoice.reference_ncf,
     };
 
     const xml = buildECFXML(xmlData as any);
@@ -116,10 +120,13 @@ export const issueInvoice = async (tenantId: number, invoiceId: number) => {
       if (item.product_id) {
         await inventoryService.recordMovement(tenantId, {
           product_id: item.product_id,
-          type: "out",
+          type:
+            invoice.type_code === "33" || invoice.type_code === "34"
+              ? "in"
+              : "out", // Credit Note = Return to stock
           quantity: item.quantity,
           reference_id: invoiceId,
-          reason: `Venta (e-CF #${ncf})`,
+          reason: `Movimiento (e-CF #${ncf})`,
         });
       }
     }

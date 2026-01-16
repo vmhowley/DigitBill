@@ -1,8 +1,8 @@
-import { AlertCircle, ArrowLeft, Banknote, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Banknote, Copy, Download, Mail, MessageCircle, Printer, Send, ShoppingCart, Truck, XCircle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from '../api';
 import { PaymentModal } from './PaymentModal';
 
@@ -100,6 +100,26 @@ export const InvoiceDetails: React.FC = () => {
         }
     };
 
+    const navigate = useNavigate();
+
+    const handleVoid = async () => {
+        if (!invoice) return;
+        const conf = window.confirm('¿Seguro que deseas anular esta factura? Se generará una Nota de Crédito automáticamente y se repondrá el inventario.');
+        if (!conf) return;
+
+        try {
+            const res = await axios.post(`/api/invoices/${id}/void`);
+            toast.success('Factura anulada correctamente');
+            // Redirect to new credit note
+            if (res.data.newInvoiceId) {
+                navigate(`/invoices/${res.data.newInvoiceId}`);
+            }
+        } catch (err: any) {
+            console.error(err);
+            toast.error(err.response?.data?.error || 'Error al anular factura');
+        }
+    };
+
     const handleSendToDGII = async () => {
         if (!invoice) return;
         try {
@@ -167,7 +187,7 @@ export const InvoiceDetails: React.FC = () => {
         <div className="max-w-4xl mx-auto p-4 md:p-8">
             <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
                 <Link to="/invoices" className="flex items-center text-gray-500 hover:text-gray-800">
-                    <ArrowLeft size={18} className="mr-2" /> Volver
+                    <ArrowLeft size={18} className="mr-2" /> Volver a Facturas
                 </Link>
                 <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     <button
@@ -244,6 +264,15 @@ export const InvoiceDetails: React.FC = () => {
                         className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
                     >
                         <Printer size={18} />
+                    </button>
+
+                    <button
+                        onClick={handleVoid}
+                        disabled={invoice.status === 'draft' || invoice.type_code === '33'}
+                        className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 border border-red-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Anular Factura (Nota de Crédito)"
+                    >
+                        <XCircle size={18} /> <span className="hidden sm:inline">Anular</span>
                     </button>
                 </div>
             </div>

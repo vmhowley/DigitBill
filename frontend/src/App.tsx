@@ -14,6 +14,7 @@ import { Pricing } from './pages/Pricing';
 import { Register } from './pages/Register';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
+import { ThemeProvider } from './context/ThemeContext';
 
 import type { ReactNode } from 'react';
 import { ClientForm } from './components/ClientForm';
@@ -141,11 +142,13 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Toaster position="top-center" />
-        <GlobalLoader />
-        <AppRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Toaster position="top-center" />
+          <GlobalLoader />
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

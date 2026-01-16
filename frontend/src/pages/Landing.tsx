@@ -1,102 +1,167 @@
 import {
     ArrowRight,
-    Check,
-    CheckCircle2,
-    ChevronDown,
-    Globe,
-    MessageSquare,
-    PieChart,
+    Car,
+    FileText,
+    LayoutDashboard,
     Play,
     ShieldCheck,
-    Smartphone,
-    Star,
     Zap
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { NavbarPublic } from '../components/NavbarPublic';
 
 export const Landing: React.FC = () => {
-    const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-    const toggleFaq = (index: number) => {
-        setOpenFaq(openFaq === index ? null : index);
-    };
 
     return (
         <div className="min-h-screen bg-white dark:bg-background-dark font-sans overflow-x-hidden selection:bg-blue-100 dark:selection:bg-blue-900 selection:text-blue-900 dark:selection:text-blue-100 transition-colors duration-300">
             <NavbarPublic />
 
             {/* Hero Section */}
-            <header className="relative pt-20 lg:pt-32 lg:pb-32 overflow-hidden">
+            <header className="relative pt-24 lg:pt-36 lg:pb-32 overflow-hidden">
                 <div className="absolute inset-0 -z-10">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-100/50 dark:bg-blue-900/20 blur-[100px] rounded-full opacity-50" />
                     <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-purple-50/50 dark:bg-purple-900/10 blur-[120px] rounded-full opacity-30" />
                 </div>
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center text-center">
-                    <div className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 text-blue-700 dark:text-blue-300 font-bold text-sm mb-8 animate-fade-in-up">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                        </span>
-                        Nueva Actualización: Facturación Electrónica al 100%
+                    <div className="inline-flex items-center gap-2 py-2 px-4 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs md:text-sm mb-8 animate-fade-in-up">
+                        <span className="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                        Solución Fiscal Integral & Más
                     </div>
 
-                    <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold tracking-tight text-slate-900 dark:text-white mb-8 max-w-5xl leading-[1.1]">
-                        Tu negocio, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">organizado</span><br />
-                        y en cumplimiento.
+                    <h1 className="text-4xl md:text-7xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8 max-w-5xl leading-[1.1]">
+                        El Sistema Operativo <br className="hidden md:block" />
+                        de tu <span className="text-primary">Negocio Inteligente</span>
                     </h1>
 
-                    <p className="mt-4 max-w-2xl mx-auto text-xl text-slate-600 dark:text-slate-300 mb-12 leading-relaxed">
-                        La plataforma de facturación electrónica favorita de las PYMES dominicanas.
-                        Emite e-CFs, controla tu inventario y gestiona tus clientes en una sola app moderna y rápida.
+                    <p className="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-12 leading-relaxed">
+                        Control total de facturación electrónica (e-CF), gestión de inventario y reportes DGII en una sola plataforma segura y moderna.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto mb-20">
+                    <div className="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto mb-20 animate-fade-in-up delay-100">
                         <Link to="/register" className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-300 bg-primary hover:bg-blue-700 rounded-full hover:scale-105 shadow-xl shadow-blue-600/20 active:scale-95 group">
-                            Comenzar Gratis
+                            Comenzar Ahora
                             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
                         </Link>
                         <button className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-700 dark:text-white transition-all duration-300 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20 group backdrop-blur-sm">
                             <Play size={18} className="mr-2 fill-slate-700 dark:fill-white" />
-                            Ver Demo
+                            Ver Video Demo
                         </button>
                     </div>
 
-                    {/* Dashboard Preview Mockup */}
-                    <div className="relative w-full max-w-6xl mx-auto transform hover:scale-[1.01] transition-transform duration-500">
-                        {/* Clean shadow backing */}
-                        <div className="absolute inset-0 bg-slate-900/5 dark:bg-blue-500/10 blur-3xl rounded-[3rem] -z-10"></div>
+                    {/* LIVE DASHBOARD PREVIEW */}
+                    <div className="relative w-full max-w-[1200px] mx-auto transform hover:scale-[1.005] transition-transform duration-700">
+                        {/* Glow Effect */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-[2.5rem] blur opacity-20 animate-pulse"></div>
 
-                        <div className="relative bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-2xl md:rounded-[2rem] shadow-2xl overflow-hidden animate-slide-up">
+                        <div className="relative bg-slate-50 dark:bg-[#0f111a] border border-slate-200 dark:border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden">
                             {/* Browser Bar */}
-                            <div className="bg-slate-50 dark:bg-[#0f172a] border-b border-slate-100 dark:border-border-dark px-6 py-4 flex items-center gap-2">
+                            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
                                 <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#ff5f56]/20"></div>
-                                    <div className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#ffbd2e]/20"></div>
-                                    <div className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#27c93f]/20"></div>
+                                    <div className="size-3 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                                    <div className="size-3 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+                                    <div className="size-3 rounded-full bg-slate-200 dark:bg-slate-700"></div>
                                 </div>
-                                <div className="mx-auto bg-white dark:bg-background-dark border border-slate-200 dark:border-border-dark px-4 py-1.5 rounded-lg text-xs text-slate-400 dark:text-slate-500 font-medium hidden sm:block w-96 text-center font-mono shadow-sm">
-                                    app.digitbill.do/dashboard
+                                <div className="hidden md:flex bg-slate-100 dark:bg-slate-800 px-4 py-1.5 rounded-md text-xs font-mono text-slate-400 gap-2 items-center">
+                                    <ShieldCheck size={12} className="text-green-500" />
+                                    https://app.digitbill.do/dashboard
                                 </div>
+                                <div className="size-8 bg-slate-100 dark:bg-slate-800 rounded-full"></div>
                             </div>
 
-                            {/* Real System Screenshot Placeholder/Div */}
-                            <div className="aspect-[16/10] w-full bg-slate-50 dark:bg-background-dark relative group overflow-hidden flex items-center justify-center border-t border-slate-100 dark:border-border-dark">
-                                {/* If you have a real screenshot, use img tag. For now, simulating app content or using the existing image path if valid. */}
-                                {/* <img src="/img/dashboard-real.png" alt="DigitBill Dashboard" className="w-full h-full object-cover object-top" /> */}
-                                <div className="text-center p-10">
-                                    <div className="grid grid-cols-4 gap-6 opacity-30 dark:opacity-20 transform scale-90 origin-top">
-                                        <div className="h-32 bg-primary rounded-xl col-span-1"></div>
-                                        <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl col-span-1"></div>
-                                        <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl col-span-1"></div>
-                                        <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl col-span-1"></div>
-                                        <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded-xl col-span-2 row-span-2"></div>
-                                        <div className="h-64 bg-slate-200 dark:bg-slate-700 rounded-xl col-span-2 row-span-2"></div>
+                            {/* FAKE DASHBOARD CONTENT */}
+                            <div className="flex h-[600px] md:h-[800px] overflow-hidden bg-slate-50 dark:bg-[#0B1121] text-left">
+                                {/* Sidebar (Mock) */}
+                                <div className="w-64 bg-white dark:bg-[#111827] border-r border-slate-200 dark:border-slate-800 p-6 hidden md:flex flex-col gap-8">
+                                    <div className="flex items-center gap-2 text-primary font-bold text-xl">
+                                        <div className="size-8 bg-primary rounded-lg"></div>
+                                        DigitBill
                                     </div>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <p className="px-6 py-3 bg-white/90 dark:bg-black/50 backdrop-blur rounded-full font-bold shadow-lg dark:text-white border border-slate-200 dark:border-white/10">Vista Previa del Dashboard</p>
+                                    <div className="space-y-1">
+                                        {['Dashboard', 'Facturas', 'Clientes', 'Inventario', 'Reportes'].map((item, i) => (
+                                            <div key={item} className={`px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-3 ${i === 0 ? 'bg-primary text-white' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
+                                                <LayoutDashboard size={18} className={i === 0 ? "fill-white/20" : ""} />
+                                                {item}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Main Content */}
+                                <div className="flex-1 p-8 overflow-hidden relative">
+                                    {/* Header */}
+                                    <div className="flex justify-between items-center mb-8">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Panel de Control</h2>
+                                            <p className="text-slate-500 text-sm">Bienvenido de nuevo, Admin.</p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold shadow-sm">Descargar Reporte</button>
+                                            <button className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-500/20">+ Nueva Factura</button>
+                                        </div>
+                                    </div>
+
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                                        {[
+                                            { label: 'Ingresos Totales', val: 'RD$ 845,200.00', trend: '+12%', color: 'text-emerald-500' },
+                                            { label: 'Facturas Activas', val: '142', trend: '+5', color: 'text-blue-500' },
+                                            { label: 'Pendiente Cobro', val: 'RD$ 125,000.00', trend: 'Vence en 3 dias', color: 'text-amber-500' },
+                                            { label: 'ITBIS a Pagar', val: 'RD$ 42,500.00', trend: 'Mes Actual', color: 'text-slate-400' }
+                                        ].map((stat, i) => (
+                                            <div key={i} className="bg-white dark:bg-[#151d32] p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                                                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">{stat.label}</p>
+                                                <p className="text-xl font-bold text-slate-900 dark:text-white mb-1">{stat.val}</p>
+                                                <p className={`text-xs font-bold ${stat.color}`}>{stat.trend}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="grid grid-cols-3 gap-8 h-full">
+                                        {/* Chart Area */}
+                                        <div className="col-span-2 bg-white dark:bg-[#151d32] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="font-bold text-slate-900 dark:text-white">Resumen de Ventas</h3>
+                                                <div className="flex gap-2">
+                                                    <span className="size-3 rounded-full bg-primary"></span>
+                                                    <span className="size-3 rounded-full bg-slate-200 dark:bg-slate-700"></span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-end gap-3 h-48 md:h-64 px-4 pb-0">
+                                                {[35, 60, 45, 75, 55, 85, 65, 90, 70, 40, 60].map((h, i) => (
+                                                    <div key={i} className="flex-1 flex gap-1 items-end h-full group">
+                                                        <div style={{ height: `${h}%` }} className="w-full bg-primary rounded-t-sm opacity-90 group-hover:opacity-100 transition-all"></div>
+                                                        <div style={{ height: `${h * 0.4}%` }} className="w-full bg-slate-100 dark:bg-slate-700 rounded-t-sm"></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Recent Activity List */}
+                                        <div className="hidden md:block col-span-1 bg-white dark:bg-[#151d32] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                            <h3 className="font-bold text-slate-900 dark:text-white mb-6">Actividad</h3>
+                                            <div className="space-y-4">
+                                                {[
+                                                    { title: 'Nueva Factura #001', desc: 'Cliente: AutoImport', time: '2m' },
+                                                    { title: 'Reporte 606 Generado', desc: 'Validado por DGII', time: '15m' },
+                                                    { title: 'Alerta Inventario', desc: 'Stock bajo: Baterías', time: '1h' },
+                                                    { title: 'Nueva Factura #002', desc: 'Cliente: Juan Pérez', time: '3h' },
+                                                ].map((act, i) => (
+                                                    <div key={i} className="flex gap-3">
+                                                        <div className="size-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                                                            <div className="size-2 rounded-full bg-slate-400"></div>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-slate-900 dark:text-white">{act.title}</p>
+                                                            <p className="text-xs text-slate-500">{act.desc}</p>
+                                                        </div>
+                                                        <span className="ml-auto text-xs text-slate-400">{act.time}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -105,178 +170,72 @@ export const Landing: React.FC = () => {
                 </div>
             </header>
 
-            {/* Trusted By Section */}
-            <section className="py-10 border-y border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-white/5">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-8">Confían en nosotros</p>
-                    <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-50 dark:opacity-40 grayscale hover:grayscale-0 dark:hover:grayscale-0 dark:hover:opacity-100 transition-all duration-500">
-                        {['Asociación Norte', 'TechDominicana', 'Ferretería Central', 'Consultores & Asoc.', 'LegalGroup'].map((name) => (
-                            <span key={name} className="text-xl md:text-2xl font-bold font-serif text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors cursor-default">{name}</span>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Value Prop / Bento Grid */}
+            {/* Value Prop (Removed Fake Clients) */}
             <section className="py-24 bg-white dark:bg-background-dark" id="features">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-20">
-                        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">Todo lo que necesitas para crecer</h2>
-                        <p className="text-xl text-slate-600 dark:text-slate-400">DigitBill no es solo una herramienta de facturación, es el sistema operativo financiero de tu empresa.</p>
+                        <span className="text-primary font-bold tracking-wider uppercase text-sm">¿Por qué DigitBill?</span>
+                        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mt-2 mb-6">Software Profesional para Negocios Serios</h2>
+                        <p className="text-xl text-slate-600 dark:text-slate-400">Diseñado desde cero para cumplir con la Norma General 06-2018 de la DGII y optimizar tu gestión administrativa.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Large Card 1 */}
-                        <div className="md:col-span-2 bg-slate-50 dark:bg-card-dark rounded-3xl p-8 md:p-12 border border-slate-100 dark:border-border-dark overflow-hidden relative group">
+                        {/* DGII Compliance Card */}
+                        <div className="md:col-span-2 bg-slate-50 dark:bg-card-dark rounded-3xl p-8 md:p-12 border border-slate-100 dark:border-border-dark overflow-hidden relative group hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
                             <div className="relative z-10">
-                                <span className="p-3 bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 rounded-xl inline-block mb-6"><Zap size={24} /></span>
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Facturación Ultra Rápida</h3>
-                                <p className="text-slate-600 dark:text-slate-400 text-lg max-w-md">Emite comprobantes válidos para la DGII en segundos. Nuestro motor inteligente valida cada RNC y NCF al instante para evitar errores.</p>
+                                <span className="p-3 bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 rounded-xl inline-block mb-6"><FileText size={24} /></span>
+                                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Reportes Fiscales Automáticos</h3>
+                                <p className="text-slate-600 dark:text-slate-400 text-lg max-w-md mb-6">
+                                    Genera tus formatos 606, 607 y 608 sin errores manuales. Incluye exportación directa en formato TXT oficial para la Herramienta de Envío DGII.
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">606 Compras</span>
+                                    <span className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">607 Ventas</span>
+                                    <span className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">608 Anulados</span>
+                                    <span className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">IT-1</span>
+                                </div>
                             </div>
-                            <div className="absolute right-0 bottom-0 w-1/2 h-full bg-gradient-to-l from-white/50 dark:from-black/20 to-transparent z-0"></div>
-                            {/* Decorative Elements */}
-                            <div className="absolute -right-10 bottom-10 bg-white dark:bg-background-dark p-4 rounded-xl shadow-lg border border-slate-100 dark:border-border-dark w-64 transform rotate-[-5deg] group-hover:rotate-0 transition-all duration-300">
-                                <div className="flex gap-4 items-center">
-                                    <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center text-green-600 dark:text-green-400"><Check size={20} /></div>
-                                    <div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">Estado</p>
-                                        <p className="font-bold text-slate-800 dark:text-white">Aceptado DGII</p>
+                            <div className="absolute right-0 bottom-0 w-1/2 h-full bg-gradient-to-l from-blue-500/10 to-transparent z-0"></div>
+                        </div>
+
+                        {/* Automotive Card */}
+                        <div className="md:row-span-2 bg-slate-900 dark:bg-[#0f0b29] text-white rounded-3xl p-8 md:p-12 overflow-hidden relative border border-slate-800">
+                            <div className="relative z-10">
+                                <span className="p-3 bg-slate-800 dark:bg-white/10 text-emerald-400 rounded-xl inline-block mb-6"><Car size={24} /></span>
+                                <h3 className="text-2xl font-bold mb-4">Plus: Módulo Automotriz</h3>
+                                <p className="text-slate-400 dark:text-slate-300 text-lg mb-8">Funcionalidades opcionales especializadas para el sector de vehículos.</p>
+                                <div className="space-y-4">
+                                    <div className="bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-sm">
+                                        <h4 className="font-bold text-emerald-400 mb-1 text-sm">Conduce de Salida</h4>
+                                        <p className="text-sm text-slate-400">Documento de entrega no fiscal integrado ideal para despachos.</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-sm">
+                                        <h4 className="font-bold text-blue-400 mb-1 text-sm">Registro de Chasis/Placa</h4>
+                                        <p className="text-sm text-slate-400">Campos personalizados para seguimiento detallado en cada factura.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Tall Card */}
-                        <div className="md:row-span-2 bg-slate-900 dark:bg-white/5 text-white rounded-3xl p-8 md:p-12 overflow-hidden relative">
-                            <div className="relative z-10">
-                                <span className="p-3 bg-slate-800 dark:bg-white/10 text-blue-400 rounded-xl inline-block mb-6"><Smartphone size={24} /></span>
-                                <h3 className="text-2xl font-bold mb-4">Tu negocio en tu bolsillo</h3>
-                                <p className="text-slate-400 dark:text-slate-300 text-lg mb-8">Accede a tus datos desde cualquier lugar. Nuestra app es 100% responsive y funciona en cualquier dispositivo.</p>
-                                <div className="flex flex-col gap-3">
-                                    {['Reportes en tiempo real', 'Envío por WhatsApp', 'Notificaciones de pago'].map((item, i) => (
-                                        <div key={i} className="flex items-center gap-3 text-slate-300 dark:text-slate-400">
-                                            <CheckCircle2 size={18} className="text-blue-500" /> {item}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-600 blur-[80px] opacity-30 rounded-full"></div>
-                        </div>
-
-                        {/* Small Card 2 */}
-                        <div className="bg-blue-50 dark:bg-blue-500/5 rounded-3xl p-8 border border-blue-100 dark:border-blue-500/10 relative overflow-hidden group">
-                            <span className="p-3 bg-white dark:bg-background-dark text-blue-600 dark:text-blue-400 rounded-xl inline-block mb-4 shadow-sm border border-slate-100 dark:border-border-dark"><PieChart size={24} /></span>
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Reportes Inteligentes</h3>
-                            <p className="text-slate-600 dark:text-slate-400">Olvídate de Excel. Visualiza tus ventas, impuestos y gastos automáticamente.</p>
-                        </div>
-
-                        {/* Small Card 3 */}
-                        <div className="bg-purple-50 dark:bg-purple-500/5 rounded-3xl p-8 border border-purple-100 dark:border-purple-500/10 relative overflow-hidden group">
+                        {/* Security Card */}
+                        <div className="bg-purple-50 dark:bg-purple-500/5 rounded-3xl p-8 border border-purple-100 dark:border-purple-500/10 relative overflow-hidden group hover:shadow-xl hover:shadow-purple-500/5 transition-all">
                             <span className="p-3 bg-white dark:bg-background-dark text-purple-600 dark:text-purple-400 rounded-xl inline-block mb-4 shadow-sm border border-slate-100 dark:border-border-dark"><ShieldCheck size={24} /></span>
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Seguridad Grado Bancario</h3>
-                            <p className="text-slate-600 dark:text-slate-400">Tus datos encriptados y respaldados diariamente. Tranquilidad total.</p>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Seguridad Bancaria</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm">Encriptación de datos, copias de seguridad diarias y control de acceso por roles.</p>
+                        </div>
+
+                        {/* Speed Card */}
+                        <div className="bg-emerald-50 dark:bg-emerald-500/5 rounded-3xl p-8 border border-emerald-100 dark:border-emerald-500/10 relative overflow-hidden group hover:shadow-xl hover:shadow-emerald-500/5 transition-all">
+                            <span className="p-3 bg-white dark:bg-background-dark text-emerald-600 dark:text-emerald-400 rounded-xl inline-block mb-4 shadow-sm border border-slate-100 dark:border-border-dark"><Zap size={24} /></span>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Simplicidad</h3>
+                            <p className="text-slate-600 dark:text-slate-400 text-sm">Interfaz intuitiva que no requiere entrenamiento. Empieza a facturar en minutos.</p>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* Testimonials */}
-            <section className="py-24 bg-slate-900 dark:bg-[#0f0b29] text-white overflow-hidden relative">
-                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-900 to-transparent opacity-50"></div>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                        <div>
-                            <span className="text-blue-400 font-bold tracking-wider uppercase text-sm">Testimonios</span>
-                            <h2 className="text-3xl md:text-5xl font-bold mt-2">Lo que dicen nuestros clientes</h2>
-                        </div>
-                        <div className="flex gap-2 text-yellow-500">
-                            {[1, 2, 3, 4, 5].map(i => <Star key={i} className="fill-current" size={24} />)}
-                            <span className="ml-2 text-xl font-bold text-white">4.9/5 de 500+ reseñas</span>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <TestimonialCard
-                            quote="Desde que usamos DigitBill, el tiempo que dedicábamos a facturación se redujo en un 80%. Es increíblemente fácil de usar."
-                            author="Carlos Rodríguez"
-                            role="CEO, TechSolutions SRL"
-                            image="https://randomuser.me/api/portraits/men/32.jpg"
-                        />
-                        <TestimonialCard
-                            quote="Cumplir con la DGII era un dolor de cabeza. Con esta plataforma, la facturación electrónica es automática y sin estrés."
-                            author="María González"
-                            role="Admin, Farmacia El Sol"
-                            image="https://randomuser.me/api/portraits/women/44.jpg"
-                        />
-                        <TestimonialCard
-                            quote="El soporte es excelente y la plataforma nunca falla. Mis clientes agradecen recibir sus facturas al instante en su correo."
-                            author="José Pérez"
-                            role="Gerente, Almacenes Unicos"
-                            image="https://randomuser.me/api/portraits/men/67.jpg"
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* FAQ */}
-            <section className="py-24 bg-white dark:bg-background-dark max-w-4xl mx-auto px-4">
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Preguntas Frecuentes</h2>
-                    <p className="text-slate-600 dark:text-slate-400 text-lg">Resolvemos tus dudas sobre la facturación electrónica.</p>
-                </div>
-
-                <div className="space-y-4">
-                    {[
-                        { q: "¿Necesito certificado digital para usar DigitBill?", a: "Sí, para emitir facturas electrónicas válidas ante la DGII necesitas un certificado digital. Nosotros te guiamos en el proceso de obtenerlo." },
-                        { q: "¿Es compatible con impresoras fiscales?", a: "DigitBill reemplaza a las impresoras fiscales tradicionales. Puedes imprimir tus facturas en cualquier impresora estándar o enviarlas por correo digitalmente." },
-                        { q: "¿Qué pasa si se cae el internet?", a: "Puedes seguir trabajando. El sistema guardará tus facturas y las sincronizará con la DGII automáticamente cuando regrese la conexión." },
-                        { q: "¿Tienen planes para contadores?", a: "Sí, tenemos un panel especial para contadores que gestionan múltiples empresas. Contáctanos para más información." }
-                    ].map((item, index) => (
-                        <div key={index} className="border border-slate-200 dark:border-border-dark rounded-2xl overflow-hidden">
-                            <button
-                                onClick={() => toggleFaq(index)}
-                                className="w-full flex justify-between items-center p-6 bg-white dark:bg-card-dark hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left"
-                            >
-                                <span className="font-bold text-slate-900 dark:text-white text-lg">{item.q}</span>
-                                <ChevronDown
-                                    className={`transition-transform duration-300 text-slate-500 dark:text-slate-400 ${openFaq === index ? 'rotate-180' : ''}`}
-                                />
-                            </button>
-                            <div className={`overflow-hidden transition-all duration-300 ${openFaq === index ? 'max-h-48' : 'max-h-0'}`}>
-                                <div className="p-6 pt-0 text-slate-600 dark:text-slate-300 leading-relaxed bg-white dark:bg-card-dark">
-                                    {item.a}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* CTA Final */}
-            <section className="py-24 bg-primary relative overflow-hidden">
-                {/* Patterns */}
-                <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                    <div className="absolute right-0 top-0 w-96 h-96 bg-white rounded-full blur-[100px] transform translate-x-1/2 -translate-y-1/2"></div>
-                    <div className="absolute left-0 bottom-0 w-96 h-96 bg-purple-500 rounded-full blur-[100px] transform -translate-x-1/2 translate-y-1/2"></div>
-                </div>
-
-                <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">¿Listo para modernizar tu negocio?</h2>
-                    <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">Únete a más de 500 empresas dominicanas que ya facturan sin papel y sin complicaciones.</p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Link to="/register" className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-primary transition-all duration-200 bg-white rounded-full hover:bg-gray-100 shadow-xl">
-                            Crear Cuenta Gratis
-                        </Link>
-                        <Link to="/contact" className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-transparent border-2 border-white/30 rounded-full hover:bg-white/10">
-                            Hablar con Ventas
-                        </Link>
-                    </div>
-                    <p className="mt-6 text-sm text-blue-200 opacity-80">No requiere tarjeta de crédito • 14 días de prueba gratis</p>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="bg-white dark:bg-background-dark pt-20 pb-10 border-t border-slate-100 dark:border-border-dark text-slate-600 dark:text-slate-400">
+            <footer className="bg-slate-50 dark:bg-[#0f111a] pt-20 pb-10 border-t border-slate-200 dark:border-border-dark text-slate-600 dark:text-slate-400">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
                     <div className="col-span-2 md:col-span-1">
                         <div className="flex items-center gap-2 mb-6">
@@ -286,67 +245,29 @@ export const Landing: React.FC = () => {
                             <span className="text-xl font-bold text-slate-900 dark:text-white">DigitBill</span>
                         </div>
                         <p className="text-sm leading-relaxed mb-6">
-                            La solución integral para la facturación electrónica en República Dominicana. Simple, segura y cumpliendo con la DGII.
+                            Software de facturación profesional.
+                            <br />Sin contratos forzosos. Sin complicaciones.
                         </p>
-                        <div className="flex gap-4">
-                            {[1, 2, 3].map(i => <div key={i} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors flex items-center justify-center cursor-pointer"><Globe size={16} /></div>)}
-                        </div>
                     </div>
-
                     <div>
-                        <h4 className="font-bold text-slate-900 dark:text-white mb-6">Producto</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-6">Plataforma</h4>
                         <ul className="space-y-4 text-sm">
                             <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Características</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Precios</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">API para Desarrolladores</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Casos de Éxito</Link></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-slate-900 dark:text-white mb-6">Compañía</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Sobre Nosotros</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Carreras</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Blog</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Contacto</Link></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-slate-900 dark:text-white mb-6">Legal</h4>
-                        <ul className="space-y-4 text-sm">
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Términos de Uso</Link></li>
-                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Privacidad</Link></li>
                             <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Seguridad</Link></li>
                         </ul>
                     </div>
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-slate-100 dark:border-border-dark flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-sm">© 2024 DigitBill Dominicana S.R.L. Todos los derechos reservados.</p>
-                    <div className="flex items-center gap-2 text-sm">
-                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                        Sistemas Operativos
+                    <div>
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-6">Legal</h4>
+                        <ul className="space-y-4 text-sm">
+                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Privacidad</Link></li>
+                            <li><Link to="#" className="hover:text-primary dark:hover:text-blue-400 transition-colors">Términos</Link></li>
+                        </ul>
                     </div>
+                </div>
+                <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-slate-200 dark:border-border-dark flex justify-between items-center text-sm">
+                    <p>© 2026 DigitBill.</p>
                 </div>
             </footer>
         </div>
     );
 };
-
-const TestimonialCard = ({ quote, author, role, image }: { quote: string, author: string, role: string, image: string }) => (
-    <div className="bg-white/10 dark:bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-blue-500/50 transition-colors relative backdrop-blur-sm">
-        <div className="mb-6 text-blue-400">
-            <MessageSquare size={32} />
-        </div>
-        <p className="text-slate-100 dark:text-slate-300 text-lg italic mb-8 leading-relaxed">"{quote}"</p>
-        <div className="flex items-center gap-4">
-            <img src={image} alt={author} className="w-12 h-12 rounded-full border-2 border-slate-600 dark:border-slate-500" />
-            <div>
-                <h4 className="font-bold text-white">{author}</h4>
-                <p className="text-sm text-slate-400 dark:text-slate-500">{role}</p>
-            </div>
-        </div>
-    </div>
-);

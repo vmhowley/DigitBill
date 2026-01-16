@@ -157,10 +157,13 @@ CREATE TABLE IF NOT EXISTS expenses (
   amount DECIMAL(12, 2) NOT NULL,
   tax_amount DECIMAL(12, 2) DEFAULT 0,
   category VARCHAR(50), -- e.g. 'compras', 'servicios', 'alquiler'
+  cost_type VARCHAR(2) DEFAULT '02', -- 01=Gastos Personal, 02=Gastos Trabajo/Suministro
   expense_date DATE DEFAULT CURRENT_DATE,
   status VARCHAR(20) DEFAULT 'paid', -- paid, pending
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Note: Invoices table also tracks payment_method now (ALTER TABLE invoices ADD COLUMN payment_method VARCHAR(2) DEFAULT '01';)
 
 -- Enable Row Level Security (RLS) basics
 -- Note: In a real Supabase env, you would create policies here.
@@ -214,5 +217,18 @@ CREATE TABLE IF NOT EXISTS vehicle_loans (
   expected_return_date DATE,
   status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'returned')),
   notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Notifications
+CREATE TABLE IF NOT EXISTS notifications (
+  id SERIAL PRIMARY KEY,
+  tenant_id INTEGER REFERENCES tenants(id) NOT NULL,
+  user_id INTEGER REFERENCES users(id), -- Optional: if null, it's for all users in tenant
+  title VARCHAR(255) NOT NULL,
+  message TEXT,
+  type VARCHAR(50) DEFAULT 'info', -- info, success, warning, error
+  read BOOLEAN DEFAULT FALSE,
+  link VARCHAR(255), -- Optional action link
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

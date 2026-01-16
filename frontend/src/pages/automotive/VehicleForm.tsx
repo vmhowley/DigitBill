@@ -50,8 +50,8 @@ export const VehicleForm = () => {
     return (
         <div className="max-w-3xl mx-auto pb-12">
             <div className="flex items-center gap-4 mb-6">
-                <Link to="/automotive/vehicles" className="p-2 hover:bg-gray-100 rounded-full text-gray-500">
-                    <ArrowLeft size={20} />
+                <Link to="/automotive/vehicles" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                    <ArrowLeft size={18} className="mr-1" /> Volver al Inventario
                 </Link>
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">{id ? 'Editar Vehículo' : 'Nuevo Vehículo'}</h1>

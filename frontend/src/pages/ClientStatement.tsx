@@ -77,15 +77,15 @@ export const ClientStatement: React.FC = () => {
     return (
         <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-4 mb-8">
-                <Link to="/clients" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <ArrowLeft size={24} className="text-gray-600" />
+                <Link to="/clients" className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <ArrowLeft size={24} className="text-gray-600 dark:text-gray-300" />
                 </Link>
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-800 tracking-tight">Estado de Cuenta</h2>
-                    <p className="text-gray-500 mt-1">{client.name} • {client.rnc_ci}</p>
+                    <h2 className="text-3xl font-bold text-gray-800 dark:text-white tracking-tight">Estado de Cuenta</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">{client.name} • {client.rnc_ci}</p>
                 </div>
                 <div className="ml-auto flex gap-2">
-                    <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                    <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-border-dark rounded-xl hover:bg-gray-50 dark:hover:bg-card-dark transition-colors text-slate-700 dark:text-slate-200">
                         <Printer size={18} /> Imprimir
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
@@ -95,44 +95,44 @@ export const ClientStatement: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <p className="text-sm font-medium text-gray-500 mb-1">Total Facturado</p>
-                    <p className="text-2xl font-bold text-gray-900">RD$ {totalInvoiced.toLocaleString()}</p>
+                <div className="bg-white dark:bg-card-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-border-dark">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Facturado</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">RD$ {totalInvoiced.toLocaleString()}</p>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <p className="text-sm font-medium text-gray-500 mb-1">Total Pagado</p>
+                <div className="bg-white dark:bg-card-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-border-dark">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pagado</p>
                     <p className="text-2xl font-bold text-green-600">RD$ {totalPaid.toLocaleString()}</p>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ring-2 ring-blue-500 ring-offset-2">
-                    <p className="text-sm font-medium text-gray-500 mb-1">Saldo Pendiente</p>
+                <div className="bg-white dark:bg-card-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-border-dark ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-background-dark">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Saldo Pendiente</p>
                     <p className="text-2xl font-bold text-red-600">RD$ {balance.toLocaleString()}</p>
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden overflow-x-auto">
+            <div className="bg-white dark:bg-card-dark rounded-2xl shadow-sm border border-gray-200 dark:border-border-dark overflow-hidden overflow-x-auto">
                 <table className="w-full text-left">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-gray-100">
-                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha</th>
-                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Descripción</th>
-                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Cargo</th>
-                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Abono</th>
+                        <tr className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-border-dark">
+                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
+                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Descripción</th>
+                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Cargo</th>
+                            <th className="py-4 px-6 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">Abono</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100 dark:divide-border-dark">
                         {transactions.map((tx, idx) => (
-                            <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="py-4 px-6 text-sm text-gray-500">
+                            <tr key={idx} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                <td className="py-4 px-6 text-sm text-gray-500 dark:text-gray-400">
                                     {new Date(tx.date).toLocaleDateString()}
                                 </td>
                                 <td className="py-4 px-6">
                                     <div className="flex items-center gap-2">
                                         {tx.type === 'invoice' ? <FileText size={16} className="text-blue-500" /> : <Banknote size={16} className="text-green-500" />}
-                                        <span className="font-medium text-gray-900">{tx.description}</span>
+                                        <span className="font-medium text-gray-900 dark:text-white">{tx.description}</span>
                                     </div>
                                     {tx.reference && <p className="text-xs text-gray-400 mt-0.5">{tx.reference}</p>}
                                 </td>
-                                <td className="py-4 px-6 text-right font-medium">
+                                <td className="py-4 px-6 text-right font-medium text-slate-900 dark:text-slate-200">
                                     {tx.type === 'invoice' ? `RD$ ${tx.amount.toLocaleString()}` : '-'}
                                 </td>
                                 <td className="py-4 px-6 text-right font-medium text-green-600">
