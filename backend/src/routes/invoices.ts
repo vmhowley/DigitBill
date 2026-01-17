@@ -592,6 +592,14 @@ router.post("/:id/email", async (req, res) => {
       req.tenantId,
     ]);
     const plan = planRes.rows[0]?.plan;
+
+    // STRICT RESTRICTION: Free plan cannot send emails at all
+    if (plan === 'free') {
+      return res.status(403).json({
+        error: "El envío de correos no está disponible en el plan gratuito. Actualiza tu plan o descarga el PDF y envíalo manualmente."
+      });
+    }
+
     const isPremium = plan === "pyme" || plan === "enterprise";
 
     await sendInvoiceEmail(
@@ -680,6 +688,14 @@ router.post("/:id/reminder", async (req, res) => {
       req.tenantId,
     ]);
     const plan = planRes.rows[0]?.plan;
+
+    // STRICT RESTRICTION: Free plan cannot send emails at all
+    if (plan === 'free') {
+      return res.status(403).json({
+        error: "El envío de recordatorios no está disponible en el plan gratuito. Actualiza tu plan para usar esta función."
+      });
+    }
+
     const isPremium = plan === "pyme" || plan === "enterprise";
 
     await sendPaymentReminderEmail(

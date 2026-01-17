@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, XCircle, PartyPopper } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../api';
@@ -29,23 +29,38 @@ export const PaymentSuccess: React.FC = () => {
     }, [sessionId]);
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center px-4">
+        <div className="min-h-[80vh] flex items-center justify-center px-4 bg-gradient-to-b from-white to-green-50/30">
             <div className="max-w-md w-full text-center">
-                <div className="mb-6 flex justify-center">
-                    <div className="bg-green-100 p-4 rounded-full text-green-600 animate-bounce">
-                        <CheckCircle2 size={64} />
+                <div className="mb-8 flex justify-center relative">
+                    <div className="absolute inset-0 bg-green-200 blur-3xl opacity-20 rounded-full animate-pulse"></div>
+                    <div className="bg-green-100 p-6 rounded-3xl text-green-600 relative animate-bounce shadow-xl shadow-green-100/50">
+                        <PartyPopper size={64} />
                     </div>
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">¡Pago Exitoso!</h1>
-                <p className="text-gray-500 mb-8">
-                    Tu plan ha sido actualizado correctamente. Ya puedes disfrutar de todas las nuevas funciones habilitadas para tu cuenta.
+
+                <h1 className="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+                    ¡Bienvenido a la Nueva Era!
+                </h1>
+
+                <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+                    Estamos encantados de tenerte de vuelta. Tu pago ha sido procesado con éxito y tu sistema ha sido
+                    <span className="font-bold text-green-600"> totalmente reactivado</span>.
+                    ¡Sigamos construyendo algo grande juntos!
                 </p>
-                <Link
-                    to="/dashboard"
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-                >
-                    Ir al Dashboard <ArrowRight size={20} />
-                </Link>
+
+                <div className="space-y-4">
+                    <Link
+                        to="/dashboard"
+                        className="w-full inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200 group"
+                    >
+                        Entrar al Dashboard
+                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+
+                    <p className="text-sm text-gray-400 font-medium">
+                        Tu factura llegará a tu correo en unos minutos.
+                    </p>
+                </div>
             </div>
         </div>
     );

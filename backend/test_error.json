@@ -1,0 +1,15 @@
+{
+  "stack": "error: update or delete on table \"products\" violates foreign key constraint \"inventory_movements_product_id_fkey\" on table \"inventory_movements\"\n    at C:\\Users\\Admin\\Documents\\projects\\DigitBill\\backend\\node_modules\\pg-pool\\index.js:45:11\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)",
+  "message": "update or delete on table \"products\" violates foreign key constraint \"inventory_movements_product_id_fkey\" on table \"inventory_movements\"",
+  "length": 341,
+  "name": "error",
+  "severity": "ERROR",
+  "code": "23503",
+  "detail": "Key (id)=(82) is still referenced from table \"inventory_movements\".",
+  "schema": "public",
+  "table": "inventory_movements",
+  "constraint": "inventory_movements_product_id_fkey",
+  "file": "ri_triggers.c",
+  "line": "2612",
+  "routine": "ri_ReportViolation"
+}

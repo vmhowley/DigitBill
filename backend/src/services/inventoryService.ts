@@ -48,6 +48,33 @@ export const recordMovement = async (tenantId: number, data: any) => {
     );
 
     await client.query("COMMIT");
+
+    // 3. Post-Transaction: Check for Low Stock Notification
+    try {
+      if (data.type === "out") {
+        const stockRes = await query("SELECT stock_quantity, description FROM products WHERE id = $1", [data.product_id]);
+        const product = stockRes.rows[0];
+        const threshold = 5; // Default threshold until min_stock_level is added to schema
+
+        if (product.stock_quantity <= threshold) {
+          const { createNotification } = require("./notificationService");
+          // Signature: (tenantId, userId, title, message, type, link)
+          // Use userId = null for system-wide alert
+          await createNotification(
+            tenantId,
+            null,
+            "Alerta de Stock Bajo",
+            `El producto "${product.description}" tiene pocas existencias (${product.stock_quantity}).`,
+            "warning",
+            "/inventory"
+          );
+        }
+      }
+    } catch (e: any) {
+      console.error("Failed to trigger stock notification", e);
+      // Don't fail the movement if notification fails
+    }
+
     return moveRes.rows[0];
   } catch (err) {
     await client.query("ROLLBACK");

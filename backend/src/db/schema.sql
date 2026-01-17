@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS tenants (
   phone VARCHAR(20),
   email VARCHAR(255),
   type VARCHAR(20) CHECK (type IN ('juridico', 'fisico')),
-  plan VARCHAR(20) DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'enterprise')),
+  plan VARCHAR(20) DEFAULT 'free' CHECK (plan IN ('free', 'entrepreneur', 'pyme', 'enterprise')),
   industry_type VARCHAR(20) DEFAULT 'retail' CHECK (industry_type IN ('retail', 'automotive', 'service')),
   status VARCHAR(20) DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

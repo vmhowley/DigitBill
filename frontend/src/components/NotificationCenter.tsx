@@ -61,6 +61,17 @@ export const NotificationCenter = () => {
         }
     };
 
+    const handleDeleteAll = async () => {
+        if (!window.confirm('¿Estás seguro de que deseas borrar todas las notificaciones?')) return;
+        try {
+            await api.delete('/api/notifications');
+            setNotifications([]);
+            setUnreadCount(0);
+        } catch (error) {
+            console.error('Error deleting all notifications', error);
+        }
+    };
+
     const handleNotificationClick = async (n: any) => {
         if (!n.read) {
             handleMarkAsRead(n.id);
@@ -96,14 +107,24 @@ export const NotificationCenter = () => {
                 <div className="absolute right-0 mt-2 w-80 md:w-96 bg-white dark:bg-card-dark border border-slate-200 dark:border-border-dark rounded-xl shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
                     <div className="p-4 border-b border-slate-100 dark:border-border-dark flex justify-between items-center">
                         <h3 className="font-bold text-slate-800 dark:text-white">Notificaciones</h3>
-                        {unreadCount > 0 && (
-                            <button
-                                onClick={handleMarkAllRead}
-                                className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium flex items-center gap-1"
-                            >
-                                <Check size={14} /> Marcar todo leído
-                            </button>
-                        )}
+                        <div className="flex items-center gap-3">
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={handleMarkAllRead}
+                                    className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium flex items-center gap-1"
+                                >
+                                    <Check size={14} /> Marcar todo leído
+                                </button>
+                            )}
+                            {notifications.length > 0 && (
+                                <button
+                                    onClick={handleDeleteAll}
+                                    className="text-xs text-red-600 hover:text-red-800 dark:text-red-400 font-medium flex items-center gap-1"
+                                >
+                                    <span className="material-symbols-outlined !text-[14px]">delete</span> Borrar todo
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100 dark:divide-border-dark">

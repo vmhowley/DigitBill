@@ -13,20 +13,30 @@ declare global {
     interface Request {
       user?: any; // Should interface this
       tenantId?: number;
+      userId?: number;
       role?: string;
       plan?: string;
     }
   }
 }
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 export const requireAuth = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const log = (msg: string) => {
+    try { fs.appendFileSync(path.join(__dirname, '../../cols.txt'), `[Auth ${new Date().toISOString()}] ${msg}\n`); } catch (e) { }
+  };
+
+  log(`Checking ${req.method} ${req.originalUrl}`);
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
+    log(`FAIL: Missing Header for ${req.originalUrl}`);
     return res.status(401).json({ error: "Missing Authorization header" });
   }
 
@@ -40,34 +50,11 @@ export const requireAuth = async (
     } = await supabase.auth.getUser(token);
 
     if (error || !user) {
+      log(`FAIL: Invalid Token for ${user?.email || 'unknown'}`);
       return res.status(401).json({ error: "Invalid token" });
     }
 
-    // 2. Security Check: Enforce 2FA if enabled
-    // Note: Temporarily disabled 2FA enforcement as requested by user.
-    /*
-    const payloadIndex = token.indexOf('.') + 1;
-    const payloadEndIndex = token.lastIndexOf('.');
-    const payload = JSON.parse(Buffer.from(token.substring(payloadIndex, payloadEndIndex), 'base64').toString('utf-8'));
-    const currentAal = payload.aal; // 'aal1', 'aal2', etc.
-
-    // Check if user has verified 2FA factors
-    const { data: factorsData, error: factorsError } = await supabaseAdmin.auth.admin.mfa.listFactors({
-        userId: user.id
-    });
-
-    if (!factorsError && factorsData && factorsData.factors) {
-        const hasVerifiedFactor = factorsData.factors.some((f: any) => f.status === 'verified');
-        
-        if (hasVerifiedFactor && currentAal !== 'aal2') {
-             console.warn(`User ${user.email} has 2FA enabled but session is ${currentAal}. Denying access.`);
-             return res.status(403).json({ error: '2FA Verification Required', code: 'mfa_required' });
-        }
-    }
-    */
-
-    // 3. Resolve Tenant
-    // Check if user exists in local DB
+    // 2. Resolve Tenant
     const userRes = await query(
       `
       SELECT u.id, u.tenant_id, u.role, t.plan, t.subscription_end_date 
@@ -78,12 +65,12 @@ export const requireAuth = async (
       [user.id]
     );
 
-    let tenantId;
-    let plan;
-    let role;
+    let authInfo;
 
-    if (userRes.rows.length === 0) {
-      // Check if maybe they exist by email but haven't linked UID yet (migrating legacy users)
+    if (userRes.rows.length > 0) {
+      authInfo = userRes.rows[0];
+    } else {
+      // Legacy check (by email)
       const emailCheck = await query(
         `
         SELECT u.id, u.tenant_id, u.role, t.plan, t.subscription_end_date 
@@ -95,64 +82,53 @@ export const requireAuth = async (
       );
 
       if (emailCheck.rows.length > 0) {
-        // Link existing legacy user to the new Supabase UID
-        tenantId = emailCheck.rows[0].tenant_id;
-        plan = emailCheck.rows[0].plan;
-
-        // CHECK EXPIRATION (Email flow)
-        const endDate = emailCheck.rows[0].subscription_end_date;
-        if (plan !== "free" && endDate) {
-          if (new Date(endDate) < new Date()) {
-            console.warn(
-              `[Auth] Subscription expired for tenant ${tenantId}. Downgrading to free.`
-            );
-            plan = "free";
-            // Optional: Trigger DB update here to persist degradation, but runtime check is safer for now
-          }
-        }
-
-        role = emailCheck.rows[0].role;
-        await query("UPDATE users SET supabase_uid = $1 WHERE id = $2", [
-          user.id,
-          emailCheck.rows[0].id,
-        ]);
-      } else {
-        // STRICT MODE: If user is not in our DB, deny access.
-        // This prevents random people from logging in.
-        console.warn(
-          `Unauthorized login attempt: ${user.email} (UID: ${user.id}) - No tenant assigned.`
-        );
-        return res
-          .status(403)
-          .json({
-            error: "Access Denied: No active subscription found for this user.",
-          });
+        authInfo = emailCheck.rows[0];
+        // Link UID
+        await query("UPDATE users SET supabase_uid = $1 WHERE id = $2", [user.id, authInfo.id]);
       }
-    } else {
-      tenantId = userRes.rows[0].tenant_id;
-      plan = userRes.rows[0].plan;
-
-      // CHECK EXPIRATION (Standard flow)
-      const endDate = userRes.rows[0].subscription_end_date;
-      if (plan !== "free" && endDate) {
-        if (new Date(endDate) < new Date()) {
-          console.warn(
-            `[Auth] Subscription expired for tenant ${tenantId}. Downgrading to free.`
-          );
-          plan = "free";
-        }
-      }
-
-      role = userRes.rows[0].role;
     }
 
-    // Attach to request
-    req.user = { ...user, role }; // Attach role
+    if (!authInfo) {
+      log(`FAIL: No Tenant for ${user.email}`);
+      console.warn(`Unauthorized access: ${user.email} (No tenant)`);
+      return res.status(403).json({ error: "Access Denied: No active subscription found." });
+    }
+
+    const { id: localUserId, tenant_id: tenantId, role, plan, subscription_end_date: endDate } = authInfo;
+
+    // 3. Check Expiration
+    const now = new Date();
+    let isExpired = false;
+    let isAllowed = false;
+
+    if (plan !== "free" && endDate) {
+      isExpired = new Date(endDate) < now;
+
+      if (isExpired) {
+        const allowedRoutes = ['/api/settings', '/api/subscriptions', '/api/auth'];
+        isAllowed = allowedRoutes.some(route => req.originalUrl.startsWith(route));
+
+        if (!isAllowed) {
+          log(`BLOCK: Expired ${user.email} accessing ${req.originalUrl} (Plan: ${plan}, End: ${endDate})`);
+          return res.status(403).json({
+            error: "Suscripción Vencida. Por favor renueve su licencia para continuar.",
+            code: "SUBSCRIPTION_EXPIRED"
+          });
+        }
+      }
+    }
+
+    log(`ALLOW: ${user.email} accessing ${req.originalUrl} (Expired: ${isExpired}, Allowed: ${isAllowed})`);
+
+    // 4. Attach to request
+    req.user = { ...user, role };
     req.tenantId = tenantId;
+    req.userId = localUserId;
     req.plan = plan || "free";
 
     next();
-  } catch (err) {
+  } catch (err: any) {
+    log(`CRITICAL ERROR: ${err.message}`);
     console.error("Auth Middleware Error:", err);
     res.status(401).json({ error: "Authentication failed" });
   }

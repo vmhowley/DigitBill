@@ -1,0 +1,58 @@
+[
+  {
+    "column_name": "subscription_end_date",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp without time zone"
+  },
+  {
+    "column_name": "id",
+    "data_type": "integer"
+  },
+  {
+    "column_name": "status",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "address",
+    "data_type": "text"
+  },
+  {
+    "column_name": "phone",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "email",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "type",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "plan",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "subscription_status",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "stripe_subscription_id",
+    "data_type": "text"
+  },
+  {
+    "column_name": "industry_type",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "name",
+    "data_type": "character varying"
+  },
+  {
+    "column_name": "rnc",
+    "data_type": "character varying"
+  }
+]

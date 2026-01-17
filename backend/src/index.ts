@@ -78,9 +78,31 @@ app.get("/", (req, res) => {
   res.send("Facturación Electrónica API is running");
 });
 
-app.listen(port as number, "0.0.0.0", async () => {
-  await initDb();
-  console.log(
-    `Server is running on port ${port} and accessible via network (0.0.0.0)`
-  );
+
+const server = app.listen(port as number, "0.0.0.0", async () => {
+  try {
+    await initDb();
+    console.log(`Server is running on port ${port} and accessible via network (0.0.0.0)`);
+  } catch (err) {
+    console.error("Database initialization failed:", err);
+  }
+});
+
+const shutdown = (signal: string) => {
+  console.log(`Received ${signal}. Closing server...`);
+  server.close(() => {
+    console.log('Server closed.');
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+process.on('exit', (code) => {
+  console.log(`Process exiting with code: ${code}`);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
 });

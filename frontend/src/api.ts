@@ -20,8 +20,8 @@ api.interceptors.request.use(async (config) => {
     throw error;
   }
 }, (error) => {
-    loaderService.hide();
-    return Promise.reject(error);
+  loaderService.hide();
+  return Promise.reject(error);
 });
 
 api.interceptors.response.use(
@@ -32,8 +32,10 @@ api.interceptors.response.use(
   (error: any) => {
     loaderService.hide();
     if (error.response && error.response.status === 403) {
-      // Check if it's our "No tenant" error
-      if (error.response.data?.error?.includes('Access Denied')) {
+      if (error.response.data?.code === 'SUBSCRIPTION_EXPIRED') {
+        // Dispatch global event for the App to handle
+        window.dispatchEvent(new Event('license-expired'));
+      } else if (error.response.data?.error?.includes('Access Denied')) {
         toast.error(
           "¡Cuenta no activada!\nContacta a ventas para adquirir tu licencia:\nventas@tufacturard.com",
           { duration: 6000, icon: '🔒' }
