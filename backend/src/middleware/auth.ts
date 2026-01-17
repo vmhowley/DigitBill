@@ -91,7 +91,10 @@ export const requireAuth = async (
     if (!authInfo) {
       log(`FAIL: No Tenant for ${user.email}`);
       console.warn(`Unauthorized access: ${user.email} (No tenant)`);
-      return res.status(403).json({ error: "Access Denied: No active subscription found." });
+      return res.status(403).json({
+        error: "Access Denied: No active subscription found.",
+        code: "ACCESS_DENIED"
+      });
     }
 
     const { id: localUserId, tenant_id: tenantId, role, plan, subscription_end_date: endDate } = authInfo;

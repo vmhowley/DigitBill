@@ -86,6 +86,19 @@ router.put('/read-all', async (req: any, res) => {
     }
 });
 
+router.delete('/:id', async (req: any, res) => {
+    try {
+        const tenantId = req.tenantId;
+        const { id } = req.params;
+        const { deleteNotification } = require('../services/notificationService');
+        await deleteNotification(id, tenantId);
+        res.json({ success: true });
+    } catch (error: any) {
+        console.error('[NotificationRouter] Error in DELETE /:id:', error);
+        res.status(500).json({ error: 'Error deleting notification' });
+    }
+});
+
 router.delete('/', async (req: any, res) => {
     try {
         const tenantId = req.tenantId;

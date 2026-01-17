@@ -99,7 +99,9 @@ function AppRoutes() {
     }
   }, [profile]);
 
-  if (isExpired && location.pathname !== '/upgrade' && profile?.subscription_status === 'expired') {
+  const shouldShowExpired = isExpired || profile?.subscription_status === 'expired';
+
+  if (shouldShowExpired && location.pathname !== '/upgrade') {
     return <LicenseExpired />;
   }
 

@@ -806,3 +806,161 @@
 [Auth 2026-01-17T03:38:35.007Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
 [Auth 2026-01-17T03:38:41.502Z] Checking GET /api/auth/me
 [Auth 2026-01-17T03:38:41.722Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:54:50.592Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:54:50.911Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:54:51.032Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:54:51.182Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:54:51.717Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:54:51.721Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:54:51.725Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:54:51.729Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:54:51.861Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:54:51.984Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:54:52.030Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:54:52.031Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:54:52.129Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.131Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:54:52.272Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.274Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:54:52.312Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.313Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:54:52.314Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.317Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:54:52.340Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.341Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:54:52.413Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.415Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:54:52.456Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.458Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.476Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.542Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.544Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:54:52.557Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:54:52.559Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:54:52.681Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:55:00.614Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:55:00.895Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:35.403Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:36.035Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:36.160Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:36.311Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:36.546Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:36.549Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:36.555Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:36.560Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:36.697Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:36.818Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:36.861Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:36.862Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:36.955Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:36.957Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:37.094Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:37.140Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.141Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:37.143Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.145Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.146Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:37.149Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:37.216Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:37.278Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.287Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.343Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.344Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:37.348Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.350Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:37.352Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.358Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.483Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:37.486Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.043Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:41.046Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:41.050Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:41.052Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:41.054Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:41.056Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:41.179Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.180Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.182Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:41.201Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:41.232Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.234Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.245Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:41.250Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:41.323Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.324Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.327Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:41.328Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:41.329Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:41.368Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.370Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:41.384Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.390Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.451Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:41.463Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.470Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.509Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:41.588Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:46.863Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:46.871Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:46.876Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:46.881Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:46.883Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:46.885Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:47.140Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.142Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:47.155Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:47.163Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.165Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:47.172Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.174Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:47.175Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.177Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:47.225Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.226Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:47.272Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:47.284Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.286Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:47.297Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.298Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:47.307Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.314Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.369Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.411Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.420Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:47.436Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:47.537Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:47.677Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:47.794Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:47.932Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:49.457Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:49.461Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:49.465Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:49.467Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:49.468Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:49.594Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.595Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:49.597Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:49.601Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.603Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:49.611Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.614Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-17T10:58:49.615Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.617Z] Checking GET /api/notifications
+[Auth 2026-01-17T10:58:49.718Z] Checking GET /api/invoices?all=true
+[Auth 2026-01-17T10:58:49.735Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.736Z] Checking GET /api/inventory/alerts
+[Auth 2026-01-17T10:58:49.742Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.743Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:49.749Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications/unread-count (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.750Z] Checking GET /api/expenses/stats-by-date
+[Auth 2026-01-17T10:58:49.751Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/notifications (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.753Z] Checking GET /api/expenses
+[Auth 2026-01-17T10:58:49.855Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/invoices?all=true (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.875Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/inventory/alerts (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.878Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:49.885Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:49.888Z] BLOCK: Expired vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Plan: pyme, End: Tue Jan 13 2026 23:24:04 GMT-0400 (Bolivia Time))
+[Auth 2026-01-17T10:58:50.001Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:50.139Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)
+[Auth 2026-01-17T10:58:50.262Z] Checking GET /api/auth/me
+[Auth 2026-01-17T10:58:50.400Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: true, Allowed: true)

@@ -35,7 +35,7 @@ api.interceptors.response.use(
       if (error.response.data?.code === 'SUBSCRIPTION_EXPIRED') {
         // Dispatch global event for the App to handle
         window.dispatchEvent(new Event('license-expired'));
-      } else if (error.response.data?.error?.includes('Access Denied')) {
+      } else if (error.response.data?.code === 'ACCESS_DENIED' || error.response.data?.error?.includes('Access Denied')) {
         toast.error(
           "¡Cuenta no activada!\nContacta a ventas para adquirir tu licencia:\nventas@tufacturard.com",
           { duration: 6000, icon: '🔒' }

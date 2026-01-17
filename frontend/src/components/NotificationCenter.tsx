@@ -11,6 +11,9 @@ export const NotificationCenter = () => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    const [isDestroying, setIsDestroying] = useState<number | null>(null);
+    const [isDestroyingAll, setIsDestroyingAll] = useState(false);
+
     useEffect(() => {
         loadData();
         // Poll every minute
@@ -64,11 +67,17 @@ export const NotificationCenter = () => {
     const handleDeleteAll = async () => {
         if (!window.confirm('¿Estás seguro de que deseas borrar todas las notificaciones?')) return;
         try {
+            setIsDestroyingAll(true);
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 800));
+
             await api.delete('/api/notifications');
             setNotifications([]);
             setUnreadCount(0);
         } catch (error) {
             console.error('Error deleting all notifications', error);
+        } finally {
+            setIsDestroyingAll(false);
         }
     };
 
@@ -79,6 +88,27 @@ export const NotificationCenter = () => {
         if (n.link) {
             navigate(n.link);
             setIsOpen(false);
+        }
+    };
+
+    const handleDeleteSingle = async (e: React.MouseEvent, id: number) => {
+        e.stopPropagation();
+        try {
+            setIsDestroying(id);
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 600));
+
+            await api.delete(`/api/notifications/${id}`); // Assuming this endpoint exists based on the requirement
+            setNotifications(prev => prev.filter(n => n.id !== id));
+            // Update unread count if we deleted an unread notification
+            const deleted = notifications.find(n => n.id === id);
+            if (deleted && !deleted.read) {
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            }
+        } catch (error) {
+            console.error('Error deleting notification', error);
+        } finally {
+            setIsDestroying(null);
         }
     };
 
@@ -127,44 +157,77 @@ export const NotificationCenter = () => {
                         </div>
                     </div>
 
-                    <div className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100 dark:divide-border-dark">
+                    <div className="max-h-[60vh] overflow-y-auto divide-y divide-slate-100 dark:divide-border-dark relative">
+                        <style>
+                            {`
+                            @keyframes destroy-flicker {
+                                0% { opacity: 1; transform: scale(1); filter: invert(0); }
+                                20% { opacity: 0.5; transform: scale(0.98) skewX(2deg); filter: invert(0.5) sepia(1) saturate(5) hue-rotate(-50deg); }
+                                40% { opacity: 1; transform: scale(1.02) skewX(-2deg); }
+                                60% { opacity: 0.3; transform: scale(0.9) skewX(5deg); filter: invert(1); }
+                                80% { opacity: 0.8; transform: scale(0.95); }
+                                100% { opacity: 0; transform: scale(0) rotate(5deg); filter: brightness(2) contrast(2); }
+                            }
+                            .notification-destroying {
+                                animation: destroy-flicker 0.6s forwards cubic-bezier(0.4, 0, 0.2, 1);
+                                pointer-events: none;
+                                z-index: 10;
+                            }
+                            .all-destroying {
+                                animation: destroy-flicker 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1);
+                                pointer-events: none;
+                            }
+                            `}
+                        </style>
+
                         {notifications.length === 0 ? (
                             <div className="p-8 text-center text-slate-500 text-sm">
                                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
                                 No tienes notificaciones
                             </div>
                         ) : (
-                            notifications.map(n => (
-                                <div
-                                    key={n.id}
-                                    className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${!n.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
-                                    onClick={() => handleNotificationClick(n)}
-                                >
-                                    <div className="flex gap-3">
-                                        <div className="mt-0.5 shrink-0">
-                                            {getIcon(n.type)}
-                                        </div>
-                                        <div className="flex-1 space-y-1">
-                                            <div className="flex justify-between items-start">
-                                                <p className={`text-sm ${!n.read ? 'font-bold' : 'font-medium'} text-slate-800 dark:text-white`}>
-                                                    {n.title}
-                                                </p>
-                                                <span className="text-[10px] text-slate-400 whitespace-nowrap ml-2">
-                                                    {new Date(n.created_at).toLocaleDateString()}
-                                                </span>
+                            <div className={isDestroyingAll ? 'all-destroying' : ''}>
+                                {notifications.map(n => (
+                                    <div
+                                        key={n.id}
+                                        className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer relative group ${!n.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''} ${isDestroying === n.id ? 'notification-destroying' : ''}`}
+                                        onClick={() => handleNotificationClick(n)}
+                                    >
+                                        <div className="flex gap-3">
+                                            <div className="mt-0.5 shrink-0">
+                                                {getIcon(n.type)}
                                             </div>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                                {n.message}
-                                            </p>
-                                            {n.link && (
-                                                <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
-                                                    Ver detalles <ExternalLink size={10} />
+                                            <div className="flex-1 space-y-1">
+                                                <div className="flex justify-between items-start">
+                                                    <p className={`text-sm ${!n.read ? 'font-bold' : 'font-medium'} text-slate-800 dark:text-white`}>
+                                                        {n.title}
+                                                    </p>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                                                            {new Date(n.created_at).toLocaleDateString()}
+                                                        </span>
+                                                        <button
+                                                            onClick={(e) => handleDeleteSingle(e, n.id)}
+                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-500 rounded transition-all"
+                                                            title="Borrar"
+                                                        >
+                                                            <span className="material-symbols-outlined !text-[16px]">delete</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            )}
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                                    {n.message}
+                                                </p>
+                                                {n.link && (
+                                                    <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
+                                                        Ver detalles <ExternalLink size={10} />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
