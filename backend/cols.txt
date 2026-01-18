@@ -3496,3 +3496,11 @@
 [Auth 2026-01-18T14:13:10.528Z] ALLOW: vmhowleyh@gmail.com accessing /api/invoices?all=true (Expired: false, Allowed: false)
 [Auth 2026-01-18T14:13:10.578Z] ALLOW: vmhowleyh@gmail.com accessing /api/expenses/stats-by-date (Expired: false, Allowed: false)
 [Auth 2026-01-18T14:13:10.655Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: false, Allowed: false)
+[Auth 2026-01-18T14:14:10.512Z] Checking GET /api/notifications/unread-count
+[Auth 2026-01-18T14:14:10.513Z] Checking GET /api/notifications
+[Auth 2026-01-18T14:14:11.279Z] ALLOW: vmhowleyh@gmail.com accessing /api/notifications (Expired: false, Allowed: false)
+[Auth 2026-01-18T14:14:11.283Z] ALLOW: vmhowleyh@gmail.com accessing /api/notifications/unread-count (Expired: false, Allowed: false)
+[Auth 2026-01-18T14:14:13.928Z] Checking GET /api/auth/me
+[Auth 2026-01-18T14:14:14.071Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: false, Allowed: false)
+[Auth 2026-01-18T14:14:19.053Z] Checking GET /api/auth/me
+[Auth 2026-01-18T14:14:19.272Z] ALLOW: vmhowleyh@gmail.com accessing /api/auth/me (Expired: false, Allowed: false)

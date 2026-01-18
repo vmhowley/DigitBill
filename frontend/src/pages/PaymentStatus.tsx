@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, XCircle, PartyPopper } from 'lucide-react';
+import { ArrowRight, XCircle, PartyPopper } from 'lucide-react';
 import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../api';
