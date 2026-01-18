@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import logo from '../assets/logo_digitbill.png';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+
 interface SidebarProps {
     isOpen: boolean;
     onClose: () => void;
@@ -10,8 +11,11 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     const location = useLocation();
     const { profile, signOut } = useAuth();
+    const { theme } = useTheme();
     const role = profile?.role || 'user';
     const isActive = (path: string) => location.pathname === path;
+
+    const logoSrc = theme === 'dark' ? '/img/logo1.png' : '/img/logo_digitbill_light.png?v=solid2';
 
     return (
         <>
@@ -29,12 +33,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 <div className="p-6 flex items-center gap-3">
-                    <div className="rounded bg-slate-200 dark:bg-slate-700/50 overflow-hidden">
-                        <img className='w-80 h-20  object-cover object-center' src={logo} alt="" />
+                    <div className="rounded overflow-hidden w-full">
+                        <img className='w-full h-20 object-cover object-center' src={logoSrc} alt="DigitBill Logo" />
                     </div>
-                    <button onClick={onClose} className="ml-auto md:hidden text-slate-400">
-                        <span className="material-symbols-outlined">close</span>
-                    </button>
                 </div>
 
                 <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto">

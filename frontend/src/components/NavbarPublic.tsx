@@ -1,10 +1,14 @@
 import { Menu, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 export const NavbarPublic: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { theme } = useTheme();
+
+    const logoSrc = theme === 'dark' ? '/img/logo_digitbill_dark.png?v=solid2' : '/img/logo_digitbill_light.png?v=solid2';
 
     return (
         <nav className="bg-white/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 dark:border-border-dark transition-colors duration-300">
@@ -12,10 +16,7 @@ export const NavbarPublic: React.FC = () => {
                 <div className="flex justify-between h-20 items-center">
                     {/* Logo */}
                     <div className="flex items-center gap-2">
-                        <div className="bg-primary size-8 rounded-lg flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-xl">account_balance_wallet</span>
-                        </div>
-                        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">DigitBill</h1>
+                        <img src={logoSrc} alt="DigitBill" className="h-10 w-auto object-contain" />
                     </div>
 
                     {/* Desktop Menu */}

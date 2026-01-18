@@ -10,8 +10,11 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { NavbarPublic } from '../components/NavbarPublic';
+import { useTheme } from '../context/ThemeContext';
 
 export const Landing: React.FC = () => {
+    const { theme } = useTheme();
+    const logoSrc = theme === 'dark' ? '/img/logo_digitbill_dark.png?v=solid2' : '/img/logo_digitbill_light.png?v=solid2';
 
 
     return (
@@ -75,9 +78,8 @@ export const Landing: React.FC = () => {
                             <div className="flex h-[600px] md:h-[800px] overflow-hidden bg-slate-50 dark:bg-[#0B1121] text-left">
                                 {/* Sidebar (Mock) */}
                                 <div className="w-64 bg-white dark:bg-[#111827] border-r border-slate-200 dark:border-slate-800 p-6 hidden md:flex flex-col gap-8">
-                                    <div className="flex items-center gap-2 text-primary font-bold text-xl">
-                                        <div className="size-8 bg-primary rounded-lg"></div>
-                                        DigitBill
+                                    <div className="flex items-center gap-2">
+                                        <img src={logoSrc} alt="DigitBill" className="h-8 w-auto object-contain" />
                                     </div>
                                     <div className="space-y-1">
                                         {['Dashboard', 'Facturas', 'Clientes', 'Inventario', 'Reportes'].map((item, i) => (
@@ -239,10 +241,7 @@ export const Landing: React.FC = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
                     <div className="col-span-2 md:col-span-1">
                         <div className="flex items-center gap-2 mb-6">
-                            <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">
-                                <span className="material-symbols-outlined text-xl">account_balance_wallet</span>
-                            </div>
-                            <span className="text-xl font-bold text-slate-900 dark:text-white">DigitBill</span>
+                            <img src={logoSrc} alt="DigitBill" className="h-8 w-auto object-contain" />
                         </div>
                         <p className="text-sm leading-relaxed mb-6">
                             Software de facturación profesional.

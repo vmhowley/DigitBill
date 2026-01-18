@@ -24,6 +24,8 @@ interface AuthContextType {
     fetchProfile: () => Promise<void>;
     isAdmin: boolean;
     needsMFA: boolean;
+    isExpired: boolean;
+    setIsExpired: (expired: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -34,7 +36,9 @@ const AuthContext = createContext<AuthContextType>({
     signOut: async () => { },
     fetchProfile: async () => { },
     isAdmin: false,
-    needsMFA: false
+    needsMFA: false,
+    isExpired: false,
+    setIsExpired: () => { }
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -43,6 +47,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [needsMFA, setNeedsMFA] = useState(false);
+    const [isExpired, setIsExpired] = useState(false);
+
+    useEffect(() => {
+        if (profile?.subscription_status === 'expired') {
+            setIsExpired(true);
+        } else if (profile?.subscription_status === 'active') {
+            setIsExpired(false);
+        }
+    }, [profile]);
 
     const checkMFA = async (currentSession: Session | null) => {
         if (!currentSession) {
@@ -134,6 +147,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setUser(null);
                 setProfile(null);
                 setNeedsMFA(false);
+                setIsExpired(false);
                 setLoading(false);
                 return;
             }
@@ -150,10 +164,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }
         });
 
+        const handleLicenseExpired = () => setIsExpired(true);
+        window.addEventListener('license-expired', handleLicenseExpired);
+
         return () => {
             mounted = false;
             clearTimeout(timeoutId);
             subscription.unsubscribe();
+            window.removeEventListener('license-expired', handleLicenseExpired);
         };
     }, []);
 
@@ -174,7 +192,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             signOut,
             fetchProfile,
             isAdmin: profile?.role === 'admin',
-            needsMFA
+            needsMFA,
+            isExpired,
+            setIsExpired
         }}>
             {children}
         </AuthContext.Provider>

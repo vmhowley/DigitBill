@@ -1,0 +1,40 @@
+<svg width="220" height="50" viewBox="0 0 220 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="moneyGradientDark" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34D399" /> <!-- Emerald 400 (Brighter for dark mode) -->
+      <stop offset="1" stop-color="#10B981" /> <!-- Emerald 500 -->
+    </linearGradient>
+    <linearGradient id="blueGradientDark" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA" /> <!-- Blue 400 (Brighter) -->
+      <stop offset="1" stop-color="#3B82F6" /> <!-- Blue 500 -->
+    </linearGradient>
+  </defs>
+
+  <!-- Group: Icon (Financial Stack + Arrow) -->
+  <g transform="translate(0, 2)">
+    <!-- Back Bill (Darker Blue fade) -->
+    <rect x="8" y="8" width="24" height="32" rx="2" fill="#1E40AF" fill-opacity="0.5"/>
+    
+    <!-- Middle Bill (Blue) -->
+    <rect x="4" y="12" width="24" height="32" rx="2" fill="url(#blueGradientDark)"/>
+    
+    <!-- Front Bill (Dark surface with border) -->
+    <rect x="0" y="16" width="24" height="32" rx="2" fill="#0F172A" stroke="#60A5FA" stroke-width="1.5"/>
+    <!-- Lines on document -->
+    <rect x="4" y="22" width="16" height="2" rx="1" fill="#475569"/>
+    <rect x="4" y="28" width="10" height="2" rx="1" fill="#475569"/>
+    <rect x="4" y="34" width="12" height="2" rx="1" fill="#475569"/>
+
+    <!-- The Growth Arrow (Bright Emerald) -->
+    <path d="M10 40L22 28L30 36L46 12" stroke="url(#moneyGradientDark)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M46 12H34M46 12V24" stroke="url(#moneyGradientDark)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Typography Group -->
+  <text x="56" y="35" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="28" fill="#FFFFFF">
+    <tspan font-weight="600">Digit</tspan><tspan font-weight="800" fill="#60A5FA">Bill</tspan>
+  </text>
+  
+  <!-- Subtle tagline/accent or dot -->
+  <circle cx="178" cy="35" r="3" fill="#34D399"/>
+</svg>

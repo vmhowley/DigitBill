@@ -32,10 +32,11 @@ api.interceptors.response.use(
   (error: any) => {
     loaderService.hide();
     if (error.response && error.response.status === 403) {
-      if (error.response.data?.code === 'SUBSCRIPTION_EXPIRED') {
+      const data = error.response.data;
+      if (data?.code === 'SUBSCRIPTION_EXPIRED' || data?.error?.toLowerCase().includes('suscripción vencida')) {
         // Dispatch global event for the App to handle
         window.dispatchEvent(new Event('license-expired'));
-      } else if (error.response.data?.code === 'ACCESS_DENIED' || error.response.data?.error?.includes('Access Denied')) {
+      } else if (data?.code === 'ACCESS_DENIED' || data?.error?.includes('Access Denied')) {
         toast.error(
           "¡Cuenta no activada!\nContacta a ventas para adquirir tu licencia:\nventas@tufacturard.com",
           { duration: 6000, icon: '🔒' }

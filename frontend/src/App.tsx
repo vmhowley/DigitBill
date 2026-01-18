@@ -78,30 +78,13 @@ const PublicRoute = ({ children }: { children: ReactNode }) => {
 };
 
 import LicenseExpired from './components/LicenseExpired';
-import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 function AppRoutes() {
-  const [isExpired, setIsExpired] = useState(false);
+  const { isExpired } = useAuth();
   const location = useLocation();
-  const { profile } = useAuth();
 
-  useEffect(() => {
-    const handleExpired = () => setIsExpired(true);
-    window.addEventListener('license-expired', handleExpired);
-    return () => window.removeEventListener('license-expired', handleExpired);
-  }, []);
-
-  // Sync state: If profile is active, clear the expired flag
-  useEffect(() => {
-    if (profile?.subscription_status === 'active') {
-      setIsExpired(false);
-    }
-  }, [profile]);
-
-  const shouldShowExpired = isExpired || profile?.subscription_status === 'expired';
-
-  if (shouldShowExpired && location.pathname !== '/upgrade') {
+  if (isExpired && location.pathname !== '/upgrade') {
     return <LicenseExpired />;
   }
 
